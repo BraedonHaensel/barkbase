@@ -89,7 +89,8 @@ class Booking(Base):
     end_datetime: Mapped[datetime] = mapped_column(DateTime)
     service_type: Mapped[ServiceType] = mapped_column(Enum(ServiceType))
     price: Mapped[float] = mapped_column(Numeric(6, 2))
-    location: Mapped[str] = mapped_column(String(100))
+    city: Mapped[str] = mapped_column(String(100))
+    street: Mapped[str] = mapped_column(String(100))
     note: Mapped[str] = mapped_column(String(100))
 
 

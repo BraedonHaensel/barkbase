@@ -4,6 +4,7 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+
 # Import environment variables from the '.env' file.
 load_dotenv()
 
@@ -17,4 +18,5 @@ engine = create_engine(os.getenv('DATABASE_URI'))
 db = sessionmaker(bind=engine)()
 
 # Initialize the routes.
-from . import routes as _
+from . import routes
+from . import ci

@@ -25,7 +25,7 @@ Base.metadata.create_all(engine)  # Recreate all tables
 
 # Add owners:
 owner = Owner(
-    email="john@gmail.com", password="abcd123", f_name="John", l_name="Doe",
+    email="john@gmail.com", password="a", f_name="John", l_name="Doe",
     address="123 Mt Norquay Pl SE", phone_num="4039987283")
 db.add(owner)
 owner = Owner(
@@ -70,7 +70,7 @@ db.commit()
 booking = Booking(
     o_email="john@gmail.com", sp_email="alice@gmail.com",
     start_datetime=datetime(2025, 10, 30, 14, 30), end_datetime=datetime(2025, 10, 30, 16, 30),
-    service_type=ServiceType.WALKING, price=60, location="55 Sunshine Pl NE",
+    service_type=ServiceType.WALKING, price=60, city="calgary", street="55 Sunshine Pl NE",
     note="My dog barks a lot.")
 db.add(booking)
 db.commit()

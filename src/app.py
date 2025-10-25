@@ -1,4 +1,9 @@
-from barkbase import app
+
+import barkbase
+from barkbase.ci import CI
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    d = CI()
+    d.main()
+    #app.run(debug=True)
+
