@@ -81,10 +81,11 @@ class Review(Base):
 
 class Booking(Base):
     __tablename__ = 'booking'
+    next_id = 0
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=False) #autoincremet must be explicitly set to false
     o_email: Mapped[str] = mapped_column(String(100), ForeignKey('owner.email'))
-    sp_email: Mapped[str] = mapped_column(String(100), ForeignKey('service_provider.email'))
+    sp_email: Mapped[str] = mapped_column(String(100), ForeignKey('service_provider.email'), nullable=True)
     start_datetime: Mapped[datetime] = mapped_column(DateTime)
     end_datetime: Mapped[datetime] = mapped_column(DateTime)
     service_type: Mapped[ServiceType] = mapped_column(Enum(ServiceType))

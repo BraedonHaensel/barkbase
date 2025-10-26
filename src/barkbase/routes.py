@@ -42,12 +42,14 @@ db.add(emergency_contact)
 db.commit()
 
 # Add dog:
-dog = Dog(name="Chico", o_email="john@gmail.com", birth_date=date(2010, 1, 20), size=Dog.Size.SMALL)
+dog = Dog(name="chico", o_email="john@gmail.com", birth_date=date(2010, 1, 20), size=Dog.Size.SMALL)
+db.add(dog)
+dog = Dog(name="amigo", o_email="john@gmail.com", birth_date=date(2010, 2, 13), size=Dog.Size.LARGE)
 db.add(dog)
 db.commit()
 
 # Add dog_breed:
-dog_breed = DogBreed(d_name="Chico", o_email="john@gmail.com", breed="Chihuahua")
+dog_breed = DogBreed(d_name="chico", o_email="john@gmail.com", breed="Chihuahua")
 db.add(dog_breed)
 db.commit()
 
@@ -68,6 +70,7 @@ db.commit()
 
 # Add booking (Note the ID is automatically set):
 booking = Booking(
+    id=-2,
     o_email="john@gmail.com", sp_email="alice@gmail.com",
     start_datetime=datetime(2025, 10, 30, 14, 30), end_datetime=datetime(2025, 10, 30, 16, 30),
     service_type=ServiceType.WALKING, price=60, city="calgary", street="55 Sunshine Pl NE",
@@ -76,7 +79,7 @@ db.add(booking)
 db.commit()
 
 # Add booked_dog
-booked_dog = BookedDog(booking_id=1, d_name="Chico", o_email="john@gmail.com")
+booked_dog = BookedDog(booking_id=-2, d_name="chico", o_email="john@gmail.com")
 db.add(booked_dog)
 db.commit()
 ########## END EXAMPLES ##########
