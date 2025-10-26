@@ -88,4 +88,58 @@ def init_routes(app, db: DB):
     @app.route("/booked-dogs")
     def get_all_booked_dogs():
         return db.getAllBookedDogs()
+    
+    # Create booking
+    # TODO: ensure the primary keys EXIST before inserting anything.
+    # 1) Ensure owner exists
+    # 2) Ensure sp exists
+    # 3) Ensure all dogs exist
+    @app.route("/bookings", methods=["POST"])
+    def create_booking():
+        data = request.get_json()
+
+        # Extract + validate required fields
+        required = [
+            "o_email", "sp_email", "start_datetime", "end_datetime",
+            "service_type", "price", "dog_names", "city", "street",
+        ]
+        missing = [k for k in required if k not in data]
+        if missing:
+            return jsonify({"error": f"Missing fields: {', '.join(missing)}"}), 400
+
+        try:
+            o_email = data["o_email"]
+            sp_email = data["sp_email"]
+
+            # parse ISO8601 timestamps like "2025-10-30T14:30:00"
+            start_datetime = datetime.fromisoformat(data["start_datetime"])
+            end_datetime = datetime.fromisoformat(data["end_datetime"])
+
+            # enum conversion
+            service_type = ServiceType[data["service_type"].upper()]  # e.g. "WALKING" → ServiceType.WALKING
+
+            price = float(data["price"])
+            dog_names = data["dog_names"]
+
+            city = data["city"]
+            street = data["street"]
+
+        except (KeyError, ValueError) as e:
+            return jsonify({"error": f"Invalid data format: {str(e)}"}), 400
+
+        # Now you can call a DB-layer helper like:
+        booking_id = db.createBooking({
+            "o_email": o_email,
+            "sp_email": sp_email,
+            "start_datetime": start_datetime,
+            "end_datetime": end_datetime,
+            "service_type": service_type,
+            "price": price,
+            "dog_names": dog_names,
+            "street": street,
+            "city": city
+        }
+        )
+
+        return jsonify({"message": "Booking created", "booking_id": booking_id}), 201
     ###################################################

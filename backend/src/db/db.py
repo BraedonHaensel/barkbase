@@ -1,32 +1,21 @@
 
-########## DATA POPULATION EXAMPLES ##########
-# This section is for initial setup/debugging, and can be deleted when no longer useful.
-
-# Reset all tables.
-# from . import engine
-# from models import Base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models.models import Base, Owner, Dog, DogBreed, EmergencyContact, ServiceProvider, Review, Booking, ServiceType, BookedDog
 from datetime import date, datetime
-from dto.dto import OwnerDTO, EmergencyContactDto, DogDTO, ServiceProviderDTO
+from dto.dto import OwnerDTO, EmergencyContactDto, DogDTO, ServiceProviderDTO, BookingCreateDto
 from typing import Optional
 
 from dotenv import load_dotenv
-# from flask import Flask
 import os
 
 # Import environment variables from the '.env' file.
 load_dotenv()
 
-
-# Create the SQLAlchemy session.
-
-
-# This class is a self.db wrapper. It allows us to interact with Mariaself.db.
+# This class is a DB wrapper. It allows us to interact with MariaDB.
 class DB:
     def __init__(self):
-        # Define the Mariaself.db engine using Mariaself.db Connector/Python.
+        # Define the DB engine using DB Connector/Python.
         DB_DRIVER = os.getenv("DB_DRIVER")
         DB_USER = os.getenv("DB_USER")
         DB_PASS = os.getenv("DB_PASS")
@@ -246,8 +235,52 @@ class DB:
 
         return results
 
-        # Add booked_dog
-        # booked_dog = BookedDog(booking_id=-2, d_name="chico", o_email="john@gmail.com")
-        # self.db.add(booked_dog)
-        # self.db.commit()
-        ########## END EXAMPLES ##########
+    def createBooking(self, request: BookingCreateDto) -> str:
+        # 1) Create new booking in Booking table
+        # 2) For each dog name, create a new entry in DogBooking
+        # ASSSUMPTIONS: In this booking, only one owner is involved and all dogs are his.
+
+        # Parse input; input validation
+        try:
+            o_email = request["o_email"]
+            sp_email = request["sp_email"]
+            start_dt = request["start_datetime"]
+            end_dt = request["end_datetime"]
+            service_type = request["service_type"]
+            price = float(request["price"])
+            dog_names = request["dog_names"]
+        except KeyError as e:
+            raise ValueError(f"Missing field: {e}")
+        except Exception as e:
+            raise ValueError(f"Invalid field format: {e}")
+
+        # 2) Create a new booking record
+        booking = Booking(
+            o_email=o_email,
+            sp_email=sp_email,
+            start_datetime=start_dt,
+            end_datetime=end_dt,
+            service_type=service_type,
+            price=price,
+            city="calgary",   # TODO: make configurable later
+            street="default street",
+            note=""
+        )
+
+        self.db.add(booking)
+        self.db.commit()  # commit so booking.id is generated
+
+        # 3) For each dog, create an entry in BookedDog
+        # TODO: check if the dog actually exists in DB?
+        for name in dog_names:
+            booked_dog = BookedDog(
+                booking_id=booking.id,
+                d_name=name,
+                o_email=o_email
+            )
+            self.db.add(booked_dog)
+
+        self.db.commit()  # persist all booked dogs
+
+        # 4) Return the booking ID as a string (for easy JSON serialization)
+        return str(booking.id)
