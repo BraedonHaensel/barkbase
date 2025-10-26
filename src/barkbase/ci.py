@@ -32,8 +32,19 @@ class CI:
 
             settings = command.split(" ")
 
-            if len(settings) == 0:
-                continue
+            if len(settings) == 0 or settings[0] == "help":
+                print('''
+                commands:
+                quit - q
+                print table - p table
+                raw sqr - r command
+                login - login email password
+                create account - create account [owner/serviceProvider] f_name l_name adress phone_num
+                create booking - create booking  city street start_time end_time [w/s] price note [dogs (multiple)]
+                find bookings - find bookings city
+                find my bookings - find mine
+                add dog - add dog name
+                ''')
             if settings[0] == 'q':
                 break
             if len(command) < 3:
