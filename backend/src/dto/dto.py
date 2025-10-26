@@ -23,7 +23,14 @@ class EmergencyContactDto(TypedDict):
     l_name: str
 
 class DogDTO(TypedDict):
-        name: str
-        o_email: str
-        birth_date: date
-        size: str  # Preserve enum type
+    name: str
+    o_email: str
+    birth_date: date
+    size: str  # Preserve enum type
+
+class ServiceProviderDTO(TypedDict):
+    email: str
+    f_name: str
+    l_name: str
+    address: str
+    phone_num: str

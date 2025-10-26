@@ -7,9 +7,9 @@
 # from models import Base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from models.models import Base, Owner, Dog, DogBreed, EmergencyContact, ServiceProvider, Review, Booking, ServiceType
+from models.models import Base, Owner, Dog, DogBreed, EmergencyContact, ServiceProvider, Review, Booking, ServiceType, BookedDog
 from datetime import date, datetime
-from dto.dto import OwnerDTO, EmergencyContactDto, DogDTO
+from dto.dto import OwnerDTO, EmergencyContactDto, DogDTO, ServiceProviderDTO
 from typing import Optional
 
 from dotenv import load_dotenv
@@ -163,6 +163,88 @@ class DB:
         ]
 
         return result 
+    
+    # DOG BREEDS
+    def getAllDogBreeds(self):
+        all = self.db.query(DogBreed).all()
+        results = []
+
+        for item in all:
+            results.append({
+                "dog_name": item.d_name,
+                "owner_email": item.o_email,
+                "breed": item.breed
+            })
+
+        return results
+    
+    # SERVICE PROVIDERS
+    def getAllSvcProviders(self) -> list[ServiceProviderDTO]:
+        all: list[ServiceProvider] = self.db.query(ServiceProvider).all()
+        results = []
+
+        for provider in all:
+            results.append({
+                "email": provider.email,
+                "f_name": provider.f_name,
+                "l_name": provider.l_name,
+                "address": provider.address,
+                "phone_num": provider.phone_num
+            })
+
+        return results
+    
+    def getAllReviews(self):
+        reviews: list[Review] = self.db.query(Review).all()
+        results = []
+
+        for review in reviews:
+            results.append({
+                "id": review.id,
+                "o_email": review.o_email,
+                "sp_email": review.sp_email,
+                "service_type": review.service_type.name,  # convert enum to string
+                "date": review.date.isoformat(),           # convert datetime.date → string
+                "star_rating": review.star_rating,
+                "description": review.description
+            })
+
+        return results
+    
+
+    # BOOKINGS
+    def getAllBookings(self):
+        bookings: list[Booking] = self.db.query(Booking).all()
+
+        results = []
+        for b in bookings:
+            results.append({
+                "id": b.id,
+                "o_email": b.o_email,
+                "sp_email": b.sp_email,
+                "start_datetime": b.start_datetime.isoformat(),
+                "end_datetime": b.end_datetime.isoformat(),
+                "service_type": b.service_type.name,  # enum → string
+                "price": float(b.price),
+                "city": b.city,
+                "street": b.street,
+                "note": b.note
+            })
+
+        return results
+
+    def getAllBookedDogs(self):
+        booked_dogs: list[BookedDog] = self.db.query(BookedDog).all()
+
+        results = []
+        for bd in booked_dogs:
+            results.append({
+                "booking_id": bd.booking_id,
+                "d_name": bd.d_name,
+                "o_email": bd.o_email
+            })
+
+        return results
 
         # Add booked_dog
         # booked_dog = BookedDog(booking_id=-2, d_name="chico", o_email="john@gmail.com")

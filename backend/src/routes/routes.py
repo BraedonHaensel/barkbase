@@ -59,31 +59,33 @@ def init_routes(app, db: DB):
         
         return jsonify(contacts)
 
-    # ) DOG ROUTES
+    # 3) DOG ROUTES
     @app.route("/dogs")
     def get_all_dogs():
         return db.getAllDogs()
 
-    # @app.route("/dog_breed")
-    # def dog_breed():
+    # Get the breeds of all dogs
+    @app.route("/dog-breeds")
+    def get_all_dog_breeds():
+        return db.getAllDogBreeds()
     #     return get_table_data(DogBreed)
 
-    # # 3) SERVICE PROVIDER ROUTES
-    # @app.route("/service_provider")
-    # def service_provider():
-    #     return get_table_data(ServiceProvider)
+    # 4) SERVICE PROVIDER ROUTES
+    @app.route("/service-providers")
+    def service_provider():
+        return db.getAllSvcProviders()
 
-    # # 4) REVIEW ROUTES
-    # @app.route("/review")
-    # def review():
-    #     return get_table_data(Review)
+    # 5) REVIEWS
+    @app.route("/reviews")
+    def get_all_reviews():
+        return db.getAllReviews()
 
-    # # 5) BOOKING ROUTES
-    # @app.route("/booking")
-    # def booking():
-    #     return get_table_data(Booking)
+    # 6) BOOKING ROUTES
+    @app.route("/bookings")
+    def get_all_bookings():
+        return db.getAllBookings()
 
-    # @app.route("/booked_dog")
-    # def booked_dog():
-    #     return get_table_data(BookedDog)
+    @app.route("/booked-dogs")
+    def get_all_booked_dogs():
+        return db.getAllBookedDogs()
     ###################################################
