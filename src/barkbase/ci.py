@@ -13,6 +13,18 @@ from .routes import get_table_data
 classMap = {"owner":Owner, "emergencycontact":EmergencyContact, "dog":Dog, "dogbreed":DogBreed,
             "serviceprovider":ServiceProvider, "review":Review, "booking":Booking, "bookeddog":BookedDog}
 
+helpStr = '''
+commands:
+quit - q
+print table - p table
+raw sqr - r command
+login - login email password
+create account - create account [owner/serviceProvider] f_name l_name adress phone_num
+create booking - create booking  city street start_time end_time [w/s] price note [dogs (multiple)]
+find bookings - find bookings city
+find my bookings - find mine
+add dog - add dog name
+                '''
 
 #The CI class is a temporary interface for prototyping functions that will then
 #be implemented into the GUI at a latter date
@@ -24,27 +36,20 @@ class CI:
 
     def main(self):
 
+        print(helpStr)
+
         while True:
+            #get command
             command = input("enter command: ")
             command = command.lower()
             settings = []
 
-
             settings = command.split(" ")
 
+            #check if command is valid
             if len(settings) == 0 or settings[0] == "help":
-                print('''
-                commands:
-                quit - q
-                print table - p table
-                raw sqr - r command
-                login - login email password
-                create account - create account [owner/serviceProvider] f_name l_name adress phone_num
-                create booking - create booking  city street start_time end_time [w/s] price note [dogs (multiple)]
-                find bookings - find bookings city
-                find my bookings - find mine
-                add dog - add dog name
-                ''')
+                print(helpStr)
+                continue
             if settings[0] == 'q':
                 break
             if len(command) < 3:
@@ -129,6 +134,7 @@ class CI:
 
         res = db.execute(select(Owner).where(and_(Owner.email == email, Owner.password == password)))
 
+        #automatically detects owner/service provider
         row = res.first()
         if row == None:
             res = db.execute(select(ServiceProvider).where(ServiceProvider.email == email).where(ServiceProvider.password == password))
@@ -149,7 +155,7 @@ class CI:
     def create_account(self, email, password, is_owner, f_name, l_name, adress, phone_num):
         is_owner = is_owner == "owner"
 
-        #do not duplicate emails
+        #do not allow duplicate emails
         res = db.execute(select(Owner).where(Owner.email == email))
         if not (res.first() == None):
             print("email already in use")
@@ -180,6 +186,7 @@ class CI:
         else:
             mode = ServiceType.SITTING
 
+        #create booking
         id = Booking.next_id
         Booking.next_id += 1
         booking = Booking(id=id, o_email=self.email, city=city, street=street, service_type=mode, start_datetime=start_time, end_datetime=end_time,
@@ -187,6 +194,7 @@ class CI:
         db.add(booking)
         db.commit()
 
+        #create associated bookedDogs
         for i in dogs:
             booked_dog = BookedDog(booking_id=id,  o_email=self.email, d_name = i)
             db.add(booked_dog)
@@ -224,6 +232,7 @@ class CI:
     def find_bookings(self, city):
         res = db.execute(select(Booking).where(Booking.city == city))
 
+        #extract from querry
         for i in res.all():
             row_data = []
 
@@ -237,11 +246,13 @@ class CI:
 
     def find_my_bookings(self):
 
+        #change based on owner/serviceProvider context
         if self.is_owner:
             res = db.execute(select(Booking).where(Booking.o_email == self.email))
         else:
             res = db.execute(select(Booking).where(Booking.sp_email == self.email))
 
+        #extract from querry
         for i in res.all():
             row_data = []
 
