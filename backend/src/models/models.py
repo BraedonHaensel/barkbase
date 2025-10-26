@@ -93,10 +93,8 @@ class Booking(Base):
     street: Mapped[str] = mapped_column(String(100))
     note: Mapped[str] = mapped_column(String(100))
 
-
 class BookedDog(Base):
     __tablename__ = 'booked_dog'
 
     booking_id: Mapped[int] = mapped_column(Integer, ForeignKey('booking.id'), primary_key=True)
-    d_name: Mapped[str] = mapped_column(String(100), ForeignKey('dog.name'), primary_key=True)
     o_email: Mapped[str] = mapped_column(String(100), ForeignKey('dog.o_email'), primary_key=True)
