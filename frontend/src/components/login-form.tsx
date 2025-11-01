@@ -41,7 +41,7 @@ const LoginForm = (props: Props) => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-5">
-        {/* Username field */}
+        {/* Email field */}
         <FormField
           control={form.control}
           name="email"
@@ -64,7 +64,7 @@ const LoginForm = (props: Props) => {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input type="password" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -120,11 +120,8 @@ const LoginForm = (props: Props) => {
           )}
         />
 
-        <Button
-          type="submit"
-          className="flex w-full items-center justify-center"
-        >
-          Log In
+        <Button type="submit" className="w-full">
+          Create Account
         </Button>
         <p className="text-sm">
           Don't have an account?{' '}
