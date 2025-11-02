@@ -1,5 +1,6 @@
 import React from 'react';
 import HomeButton from '@/components/home-button';
+import UserAccountNav from '@/components/user-account-nav';
 
 type Props = {};
 
@@ -10,8 +11,14 @@ const Navbar = (props: Props) => {
         <HomeButton />
       </div>
 
-      <div className="flex h-full items-center bg-blue-500">
-        I am the right div
+      <div className="aspect-square h-full">
+        <UserAccountNav
+          user={{
+            email: 'email@example.com',
+            firstName: 'John',
+            lastName: 'Doe',
+          }}
+        />
       </div>
     </div>
   );
