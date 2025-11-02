@@ -1,18 +1,10 @@
-# import barkbase
-# from barkbase.ci import CI
 from routes.routes import init_routes
-# from dotenv import load_dotenv
+from routes.auth import init_auth_routes
 from flask import Flask
 from db.db import DB
-
-# TODO: write skeleton to expose all routes; return mock data for each.
-# test using Postman; show during demo
-
-# Creates and returns a new Flask instance
-def create_app(db):
-    app = Flask(__name__)
-    init_routes(app, db)
-    return app
+from repo.owner_repo import OwnerRepo
+from repo.sp_repo import ServiceProviderRepo
+from flasgger import Swagger
 
 if __name__ == '__main__':
     # TODO: populate DB
@@ -21,10 +13,30 @@ if __name__ == '__main__':
     db.resetAllTables()
     db.populateDb()
 
-    app = create_app(db)
+
+    session = db.get_session()
+
+    # repos
+    owner_repo = OwnerRepo(session)
+    sp_repo = ServiceProviderRepo(session)
+
+    # initialize app
+    app = Flask(__name__)
+
+    # swagger docs
+    swagger = Swagger(app, template={
+        "info": {
+            "title": "BarkBase API",
+            "description": "REST API for Owners and Service Providers",
+            "version": "1.0.0"
+        }
+    })
+    
+    # initialize routes
+    init_routes(app, db)
+    init_auth_routes(app, owner_repo=owner_repo, sp_repo=sp_repo)
     app.run(debug=True)
 
     # d = CI()
     # d.main()
     #app.run(debug=True)
-
