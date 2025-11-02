@@ -14,7 +14,7 @@ class Owner(Base):
     __tablename__ = 'owner'
 
     email: Mapped[str] = mapped_column(String(100), primary_key=True)
-    password: Mapped[str] = mapped_column(String(100))
+    password: Mapped[str] = mapped_column(String(255)) # 256 to match length of hashed passwords
     f_name: Mapped[str] = mapped_column(String(100))
     l_name: Mapped[str] = mapped_column(String(100))
     address: Mapped[str] = mapped_column(String(100))
@@ -58,7 +58,7 @@ class ServiceProvider(Base):
     __tablename__ = 'service_provider'
 
     email: Mapped[str] = mapped_column(String(100), primary_key=True)
-    password: Mapped[str] = mapped_column(String(100))
+    password: Mapped[str] = mapped_column(String(255)) # 256 to match length of hashed passwords
     f_name: Mapped[str] = mapped_column(String(100))
     l_name: Mapped[str] = mapped_column(String(100))
     address: Mapped[str] = mapped_column(String(100))

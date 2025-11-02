@@ -31,20 +31,21 @@ def init_routes(app, db: DB):
 
     # 1) OWNER ROUTES
     # GET /api/owners?:email
+
+    # GET /api/owners
     @app.route("/owners")
-    def get_owner_by_email():
-        email = request.args.get("email")
+    def get_all_owners():
+        return jsonify(db.getAllOwners())
+
+    # Get owner by email
+    @app.route("/owners/<email>")
+    def get_owner_by_email(email):
         owner = db.getOwnerByEmail(email)
 
         if not owner:
             return jsonify({ "error": "Owner not found" }), 404
         
         return jsonify(owner)
-
-    # GET /api/owners
-    @app.route("/owners")
-    def owner():
-        return jsonify(db.getAllOwners())
 
     # 2) EMERGENCY CONTACT 
     # GET /api/emergency-contact
@@ -142,4 +143,3 @@ def init_routes(app, db: DB):
         )
 
         return jsonify({"message": "Booking created", "booking_id": booking_id}), 201
-    ###################################################
