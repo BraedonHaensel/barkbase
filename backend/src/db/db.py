@@ -28,11 +28,16 @@ class DB:
         )
 
         self.engine = create_engine(DATABASE_URI)
-        self.db = sessionmaker(bind=self.engine)()
+        self.session = sessionmaker(bind=self.engine)
+        self.db = self.session() # TODO: remove later
     
     def resetAllTables(self):
         Base.metadata.drop_all(self.engine)  # Clear all tables
         Base.metadata.create_all(self.engine)  # Recreate all tables
+
+    # Returns a new SQLAlchemy session.
+    def get_session(self):
+        return self.session()
 
     def populateDb(self):
         # Add owners:
