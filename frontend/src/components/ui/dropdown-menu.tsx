@@ -1,4 +1,5 @@
-// Citation: This component is from https://ui.shadcn.com/docs/components/dropdown-menu
+// CITATION This component is taken from:
+// * Shadcn. (n.d.). Dropdown menu. Shadcn/Ui. Retrieved November 3, 2025, from https://ui.shadcn.com/docs/components/dropdown-menu
 
 'use client';
 

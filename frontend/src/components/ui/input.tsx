@@ -1,4 +1,5 @@
-// Citation: This component is from https://ui.shadcn.com/docs/components/input
+// CITATION This component is taken from:
+// * Shadcn. (n.d.). Input. Shadcn/Ui. Retrieved November 3, 2025, from https://ui.shadcn.com/docs/components/input
 
 import * as React from 'react';
 

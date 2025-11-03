@@ -1,4 +1,5 @@
-// Citation: This component is from https://ui.shadcn.com/docs/components/card
+// CITATION This component is taken from:
+// * Shadcn. (n.d.). Card. Shadcn/Ui. Retrieved November 3, 2025, from https://ui.shadcn.com/docs/components/card
 
 import * as React from 'react';
 
