@@ -12,7 +12,7 @@ load_dotenv()
 app = Flask(__name__)
 
 # Define the MariaDB engine using MariaDB Connector/Python.
-engine = create_engine(os.getenv('DATABASE_URI'))
+engine = create_engine('mariadb+mariadbconnector://matias:matias@bank/barkbase')
 
 # Create the SQLAlchemy session.
 db = sessionmaker(bind=engine)()
