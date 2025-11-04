@@ -20,13 +20,11 @@ import { LoaderCircle } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import api from '@/lib/api';
-import { redirect, useRouter } from 'next/navigation';
-
-type Props = {};
+import { useRouter } from 'next/navigation';
 
 type CreateAccountSchema = z.infer<typeof createAccountSchema>;
 
-const CreateAccountForm = (props: Props) => {
+const CreateAccountForm = () => {
   const [stageNum, setStageNum] = useState(1);
   const router = useRouter();
 

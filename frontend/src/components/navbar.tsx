@@ -1,10 +1,7 @@
-import React from 'react';
 import HomeButton from '@/components/home-button';
-import UserAccountNav from '@/components/user-account-nav';
+import ProvileNav from '@/components/profile-nav';
 
-type Props = {};
-
-const Navbar = (props: Props) => {
+const Navbar = () => {
   return (
     <div className="flex h-full items-center justify-between gap-3">
       <div>
@@ -12,7 +9,7 @@ const Navbar = (props: Props) => {
       </div>
 
       <div className="aspect-square h-full">
-        <UserAccountNav
+        <ProvileNav
           user={{
             email: 'email@example.com',
             firstName: 'John',

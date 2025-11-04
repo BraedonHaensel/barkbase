@@ -2,7 +2,6 @@
 
 import { loginSchema } from '@/lib/schemas/login';
 import { zodResolver } from '@hookform/resolvers/zod';
-import React from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
 import {
@@ -17,12 +16,20 @@ import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { AccountType } from '@/enums/accountType';
 import Link from 'next/link';
-
-type Props = {};
+import { useMutation } from '@tanstack/react-query';
+import api from '@/lib/api';
+import { LoaderCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import { useContext } from 'react';
+import { SessionContext } from '@/context/session-context';
 
 type LoginSchema = z.infer<typeof loginSchema>;
 
-const LoginForm = (props: Props) => {
+const LoginForm = () => {
+  const router = useRouter();
+  const { setSession } = useContext(SessionContext);
+
   const form = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -34,8 +41,35 @@ const LoginForm = (props: Props) => {
 
   form.watch();
 
+  const { mutate: postLogin, isPending } = useMutation({
+    mutationFn: async (input: LoginSchema) => {
+      const response = await api.post('/auth/login', {
+        email: input.email,
+        password: input.password,
+        role: input.accountType,
+      });
+      return response.data;
+    },
+  });
+
   function onSubmit(input: LoginSchema) {
-    // Do soemthing after submitting the form, hit the login api?
+    postLogin(input, {
+      onSuccess: ({ role, token }) => {
+        console.info(`Logged in as ${role} with token ${token}`);
+        setSession({ token, accountType: role });
+        router.push('/dashboard');
+      },
+      onError: (error: any) => {
+        const apiError = error?.response?.data?.error;
+        if (apiError) {
+          console.error(`API error: ${apiError}`);
+          toast.error(`Login failed: ${apiError}`);
+        } else {
+          console.error(error);
+          toast.error('Login failed. Please try again.');
+        }
+      },
+    });
   }
 
   return (
@@ -120,9 +154,14 @@ const LoginForm = (props: Props) => {
           )}
         />
 
-        <Button type="submit" className="w-full">
-          Log In
+        <Button type="submit" className="w-full" disabled={isPending}>
+          {isPending ? (
+            <LoaderCircle className="h-6! w-6! animate-spin" />
+          ) : (
+            'Log In'
+          )}
         </Button>
+
         <p className="text-sm">
           Don't have an account?{' '}
           <Link

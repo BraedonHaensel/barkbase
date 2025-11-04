@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useContext, useState } from 'react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,13 +11,15 @@ import {
 import { CircleUser, LogOut } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { SessionContext } from '@/context/session-context';
 
 type Props = {
-  user: Pick<User, 'email' | 'firstName' | 'lastName'>;
+  user: Pick<OldUser, 'email' | 'firstName' | 'lastName'>;
 };
 
-const UserAccountNav = ({ user }: Props) => {
+const ProvileNav = ({ user }: Props) => {
   const [open, setOpen] = useState(false);
+  const { clearSession } = useContext(SessionContext);
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -57,11 +59,12 @@ const UserAccountNav = ({ user }: Props) => {
           variant="destructive"
           onClick={() => {
             setOpen(false);
-            // TODO: Request logout on the backend
+            // TODO: Request logout on the backend? Or let token expire
+            clearSession();
             redirect('/login');
           }}
         >
-          Sign Out
+          Log Out
           <LogOut />
         </DropdownMenuItem>
       </DropdownMenuContent>
@@ -69,4 +72,4 @@ const UserAccountNav = ({ user }: Props) => {
   );
 };
 
-export default UserAccountNav;
+export default ProvileNav;
