@@ -121,7 +121,7 @@ const LoginForm = (props: Props) => {
         />
 
         <Button type="submit" className="w-full">
-          Create Account
+          Log In
         </Button>
         <p className="text-sm">
           Don't have an account?{' '}

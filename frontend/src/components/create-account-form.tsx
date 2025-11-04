@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
 import {
@@ -16,6 +16,11 @@ import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { AccountType } from '@/enums/accountType';
 import { createAccountSchema } from '@/lib/schemas/create-account';
+import { LoaderCircle } from 'lucide-react';
+import { useMutation } from '@tanstack/react-query';
+import { toast } from 'sonner';
+import api from '@/lib/api';
+import { redirect, useRouter } from 'next/navigation';
 
 type Props = {};
 
@@ -23,6 +28,7 @@ type CreateAccountSchema = z.infer<typeof createAccountSchema>;
 
 const CreateAccountForm = (props: Props) => {
   const [stageNum, setStageNum] = useState(1);
+  const router = useRouter();
 
   const form = useForm<CreateAccountSchema>({
     resolver: zodResolver(createAccountSchema),
@@ -40,14 +46,45 @@ const CreateAccountForm = (props: Props) => {
 
   form.watch();
 
+  const { mutate: postCreateAccount, isPending } = useMutation({
+    mutationFn: async (input: CreateAccountSchema) => {
+      const response = await api.post('/auth/signup', {
+        address: input.address,
+        email: input.email,
+        f_name: input.firstName,
+        l_name: input.lastName,
+        password: input.password,
+        phone_num: input.phoneNumber,
+        role: input.accountType,
+      });
+      return response.data;
+    },
+  });
+
   function onSubmit(input: CreateAccountSchema) {
-    // Do soemthing after submitting the form, hit the account creation api?
+    postCreateAccount(input, {
+      onSuccess: ({ message }) => {
+        console.info(message);
+        toast.success('Account created! Please log in.');
+        router.push('/login');
+      },
+      onError: (error: any) => {
+        const apiError = error?.response?.data?.error;
+        if (apiError) {
+          console.error(`API error: ${apiError}`);
+          toast.error(`Failed to create account: ${apiError}`);
+        } else {
+          console.error(error);
+          toast.error('Failed to create account. Please try again.');
+        }
+      },
+    });
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-        {stageNum == 1 && (
+        {stageNum === 1 && (
           <>
             {/* Email field */}
             <FormField
@@ -146,7 +183,7 @@ const CreateAccountForm = (props: Props) => {
           </>
         )}
 
-        {stageNum == 2 && (
+        {stageNum === 2 && (
           <>
             {/* First name field */}
             <FormField
@@ -211,10 +248,14 @@ const CreateAccountForm = (props: Props) => {
             <Button
               type="submit"
               className="w-full"
-              disabled={stageNum < 2}
-              variant={stageNum == 2 ? 'default' : 'secondary'}
+              disabled={stageNum < 2 || isPending}
+              variant={stageNum === 2 ? 'default' : 'secondary'}
             >
-              Create Account
+              {isPending ? (
+                <LoaderCircle className="h-6! w-6! animate-spin" />
+              ) : (
+                'Create Account'
+              )}
             </Button>
           </>
         )}
