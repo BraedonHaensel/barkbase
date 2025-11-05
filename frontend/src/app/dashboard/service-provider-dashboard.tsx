@@ -1,9 +1,9 @@
-type Props = {
-  session: Session;
-};
-
-const ServiceProviderDashboard = ({ session }: Props) => {
-  return <div>Service provider dashboard... token: {session.token}</div>;
+const ServiceProviderDashboard = () => {
+  return (
+    <div className="grid gap-6 md:grid-cols-2">
+      <p>Service Provider Dashboard...</p>
+    </div>
+  );
 };
 
 export default ServiceProviderDashboard;

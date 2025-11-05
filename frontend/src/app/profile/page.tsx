@@ -2,6 +2,11 @@ import React from 'react';
 
 type Props = {};
 
-export default function CreateAccountPage() {
-  return <div>Profile page...</div>;
+export default function ProfilePage() {
+  return (
+    <div>
+      Profile page. Will handle changing user account things, potentially more
+      like emergency contacts
+    </div>
+  );
 }

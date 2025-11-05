@@ -19,11 +19,11 @@ export default function DashboardPage() {
   return (
     <>
       {session?.accountType === AccountType.OWNER ? (
-        <OwnerDashboard session={session} />
+        <OwnerDashboard />
       ) : session?.accountType === AccountType.SERVICE_PROVIDER ? (
-        <ServiceProviderDashboard session={session} />
+        <ServiceProviderDashboard />
       ) : (
-        <></>
+        <p>Invalid permissions. Please log out and try again.</p>
       )}
     </>
   );
