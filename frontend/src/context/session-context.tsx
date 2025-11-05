@@ -1,5 +1,6 @@
 'use client';
 
+import { LoaderCircle } from 'lucide-react';
 import { createContext, ReactNode, useEffect, useState } from 'react';
 
 interface SessionContextType {
@@ -14,10 +15,11 @@ export const SessionContext = createContext<SessionContextType>({
   clearSession: () => {},
 });
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({
+export const SessionProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [session, setSession] = useState<Session | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Try to load the session from localStorage
   useEffect(() => {
@@ -27,6 +29,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     } catch {
       setSession(null);
     }
+    setIsLoading(false);
   }, []);
 
   // Update localStorage if the session changes
@@ -41,8 +44,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const clearSession = () => setSession(null);
 
   return (
-    <SessionContext.Provider value={{ session, setSession, clearSession }}>
-      {children}
-    </SessionContext.Provider>
+    <>
+      {isLoading ? (
+        <LoaderCircle className="mx-auto mt-3 h-10 w-10 animate-spin" />
+      ) : (
+        <SessionContext.Provider value={{ session, setSession, clearSession }}>
+          {children}
+        </SessionContext.Provider>
+      )}
+    </>
   );
 };

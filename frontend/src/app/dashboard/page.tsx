@@ -10,12 +10,11 @@ import ServiceProviderDashboard from './service-provider-dashboard';
 export default function DashboardPage() {
   const { session } = useContext(SessionContext);
 
-  console.log(session);
-
-  // TOOD: Figure out how to guard routes from users without an active session
-  // if (!session) {
-  //   redirect('/login');
-  // }
+  useEffect(() => {
+    if (!session) {
+      redirect('/login');
+    }
+  }, [session]);
 
   return (
     <>
