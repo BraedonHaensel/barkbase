@@ -9,13 +9,7 @@ const Navbar = () => {
       </div>
 
       <div className="aspect-square h-full">
-        <ProvileNav
-          user={{
-            email: 'email@example.com',
-            firstName: 'John',
-            lastName: 'Doe',
-          }}
-        />
+        <ProvileNav />
       </div>
     </div>
   );
