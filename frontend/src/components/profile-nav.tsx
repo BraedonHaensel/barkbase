@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useContext, useState } from 'react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,23 +11,30 @@ import {
 import { CircleUser, LogOut } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { SessionContext } from '@/context/session-context';
 
-type Props = {
-  user: Pick<User, 'email' | 'firstName' | 'lastName'>;
-};
-
-const UserAccountNav = ({ user }: Props) => {
+const ProvileNav = () => {
   const [open, setOpen] = useState(false);
+  const { session, clearSession } = useContext(SessionContext);
+
+  const tempUser = {
+    email: 'email@example.com',
+    firstName: 'John',
+    lastName: 'Doe',
+  };
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
-      <DropdownMenuTrigger className="h-full w-full focus:outline-none">
+      <DropdownMenuTrigger
+        className="h-full w-full hover:opacity-60 focus:outline-none"
+        disabled={!session}
+      >
         <Avatar className="h-full w-full">
           <AvatarImage
-            src="https://github.com/shadcn.png"
+            src={!!session ? 'https://github.com/shadcn.png' : undefined}
             alt="Profile image"
           />
-          <AvatarFallback className="bg-gray-200">
+          <AvatarFallback className="bg-white">
             <CircleUser className="h-full w-full" />
           </AvatarFallback>
         </Avatar>
@@ -35,9 +42,11 @@ const UserAccountNav = ({ user }: Props) => {
       <DropdownMenuContent className="max-w-[min(400px,100vw)]" align="end">
         <div className="p-2">
           <p className="truncate font-medium">
-            {user.firstName} {user.lastName}
+            {tempUser.firstName} {tempUser.lastName}
           </p>
-          <p className="text-muted-foreground truncate text-sm">{user.email}</p>
+          <p className="text-muted-foreground truncate text-sm">
+            {tempUser.email}
+          </p>
         </div>
 
         <DropdownMenuSeparator />
@@ -57,11 +66,12 @@ const UserAccountNav = ({ user }: Props) => {
           variant="destructive"
           onClick={() => {
             setOpen(false);
-            // TODO: Request logout on the backend
+            // TODO: Request logout on the backend? Or let token expire
+            clearSession();
             redirect('/login');
           }}
         >
-          Sign Out
+          Log Out
           <LogOut />
         </DropdownMenuItem>
       </DropdownMenuContent>
@@ -69,4 +79,4 @@ const UserAccountNav = ({ user }: Props) => {
   );
 };
 
-export default UserAccountNav;
+export default ProvileNav;

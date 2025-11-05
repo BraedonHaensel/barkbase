@@ -1,4 +1,5 @@
-// Citation: This component is from https://ui.shadcn.com/docs/components/button
+// CITATION This component is taken from:
+// * Shadcn. (n.d.). Button. Shadcn/Ui. Retrieved November 3, 2025, from https://ui.shadcn.com/docs/components/button
 
 import * as React from 'react';
 import { Slot } from '@radix-ui/react-slot';
