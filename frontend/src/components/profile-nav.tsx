@@ -31,7 +31,7 @@ const ProvileNav = () => {
       >
         <Avatar className="h-full w-full">
           <AvatarImage
-            src={!!session ? 'https://github.com/shadcn.png' : ''}
+            src={!!session ? 'https://github.com/shadcn.png' : undefined}
             alt="Profile image"
           />
           <AvatarFallback className="bg-white">

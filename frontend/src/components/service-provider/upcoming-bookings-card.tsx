@@ -1,30 +1,30 @@
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { History } from 'lucide-react';
+import { BookUp2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
-const PreviousBookingsCard = () => {
+const UpcomingBookingsCard = () => {
   const router = useRouter();
 
   return (
     <Card
       className="border-3 hover:cursor-pointer hover:opacity-60"
-      onClick={() => router.push('owner/previous-bookings')}
+      onClick={() => router.push('service-provider/upcoming-bookings')}
     >
       <CardHeader className="flex flex-row justify-between">
-        <CardTitle className="text-2xl font-bold">Previous Bookings</CardTitle>
-        <History size={32} />
+        <CardTitle className="text-2xl font-bold">Upcoming Bookings</CardTitle>
+        <BookUp2 size={32} />
       </CardHeader>
       <CardContent>
         <p className="text-muted-foreground">
-          View and write reviews for previous bookings!
+          View the details of upcoming bookings!
         </p>
         <span className="text-muted-foreground">
           <br />
-          TODO: Show a previous booking preview
+          TODO: Show a booking preview
         </span>
       </CardContent>
     </Card>
   );
 };
 
-export default PreviousBookingsCard;
+export default UpcomingBookingsCard;

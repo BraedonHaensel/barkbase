@@ -8,7 +8,7 @@ const PreviousBookingsCard = () => {
   return (
     <Card
       className="border-3 hover:cursor-pointer hover:opacity-60"
-      onClick={() => router.push('owner/previous-bookings')}
+      onClick={() => router.push('service-provider/previous-bookings')}
     >
       <CardHeader className="flex flex-row justify-between">
         <CardTitle className="text-2xl font-bold">Previous Bookings</CardTitle>
@@ -16,7 +16,7 @@ const PreviousBookingsCard = () => {
       </CardHeader>
       <CardContent>
         <p className="text-muted-foreground">
-          View and write reviews for previous bookings!
+          View your previuosly completed bookings!
         </p>
         <span className="text-muted-foreground">
           <br />
