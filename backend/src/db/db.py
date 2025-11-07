@@ -4,13 +4,15 @@ from sqlalchemy.orm import sessionmaker
 from models.models import Base, Owner, Dog, DogBreed, EmergencyContact, ServiceProvider, Review, Booking, ServiceType, BookedDog
 from datetime import date, datetime
 from dto.dto import OwnerDTO, EmergencyContactDto, DogDTO, ServiceProviderDTO, BookingCreateDto
-from typing import Optional
+from typing import Optional, List
+
 
 from dotenv import load_dotenv
 import os
 
 # Import environment variables from the '.env' file.
 load_dotenv()
+
 
 # This class is a DB wrapper. It allows us to interact with MariaDB.
 class DB:
@@ -23,9 +25,14 @@ class DB:
         DB_PORT = os.getenv("DB_PORT", "3306")
         DB_NAME = os.getenv("DB_NAME", "barkbase_local")
 
-        DATABASE_URI = (
-            f"{DB_DRIVER}://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-        )
+        if DB_PORT != '0':
+            DATABASE_URI = (
+                f"{DB_DRIVER}://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+            )
+        else:
+            DATABASE_URI = (
+                f"{DB_DRIVER}://{DB_USER}:{DB_PASS}@{DB_HOST}/{DB_NAME}"
+            )
 
         self.engine = create_engine(DATABASE_URI)
         self.session = sessionmaker(bind=self.engine)
@@ -95,7 +102,7 @@ class DB:
         self.db.add(booking)
         self.db.commit()
 
-    def getAllOwners(self) -> list[OwnerDTO]:
+    def getAllOwners(self) -> List[OwnerDTO]:
         owners = self.db.query(Owner).all()  # fetch all rows from owner table
 
         # Convert ORM objects → dicts (for easy JSON use later)
@@ -126,7 +133,7 @@ class DB:
         }
 
     # Filter by o_email
-    def getEmergencyContact(self, o_email: str) -> list[EmergencyContactDto]:
+    def getEmergencyContact(self, o_email: str) -> List[EmergencyContactDto]:
         contacts = self.db.query(EmergencyContact).filter(EmergencyContact.o_email == o_email)
 
         res = []
@@ -143,7 +150,7 @@ class DB:
         return res
     
     # DOGS
-    def getAllDogs(self) -> list[DogDTO]:
+    def getAllDogs(self) -> List[DogDTO]:
         dogs = self.db.query(Dog).all()
 
         result = [
@@ -173,8 +180,8 @@ class DB:
         return results
     
     # SERVICE PROVIDERS
-    def getAllSvcProviders(self) -> list[ServiceProviderDTO]:
-        all: list[ServiceProvider] = self.db.query(ServiceProvider).all()
+    def getAllSvcProviders(self) -> List[ServiceProviderDTO]:
+        all: List[ServiceProvider] = self.db.query(ServiceProvider).all()
         results = []
 
         for provider in all:
@@ -189,7 +196,7 @@ class DB:
         return results
     
     def getAllReviews(self):
-        reviews: list[Review] = self.db.query(Review).all()
+        reviews: List[Review] = self.db.query(Review).all()
         results = []
 
         for review in reviews:
@@ -208,7 +215,7 @@ class DB:
 
     # BOOKINGS
     def getAllBookings(self):
-        bookings: list[Booking] = self.db.query(Booking).all()
+        bookings: List[Booking] = self.db.query(Booking).all()
 
         results = []
         for b in bookings:
@@ -228,7 +235,7 @@ class DB:
         return results
 
     def getAllBookedDogs(self):
-        booked_dogs: list[BookedDog] = self.db.query(BookedDog).all()
+        booked_dogs: List[BookedDog] = self.db.query(BookedDog).all()
 
         results = []
         for bd in booked_dogs:
