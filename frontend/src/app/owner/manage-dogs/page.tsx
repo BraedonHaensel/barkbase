@@ -1,5 +1,6 @@
 'use client';
 
+import DogCard from '@/components/owner/dog-card';
 import { SessionContext } from '@/context/session-context';
 import { AccountType } from '@/enums/accountType';
 import { redirect } from 'next/navigation';
@@ -14,5 +15,9 @@ export default function ManageDogsPage() {
     }
   }, [session]);
 
-  return <p>manage dogs page</p>;
+  return (
+    <div className="grid gap-6 md:grid-cols-2">
+      <DogCard />
+    </div>
+  );
 }
