@@ -169,7 +169,7 @@ const DogCardForm = ({ isEditing, setIsEditing }: Props) => {
           )}
         />
 
-        {/* Name field */}
+        {/* Breeds field */}
         <FormField
           control={form.control}
           name="breeds"
@@ -187,6 +187,7 @@ const DogCardForm = ({ isEditing, setIsEditing }: Props) => {
 
         {isEditing && (
           <div className="flex flex-col gap-3">
+            {/* Discard changes button */}
             <Button
               type="button"
               className="w-full"
@@ -199,6 +200,7 @@ const DogCardForm = ({ isEditing, setIsEditing }: Props) => {
               Discard Changes
             </Button>
 
+            {/* Save changes button */}
             <Button type="submit" className="w-full" disabled={isPending}>
               {isPending ? (
                 <LoaderCircle className="h-6! w-6! animate-spin" />
@@ -207,6 +209,7 @@ const DogCardForm = ({ isEditing, setIsEditing }: Props) => {
               )}
             </Button>
 
+            {/* Delete button */}
             <Button
               type="button"
               className="bg-destructive/30 mt-4 w-full"
