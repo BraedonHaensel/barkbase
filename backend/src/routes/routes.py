@@ -93,15 +93,14 @@ def init_routes(app, db: DB):
     # Create booking
     # TODO: ensure the primary keys EXIST before inserting anything.
     # 1) Ensure owner exists
-    # 2) Ensure sp exists
-    # 3) Ensure all dogs exist
+    # 2) Ensure all dogs exist
     @app.route("/bookings", methods=["POST"])
     def create_booking():
         data = request.get_json()
 
         # Extract + validate required fields
         required = [
-            "o_email", "sp_email", "start_datetime", "end_datetime",
+            "o_email", "start_datetime", "end_datetime",
             "service_type", "price", "dog_names", "city", "street",
         ]
         missing = [k for k in required if k not in data]
@@ -110,7 +109,6 @@ def init_routes(app, db: DB):
 
         try:
             o_email = data["o_email"]
-            sp_email = data["sp_email"]
 
             # parse ISO8601 timestamps like "2025-10-30T14:30:00"
             start_datetime = datetime.fromisoformat(data["start_datetime"])
@@ -128,18 +126,20 @@ def init_routes(app, db: DB):
         except (KeyError, ValueError) as e:
             return jsonify({"error": f"Invalid data format: {str(e)}"}), 400
 
-        # Now you can call a DB-layer helper like:
-        booking_id = db.createBooking({
-            "o_email": o_email,
-            "sp_email": sp_email,
-            "start_datetime": start_datetime,
-            "end_datetime": end_datetime,
-            "service_type": service_type,
-            "price": price,
-            "dog_names": dog_names,
-            "street": street,
-            "city": city
-        }
-        )
+        try:
+            booking_id = db.createBooking({
+                "o_email": o_email,
+                "sp_email": None,  # Service provider is unknown when the booking is created
+                "start_datetime": start_datetime,
+                "end_datetime": end_datetime,
+                "service_type": service_type,
+                "price": price,
+                "dog_names": dog_names,
+                "street": street,
+                "city": city
+            }
+            )
+        except KeyError as e:
+            return jsonify({"error": f"Non-existent account: {str(e)}"}), 400
 
         return jsonify({"message": "Booking created", "booking_id": booking_id}), 201

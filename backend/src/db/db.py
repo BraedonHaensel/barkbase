@@ -163,7 +163,10 @@ class DB:
             for dog in dogs
         ]
 
-        return result 
+        return result
+
+    def getDog(self, o_email:str, name:str) -> Dog:
+        return self.db.query(Dog).filter(and_(Dog.o_email == o_email, Dog.name == name))
     
     # DOG BREEDS
     def getAllDogBreeds(self):
@@ -250,7 +253,7 @@ class DB:
     def createBooking(self, request: BookingCreateDto) -> str:
         # 1) Create new booking in Booking table
         # 2) For each dog name, create a new entry in DogBooking
-        # ASSSUMPTIONS: In this booking, only one owner is involved and all dogs are his.
+        # ASSUMPTIONS: In this booking, only one owner is involved and all dogs are his.
 
         # Parse input; input validation
         try:
@@ -265,6 +268,17 @@ class DB:
             raise ValueError(f"Missing field: {e}")
         except Exception as e:
             raise ValueError(f"Invalid field format: {e}")
+
+        # Check if keys exist
+        if not self.getOwnerByEmail(o_email):
+            raise KeyError(f"Missing owner: {o_email}")
+        if sp_email != None:
+            if not self.getServiceProviderByEmail(sp_email):
+                raise KeyError(f"Missing owner: {o_email}")
+
+        for i in dog_names:
+            if not self.getDog(o_email, i):
+                raise KeyError(f"Missing dog: {i}")
 
         # 2) Create a new booking record
         booking = Booking(
@@ -283,7 +297,6 @@ class DB:
         self.db.commit()  # commit so booking.id is generated
 
         # 3) For each dog, create an entry in BookedDog
-        # TODO: check if the dog actually exists in DB?
         for name in dog_names:
             booked_dog = BookedDog(
                 booking_id=booking.id,
