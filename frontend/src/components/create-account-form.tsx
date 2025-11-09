@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { AccountType } from '@/enums/accountType';
+import { AccountType } from '@/enums/account-type';
 import { createAccountSchema } from '@/lib/schemas/create-account';
 import { LoaderCircle } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';

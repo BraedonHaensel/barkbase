@@ -1,12 +1,12 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -15,14 +15,21 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { dogSchema } from '@/lib/schemas/dog';
-import { ChevronDown, LoaderCircle } from 'lucide-react';
+import { LoaderCircle } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import api from '@/lib/api';
 import { useRouter } from 'next/navigation';
-import { Calendar } from '../ui/calendar';
 import DatePicker from '../date-picker';
 import { dateToAge } from '@/lib/utils';
+import { DogSize } from '@/enums/dog-size';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
 
 type DogSchema = z.infer<typeof dogSchema>;
 
@@ -32,7 +39,11 @@ const DogCardForm = () => {
   // temporary dog
   const dog = {
     name: 'Chico',
-    date: '',
+    //TODO: default date not working
+    //TODO: Add edit and delete and add dog buttons
+    date: '2025-11-03T07:00:00.000Z',
+    size: DogSize.MEDIUM,
+    breeds: 'golden retriever, labrador',
   };
 
   const form = useForm<DogSchema>({
@@ -40,6 +51,8 @@ const DogCardForm = () => {
     defaultValues: {
       name: dog.name,
       date: undefined,
+      size: dog.size,
+      breeds: dog.breeds,
     },
   });
 
@@ -47,8 +60,12 @@ const DogCardForm = () => {
 
   const { mutate: postUpdateDog, isPending } = useMutation({
     mutationFn: async (input: DogSchema) => {
+      //TODO: Format breeds as array?
       const response = await api.post('/TODO', {
-        address: input.name,
+        name: input.name,
+        date: input.date,
+        size: input.size,
+        breeds: input.breeds,
       });
       return response.data;
     },
@@ -113,6 +130,53 @@ const DogCardForm = () => {
                   )}
                 </div>
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Size field */}
+        <FormField
+          control={form.control}
+          name="size"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Size</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {/* Citation: Size weights are taken from:
+                   * Rover.com: Book Dog Boarding, Dog Walking and More. (n.d.). Rover.com. Retrieved November 8, 2025, https://www.rover.com/ca/
+                   */}
+                  <SelectItem value={DogSize.SMALL}>
+                    Small (0-15 lbs)
+                  </SelectItem>
+                  <SelectItem value={DogSize.MEDIUM}>
+                    Medium (16-40 lbs)
+                  </SelectItem>
+                  <SelectItem value={DogSize.LARGE}>Large (41+ lbs)</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Name field */}
+        <FormField
+          control={form.control}
+          name="breeds"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Breeds</FormLabel>
+              <Input {...field} />
+              <FormDescription>
+                Separate multiple breeds with commas
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}

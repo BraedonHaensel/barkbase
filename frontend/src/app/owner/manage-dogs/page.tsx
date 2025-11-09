@@ -2,7 +2,7 @@
 
 import DogCard from '@/components/owner/dog-card';
 import { SessionContext } from '@/context/session-context';
-import { AccountType } from '@/enums/accountType';
+import { AccountType } from '@/enums/account-type';
 import { redirect } from 'next/navigation';
 import { useContext, useEffect } from 'react';
 

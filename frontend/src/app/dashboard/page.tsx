@@ -1,7 +1,7 @@
 'use client';
 
 import { SessionContext } from '@/context/session-context';
-import { AccountType } from '@/enums/accountType';
+import { AccountType } from '@/enums/account-type';
 import { useContext, useEffect } from 'react';
 import OwnerDashboard from './owner-dashboard';
 import { redirect } from 'next/navigation';
