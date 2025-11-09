@@ -1,7 +1,7 @@
 'use client';
 
 import { SessionContext } from '@/context/session-context';
-import { AccountType } from '@/enums/accountType';
+import { AccountType } from '@/enums/account-type';
 import { redirect } from 'next/navigation';
 import { useContext, useEffect } from 'react';
 

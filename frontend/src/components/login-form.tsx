@@ -14,7 +14,7 @@ import {
 } from './ui/form';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
-import { AccountType } from '@/enums/accountType';
+import { AccountType } from '@/enums/account-type';
 import Link from 'next/link';
 import { useMutation } from '@tanstack/react-query';
 import api from '@/lib/api';
