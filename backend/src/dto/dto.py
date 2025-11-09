@@ -5,7 +5,15 @@ They are known as DTOs (Data Transfer Objects).
 
 from typing import TypedDict
 from datetime import date
-from models.models import Dog
+from models.models import Role
+
+# JWT token
+class TokenPayload(TypedDict):
+    """
+    Represents the decoded JWT payload structure.
+    """
+    email: str
+    role: str
 
 class OwnerDTO(TypedDict):
     email: str
