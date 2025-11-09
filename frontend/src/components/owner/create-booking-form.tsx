@@ -208,6 +208,8 @@ const CreateBookingForm = () => {
           <>
             {/* TODO: Dog selection, address, etc. */}
 
+            <p>More stages TODO...</p>
+
             <Button
               type="submit"
               className="w-full"
@@ -217,7 +219,7 @@ const CreateBookingForm = () => {
               {isPending ? (
                 <LoaderCircle className="h-6! w-6! animate-spin" />
               ) : (
-                'Create Account'
+                'Create Booking'
               )}
             </Button>
           </>
