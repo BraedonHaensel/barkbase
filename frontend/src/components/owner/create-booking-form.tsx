@@ -206,6 +206,8 @@ const CreateBookingForm = () => {
 
         {stageNum === 2 && (
           <>
+            {/* TODO: Dog selection, address, etc. */}
+
             <Button
               type="submit"
               className="w-full"
