@@ -1,7 +1,7 @@
-import FindBookingsCard from '@/components/service-provider/find-bookings-card';
-import MyReviewsCard from '@/components/service-provider/my-reviews-card';
-import PreviousBookingsCard from '@/components/service-provider/previous-bookings-card';
-import UpcomingBookingsCard from '@/components/service-provider/upcoming-bookings-card';
+import FindBookingsCard from '@/components/service-provider/dashboard/find-bookings-card';
+import MyReviewsCard from '@/components/service-provider/dashboard/my-reviews-card';
+import PreviousBookingsCard from '@/components/service-provider/dashboard/previous-bookings-card';
+import UpcomingBookingsCard from '@/components/service-provider/dashboard/upcoming-bookings-card';
 
 const ServiceProviderDashboard = () => {
   return (

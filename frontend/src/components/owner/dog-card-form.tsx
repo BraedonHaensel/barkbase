@@ -29,7 +29,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../ui/select';
+} from '@/components/ui/select';
 
 type DogSchema = z.infer<typeof dogSchema>;
 
@@ -125,7 +125,7 @@ const DogCardForm = ({ isEditing, setIsEditing }: Props) => {
               <FormLabel>Date of Birth</FormLabel>
               <FormControl>
                 <div className="flex items-center gap-3">
-                  <DatePicker {...field} />
+                  <DatePicker blockFuture {...field} />
                   {field.value && (
                     <p className="text-muted-foreground">
                       ({dateToAge(field.value)} old)
