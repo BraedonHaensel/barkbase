@@ -2,7 +2,8 @@ from middleware.auth_middleware import token_required
 from repo.owner_repo import OwnerRepo
 from repo.sp_repo import ServiceProviderRepo
 from flask import request, jsonify
-from dto.dto import OwnerDTO, ServiceProviderDTO
+from dto.dto import OwnerDTO, ServiceProviderDTO, TokenPayload
+from models.models import Role
 
 # routes to get user details
 def init_user_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
@@ -72,11 +73,11 @@ def init_user_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
               type: string
     """
 
-        user_info = request.user #comes from the decoded JWT
-        role = user_info["role"]
+        user_info: TokenPayload = request.payload #comes from the decoded JWT
+        role = user_info["role"].lower()
         email = user_info["email"]
 
-        if role == "owner":
+        if role == Role.OWNER:
             owner = owner_repo.get_by_email(email)
             if not owner:
                 return jsonify({"error": "Owner not found"}), 404
@@ -91,7 +92,7 @@ def init_user_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
             }
             return jsonify(dto), 200
 
-        elif role == "service_provider":
+        elif role == Role.SERVICE_PROVIDER:
             sp = sp_repo.get_by_email(email)
             if not sp:
                 return jsonify({"error": "Service provider not found"}), 404
