@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BookUp2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -8,7 +8,7 @@ const UpcomingBookingsCard = () => {
   return (
     <Card
       className="border-3 hover:cursor-pointer hover:opacity-60"
-      onClick={() => router.push('owner/upcoming-bookings')}
+      onClick={() => router.push('service-provider/upcoming-bookings')}
     >
       <CardHeader className="flex flex-row justify-between">
         <CardTitle className="text-2xl font-bold">Upcoming Bookings</CardTitle>

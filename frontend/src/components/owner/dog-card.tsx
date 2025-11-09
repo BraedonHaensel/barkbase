@@ -1,4 +1,4 @@
-import { Card, CardContent } from '../ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import DogCardForm from './dog-card-form';
 import { useState } from 'react';
 

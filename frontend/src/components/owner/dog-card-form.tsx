@@ -29,7 +29,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../ui/select';
+} from '@/components/ui/select';
 
 type DogSchema = z.infer<typeof dogSchema>;
 
