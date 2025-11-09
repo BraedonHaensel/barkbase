@@ -33,15 +33,18 @@ import {
 
 type DogSchema = z.infer<typeof dogSchema>;
 
-const DogCardForm = () => {
+type Props = {
+  isEditing: boolean;
+  setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+const DogCardForm = ({ isEditing, setIsEditing }: Props) => {
   const router = useRouter();
 
   // temporary dog
   const dog = {
     name: 'Chico',
-    //TODO: default date not working
-    //TODO: Add edit and delete and add dog buttons
-    date: '2025-11-03T07:00:00.000Z',
+    date: new Date('2024-11-03T07:00:00.000Z'),
     size: DogSize.MEDIUM,
     breeds: 'golden retriever, labrador',
   };
@@ -50,7 +53,7 @@ const DogCardForm = () => {
     resolver: zodResolver(dogSchema),
     defaultValues: {
       name: dog.name,
-      date: undefined,
+      date: dog.date,
       size: dog.size,
       breeds: dog.breeds,
     },
@@ -182,13 +185,44 @@ const DogCardForm = () => {
           )}
         />
 
-        <Button type="submit" className="w-full" disabled={isPending}>
-          {isPending ? (
-            <LoaderCircle className="h-6! w-6! animate-spin" />
-          ) : (
-            'Save Changes'
-          )}
-        </Button>
+        {isEditing && (
+          <div className="flex flex-col gap-3">
+            <Button
+              type="button"
+              className="w-full"
+              onClick={() => {
+                form.reset();
+                setIsEditing(false);
+              }}
+              variant="secondary"
+            >
+              Discard Changes
+            </Button>
+
+            <Button type="submit" className="w-full" disabled={isPending}>
+              {isPending ? (
+                <LoaderCircle className="h-6! w-6! animate-spin" />
+              ) : (
+                'Save Changes'
+              )}
+            </Button>
+
+            <Button
+              type="button"
+              className="bg-destructive/30 mt-4 w-full"
+              variant="destructive"
+              onClick={() => {
+                if (
+                  window.confirm(`Are you sure you want to delete ${dog.name}?`)
+                ) {
+                  console.log('Deleting...');
+                }
+              }}
+            >
+              Delete
+            </Button>
+          </div>
+        )}
       </form>
     </Form>
   );
