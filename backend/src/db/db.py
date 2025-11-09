@@ -49,44 +49,40 @@ class DB:
     def populateDb(self):
         # Add owners:
         owner = Owner(
-            email="john@gmail.com", password="a", f_name="John", l_name="Doe",
-            address="123 Mt Norquay Pl SE", phone_num="4039987283")
-        self.db.add(owner)
-        owner = Owner(
-            email="samuel@gmail.com", password="abcd123", f_name="Samuel", l_name="White",
+            email="bob@gmail.com", password="pbkdf2:sha256:1000000$hShsiGaRHootXXdH$b6d33d6b698561763c2851fa73f0c3ae4b5b57fa5d217521ea4bf43ef82dbb1e", f_name="Bob", l_name="Doe",
             address="123 Mt Norquay Pl SE", phone_num="4039987283")
         self.db.add(owner)
         self.db.commit()
 
         # Add emergency_contact:
         emergency_contact = EmergencyContact(
-            phone_num="4031234321", o_email="john@gmail.com", relationship="Friend",
+            phone_num="4031234321", o_email="bob@gmail.com", relationship="Friend",
             email="susan@gmail.com", f_name="Susan", l_name="Smith")
         self.db.add(emergency_contact)
         self.db.commit()
 
         # Add dog:
-        dog = Dog(name="chico", o_email="john@gmail.com", birth_date=date(2010, 1, 20), size=Dog.Size.SMALL)
+        dog = Dog(name="chico", o_email="bob@gmail.com", birth_date=date(2010, 1, 20), size=Dog.Size.SMALL)
         self.db.add(dog)
-        dog = Dog(name="amigo", o_email="john@gmail.com", birth_date=date(2010, 2, 13), size=Dog.Size.LARGE)
+        dog = Dog(name="amigo", o_email="bob@gmail.com", birth_date=date(2010, 2, 13), size=Dog.Size.LARGE)
         self.db.add(dog)
         self.db.commit()
 
         # Add dog_breed:
-        dog_breed = DogBreed(d_name="chico", o_email="john@gmail.com", breed="Chihuahua")
+        dog_breed = DogBreed(d_name="chico", o_email="bob@gmail.com", breed="Chihuahua")
         self.db.add(dog_breed)
         self.db.commit()
 
         # Add service_provider:
         service_provider = ServiceProvider(
-            email="alice@gmail.com", password="alice123", f_name="Alice", l_name="Swift",
+            email="alice@gmail.com", password="pbkdf2:sha256:1000000$hShsiGaRHootXXdH$b6d33d6b698561763c2851fa73f0c3ae4b5b57fa5d217521ea4bf43ef82dbb1e", f_name="Alice", l_name="Swift",
             address="22 Nose Hill Way NW", phone_num="4038881234")
         self.db.add(service_provider)
         self.db.commit()
 
         # Add review (Note the ID is automatically set):
         review = Review(
-            o_email="john@gmail.com", sp_email="alice@gmail.com", service_type=ServiceType.WALKING,
+            o_email="bob@gmail.com", sp_email="alice@gmail.com", service_type=ServiceType.WALKING,
             date=date(2025, 9, 19), star_rating=1,
             description="Alice was very friendly and my dog was happy after the walk!")
         self.db.add(review)
@@ -95,7 +91,7 @@ class DB:
         # Add booking (Note the ID is automatically set):
         booking = Booking(
             id=-2,
-            o_email="john@gmail.com", sp_email="alice@gmail.com",
+            o_email="bob@gmail.com", sp_email="alice@gmail.com",
             start_datetime=datetime(2025, 10, 30, 14, 30), end_datetime=datetime(2025, 10, 30, 16, 30),
             service_type=ServiceType.WALKING, price=60, city="calgary", street="55 Sunshine Pl NE",
             note="My dog barks a lot.")

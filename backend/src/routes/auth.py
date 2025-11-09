@@ -44,10 +44,10 @@ def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
               example: owner
             email:
               type: string
-              example: john.doe@gmail.com
+              example: john@gmail.com
             password:
               type: string
-              example: mysecurepassword
+              example: password
             f_name:
               type: string
               example: John
@@ -158,10 +158,10 @@ def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
                 - service_provider
             email:
               type: string
-              example: john.doe@gmail.com
+              example: john@gmail.com
             password:
               type: string
-              example: mysecurepassword
+              example: password
     responses:
       200:
         description: Successful login
