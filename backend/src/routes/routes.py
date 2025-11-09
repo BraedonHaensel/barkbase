@@ -7,6 +7,9 @@ from flask import request, jsonify
 from models.models import *
 from db.db import DB
 
+from utils.utils import *
+
+
 # from datetime import date, datetime
 
 # takes in an `app` and attaches the routes to it.
@@ -91,16 +94,72 @@ def init_routes(app, db: DB):
         return db.getAllBookedDogs()
     
     # Create booking
-    # TODO: ensure the primary keys EXIST before inserting anything.
-    # 1) Ensure owner exists
-    # 2) Ensure all dogs exist
-    @app.route("/bookings", methods=["POST"])
+    @app.route("/create_booking", methods=["POST"])
     def create_booking():
+        """
+    Creates a booking
+    ---
+    parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          required:
+            - token
+            - start_datetime
+            - end_datetime
+            - service_type
+            - price
+            - dog_names
+            - city
+            - street
+          properties:
+            token:
+              type: string
+              description: JWT access token
+            start_datetime:
+              type: string
+              example: 2025-10-30T14:30:00
+            end_datetime:
+              type: string
+              example: 2025-10-30T14:30:00
+            service_type:
+              type: string
+              enum:
+                - sitting
+                - walking
+            price:
+              type: integer
+            dog_names:
+              type: array
+              items: string
+            city:
+              type: string
+              example: Calgary
+            street:
+              type: string
+              example: 2500 University drive
+    responses:
+      201:
+        description: Success
+        schema:
+          type: object
+          properties:
+            booking_id:
+              type: integer
+      400:
+        description: Invalid data format / Non-existent dog
+      401:
+        description: Invalid credentials
+
+    """
+
         data = request.get_json()
 
         # Extract + validate required fields
         required = [
-            "o_email", "start_datetime", "end_datetime",
+            "token", "start_datetime", "end_datetime",
             "service_type", "price", "dog_names", "city", "street",
         ]
         missing = [k for k in required if k not in data]
@@ -108,7 +167,13 @@ def init_routes(app, db: DB):
             return jsonify({"error": f"Missing fields: {', '.join(missing)}"}), 400
 
         try:
-            o_email = data["o_email"]
+            token = utils.details_from_token(data["token"])
+
+            if token == None:
+                return jsonify({"error": f"Invalid token"}), 401
+            if token[1] != "owner":
+                return jsonify({"error": f"Invalid account type"}), 401
+            o_email = token[0]
 
             # parse ISO8601 timestamps like "2025-10-30T14:30:00"
             start_datetime = datetime.fromisoformat(data["start_datetime"])
@@ -140,6 +205,6 @@ def init_routes(app, db: DB):
             }
             )
         except KeyError as e:
-            return jsonify({"error": f"Non-existent account: {str(e)}"}), 400
+            return jsonify({"error": f"Non-existent dog: {str(e)}"}), 400
 
         return jsonify({"message": "Booking created", "booking_id": booking_id}), 201

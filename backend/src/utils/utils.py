@@ -6,8 +6,8 @@ import jwt
 import datetime
 import os
 
-from src.barkbase.models import ServiceProvider
-from src.models.models import Owner
+from models.models import ServiceProvider
+from models.models import Owner
 
 
 def valid_token(token) -> bool:
@@ -84,6 +84,10 @@ def account_from_token(token, owner_repo: OwnerRepo, sp_repo: ServiceProviderRep
     data = jwt.dencode(token, SECRET_KEY, algorithm="HS256")
 
     if data["role"] == "owner":
+        if owner_repo == None:
+            return None
         return owner_repo.get_by_email(data["email"])
     else:
+        if sp_repo == None:
+            return None
         return sp_repo.get_by_email(data["email"])
