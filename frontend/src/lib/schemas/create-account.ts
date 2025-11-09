@@ -1,4 +1,4 @@
-import { AccountType } from '@/enums/accountType';
+import { AccountType } from '@/enums/account-type';
 import { z } from 'zod';
 
 export const createAccountSchema = z
