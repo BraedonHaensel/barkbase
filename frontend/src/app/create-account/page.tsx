@@ -1,8 +1,5 @@
-import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import CreateAccountForm from '@/components/create-account-form';
-
-type Props = {};
 
 export default function CreateAccountPage() {
   return (
