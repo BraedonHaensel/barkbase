@@ -20,7 +20,7 @@ Use [draw.io](https://www.drawio.com/) to view our ER diagram: [BarkBase ER Diag
 
 Use [draw.io](https://www.drawio.com/) to view our relational schema: [BarkBase Relational Schema.draw.io](documents/BarkBase%20Relational%20Schema.drawio)
 
-## How to run the application
+## How to Run the Application
 
 1. Clone the repository and then navigate into its root folder
 
