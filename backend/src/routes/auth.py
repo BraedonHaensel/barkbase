@@ -7,6 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
 import datetime
 import os
+from models.models import Role
 
 
 
@@ -47,10 +48,10 @@ def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
               example: owner
             email:
               type: string
-              example: john.doe@gmail.com
+              example: john@gmail.com
             password:
               type: string
-              example: mysecurepassword
+              example: password
             f_name:
               type: string
               example: John
@@ -95,9 +96,9 @@ def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
             return jsonify({"error": f"Missing fields: {', '.join(missing)}"}), 400
 
         # 2) choose correct repo based on role
-        if role.lower() == "owner":
+        if role.lower() == Role.OWNER.lower():
             existing_user = owner_repo.get_by_email(email)
-        elif role.lower() == "service_provider":
+        elif role.lower() == Role.SERVICE_PROVIDER.lower():
             existing_user = sp_repo.get_by_email(email)
         else:
             return jsonify({"error": "Invalid role"}), 400
@@ -161,10 +162,10 @@ def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
                 - service_provider
             email:
               type: string
-              example: john.doe@gmail.com
+              example: john@gmail.com
             password:
               type: string
-              example: mysecurepassword
+              example: password
     responses:
       200:
         description: Successful login

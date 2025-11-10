@@ -1,5 +1,7 @@
 from routes.routes import init_routes
 from routes.auth import init_auth_routes
+from routes.user import init_user_routes
+from routes.booking import init_booking_routes
 from flask import Flask
 from db.db import DB
 from repo.owner_repo import OwnerRepo
@@ -15,7 +17,6 @@ if __name__ == '__main__':
     db.resetAllTables()
     db.populateDb()
 
-
     session = db.get_session()
 
     # repos
@@ -27,16 +28,52 @@ if __name__ == '__main__':
     # allow CORS for front-end access to the api
     CORS(app)
 
-    # swagger docs
-    swagger = Swagger(app, template={
+    swagger_template = {
+        "swagger": "2.0",
         "info": {
             "title": "BarkBase API",
-            "description": "REST API for Owners and Service Providers",
+            "description": "API documentation for BarkBase backend",
             "version": "1.0.0"
+        },
+        "securityDefinitions": {
+            "bearerAuth": {
+                "type": "apiKey",
+                "name": "Authorization",
+                "in": "header",
+                "description": "JWT Bearer token. Example: **Bearer &lt;token&gt;**"
+            }
+        },
+        # models for Flasgger to render
+        "definitions": {
+            "OwnerDTO": {
+                "type": "object",
+                "properties": {
+                    "email": {"type": "string", "example": "john.doe@gmail.com"},
+                    "f_name": {"type": "string", "example": "John"},
+                    "l_name": {"type": "string", "example": "Doe"},
+                    "address": {"type": "string", "example": "55 Sunshine Pl NE"},
+                    "phone_num": {"type": "string", "example": "4039997777"}
+                }
+            },
+            "ServiceProviderDTO": {
+                "type": "object",
+                "properties": {
+                    "email": {"type": "string", "example": "alice.swift@gmail.com"},
+                    "f_name": {"type": "string", "example": "Alice"},
+                    "l_name": {"type": "string", "example": "Swift"},
+                    "address": {"type": "string", "example": "22 Nose Hill Way NW"},
+                    "phone_num": {"type": "string", "example": "4038881234"}
+                }
+            }
         }
-    })
+    }
 
+    # swagger docs
+    swagger = Swagger(app, template=swagger_template)
+    
     # initialize routes
     init_routes(app, db)
     init_auth_routes(app, owner_repo=owner_repo, sp_repo=sp_repo)
-    app.run(port=3000, debug=True)
+    init_user_routes(app, owner_repo=owner_repo, sp_repo=sp_repo)
+    init_booking_routes(app, db)
+    app.run(port=os.getenv('API_PORT'), debug=True)

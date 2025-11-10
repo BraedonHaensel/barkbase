@@ -12,8 +12,27 @@ import { Calendar } from './ui/calendar';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-const DatePicker = ({ value, onChange }: any) => {
+type Props = {
+  value: Date;
+  onChange: any;
+  blockPast?: boolean;
+  blockFuture?: boolean;
+};
+
+const DatePicker = ({
+  value,
+  onChange,
+  blockPast = false,
+  blockFuture = false,
+}: Props) => {
   const [open, setOpen] = useState(false);
+
+  const todayDate = new Date();
+  const startOfToday = new Date(
+    todayDate.getFullYear(),
+    todayDate.getMonth(),
+    todayDate.getDate()
+  );
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -33,11 +52,15 @@ const DatePicker = ({ value, onChange }: any) => {
           selected={value}
           captionLayout="dropdown"
           onSelect={(date) => {
-            if (date && date > new Date()) {
-              toast.error("Date can't be in the future");
-            } else {
-              onChange(date);
-              setOpen(false);
+            if (date) {
+              if (blockPast && date < startOfToday) {
+                toast.error("Date can't be in the past!");
+              } else if (blockFuture && date > todayDate) {
+                toast.error("Date can't be in the future!");
+              } else {
+                onChange(date);
+                setOpen(false);
+              }
             }
           }}
         />
