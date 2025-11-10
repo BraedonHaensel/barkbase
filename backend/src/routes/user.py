@@ -4,6 +4,7 @@ from repo.sp_repo import ServiceProviderRepo
 from flask import request, jsonify
 from dto.dto import OwnerDTO, ServiceProviderDTO, TokenPayload
 from models.models import Role
+from utils.images import get_user_image_url
 
 # routes to get user details
 def init_user_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
@@ -42,12 +43,14 @@ def init_user_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
               l_name: "Doe"
               address: "55 Sunshine Pl NE"
               phone_num: "4039997777"
+              image_url: "http://127.0.0.1:5000/static/images/img.jpg"
             sp_example:
               email: "alice.swift@gmail.com"
               f_name: "Alice"
               l_name: "Swift"
               address: "22 Nose Hill Way NW"
               phone_num: "4038881234"
+              image_url: "http://127.0.0.1:5000/static/images/img.jpg"
       400:
         description: Invalid role specified in token
         schema:
@@ -88,7 +91,8 @@ def init_user_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
                 "f_name": owner.f_name,
                 "l_name": owner.l_name,
                 "address": owner.address,
-                "phone_num": owner.phone_num
+                "phone_num": owner.phone_num,
+                "image_url": get_user_image_url(owner.image_filename),
             }
             return jsonify(dto), 200
 
@@ -103,7 +107,8 @@ def init_user_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
                 "f_name": sp.f_name,
                 "l_name": sp.l_name,
                 "address": sp.address,
-                "phone_num": sp.phone_num
+                "phone_num": sp.phone_num,
+                "image_url": get_user_image_url(sp.image_filename),
             }
             return jsonify(dto), 200
         

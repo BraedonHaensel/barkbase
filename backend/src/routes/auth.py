@@ -7,6 +7,8 @@ import jwt
 import datetime
 import os
 from models.models import Role
+from utils.images import save_user_image, validate_image_file
+
 
 def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
     # post request
@@ -36,6 +38,7 @@ def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
             - l_name
             - address
             - phone_num
+            - image_file
           properties:
             role:
               type: string
@@ -61,6 +64,10 @@ def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
             phone_num:
               type: string
               example: "4039997777"
+            image_file:
+              type: string
+              format: binary
+              example: ""
     responses:
       201:
         description: Account created successfully
@@ -76,7 +83,7 @@ def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
         description: User already exists
         """
 
-        data = request.get_json()
+        data = request.form
 
         email = data.get("email")
         password = data.get("password")
@@ -85,6 +92,7 @@ def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
         address = data.get("address")
         phone_num = data.get("phone_num")
         role = data.get("role")  # "owner" or "service_provider"
+        image_file = request.files.get("image_file")
 
         # 1) validate input
         required_fields = ["email", "password", "f_name", "l_name", "address", "phone_num", "role"]
@@ -107,7 +115,12 @@ def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
         # 4) Hash password
         hashed_pw = generate_password_hash(password, method="pbkdf2:sha256")
 
-        # 5) Create new user 
+        # 5) Validate and save the user profile image
+        if not validate_image_file:
+            return jsonify({"error": "Unsupported image file type"}), 400
+        image_filename = save_user_image(app, image_file)
+
+        # 6) Create new user 
         try:
             if role.lower() == "owner":
                 owner_repo.create(
@@ -116,7 +129,8 @@ def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
                     f_name=f_name,
                     l_name=l_name,
                     address=address,
-                    phone_num=phone_num
+                    phone_num=phone_num,
+                    image_filename=image_filename,
                 )
             else:
                 sp_repo.create(
@@ -125,7 +139,8 @@ def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
                     f_name=f_name,
                     l_name=l_name,
                     address=address,
-                    phone_num=phone_num
+                    phone_num=phone_num,
+                    image_filename=image_filename,
                 )
 
             return jsonify({"message": f"{role.capitalize()} account created successfully."}), 201

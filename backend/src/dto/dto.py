@@ -21,6 +21,7 @@ class OwnerDTO(TypedDict):
     l_name: str
     address: str
     phone_num: str
+    image_url: str
 
 class EmergencyContactDto(TypedDict):
     phone_num: str
@@ -42,6 +43,7 @@ class ServiceProviderDTO(TypedDict):
     l_name: str
     address: str
     phone_num: str
+    image_url: str
 
 # Request body shape to create booking
 class BookingCreateDto(TypedDict):
