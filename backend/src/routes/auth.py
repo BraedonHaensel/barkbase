@@ -1,4 +1,5 @@
 # from db.db import DB
+
 from flask import jsonify, request
 from repo.owner_repo import OwnerRepo
 from repo.sp_repo import ServiceProviderRepo
@@ -6,6 +7,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
 import datetime
 import os
+
+
 
 def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
     # post request
@@ -211,3 +214,7 @@ def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
         token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
 
         return jsonify({"token": token, "role": role}), 200
+
+
+
+

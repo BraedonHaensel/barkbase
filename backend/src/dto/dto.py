@@ -3,7 +3,7 @@ This folder contains the types that will be exposed in our API.
 They are known as DTOs (Data Transfer Objects).
 """
 
-from typing import TypedDict
+from typing import TypedDict, List
 from datetime import date
 from models.models import Dog
 
@@ -43,4 +43,4 @@ class BookingCreateDto(TypedDict):
     end_datetime: str
     service_type: str        # e.g. "WALKING" or "SITTING"
     price: float
-    dog_names: list[str]
+    dog_names: List[str]
