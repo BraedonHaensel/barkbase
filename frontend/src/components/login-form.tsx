@@ -23,12 +23,14 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { useContext } from 'react';
 import { SessionContext } from '@/context/session-context';
+import { UserContext } from '@/context/user-context';
 
 type LoginSchema = z.infer<typeof loginSchema>;
 
 const LoginForm = () => {
   const router = useRouter();
   const { setSession } = useContext(SessionContext);
+  const { refreshUser } = useContext(UserContext);
 
   const form = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
@@ -57,6 +59,7 @@ const LoginForm = () => {
       onSuccess: ({ role, token }) => {
         console.info(`Logged in as ${role} with token ${token}`);
         setSession({ token, accountType: role });
+        refreshUser();
         router.push('/dashboard');
       },
       onError: (error: any) => {

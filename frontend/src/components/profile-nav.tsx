@@ -12,26 +12,22 @@ import { CircleUser, LogOut } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { SessionContext } from '@/context/session-context';
+import { UserContext } from '@/context/user-context';
 
 const ProvileNav = () => {
   const [open, setOpen] = useState(false);
-  const { session, clearSession } = useContext(SessionContext);
-
-  const tempUser = {
-    email: 'email@example.com',
-    firstName: 'John',
-    lastName: 'Doe',
-  };
+  const { clearSession } = useContext(SessionContext);
+  const { user } = useContext(UserContext);
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger
         className="h-full w-full hover:opacity-60 focus:outline-none"
-        disabled={!session}
+        disabled={!user}
       >
         <Avatar className="h-full w-full">
           <AvatarImage
-            src={!!session ? 'https://github.com/shadcn.png' : undefined}
+            src={!!user ? 'https://github.com/shadcn.png' : undefined}
             alt="Profile image"
           />
           <AvatarFallback className="bg-white">
@@ -39,42 +35,43 @@ const ProvileNav = () => {
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="max-w-[min(400px,100vw)]" align="end">
-        <div className="p-2">
-          <p className="truncate font-medium">
-            {tempUser.firstName} {tempUser.lastName}
-          </p>
-          <p className="text-muted-foreground truncate text-sm">
-            {tempUser.email}
-          </p>
-        </div>
+      {user && (
+        <DropdownMenuContent className="max-w-[min(400px,100vw)]" align="end">
+          <div className="p-2">
+            <p className="truncate font-medium">
+              {user.firstName} {user.lastName}
+            </p>
+            <p className="text-muted-foreground truncate text-sm">
+              {user.email}
+            </p>
+          </div>
 
-        <DropdownMenuSeparator />
+          <DropdownMenuSeparator />
 
-        <DropdownMenuItem
-          onClick={() => {
-            setOpen(false);
-            redirect('/profile');
-          }}
-        >
-          Profile
-        </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              setOpen(false);
+              redirect('/profile');
+            }}
+          >
+            Profile
+          </DropdownMenuItem>
 
-        <DropdownMenuSeparator />
+          <DropdownMenuSeparator />
 
-        <DropdownMenuItem
-          variant="destructive"
-          onClick={() => {
-            setOpen(false);
-            // TODO: Request logout on the backend? Or let token expire
-            clearSession();
-            redirect('/login');
-          }}
-        >
-          Log Out
-          <LogOut />
-        </DropdownMenuItem>
-      </DropdownMenuContent>
+          <DropdownMenuItem
+            variant="destructive"
+            onClick={() => {
+              setOpen(false);
+              clearSession();
+              redirect('/login');
+            }}
+          >
+            Log Out
+            <LogOut />
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      )}
     </DropdownMenu>
   );
 };

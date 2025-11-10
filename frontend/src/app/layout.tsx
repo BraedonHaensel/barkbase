@@ -28,6 +28,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <Toaster
+          position="top-center"
+          toastOptions={{
+            classNames: {
+              success: '!bg-green-300 !border-green-300',
+              error: '!bg-red-300 !border-red-300',
+            },
+          }}
+        />
         <Providers>
           <div
             className={`${geistSans.variable} ${geistMono.variable} flex min-h-screen min-w-[320px] flex-col antialiased`}
@@ -42,15 +51,6 @@ export default function RootLayout({
             <main className="h-full">
               <div className="mx-auto h-full max-w-7xl p-8">{children}</div>
             </main>
-            <Toaster
-              position="top-center"
-              toastOptions={{
-                classNames: {
-                  success: '!bg-green-300 !border-green-300',
-                  error: '!bg-red-300 !border-red-300',
-                },
-              }}
-            />
           </div>
         </Providers>
       </body>
