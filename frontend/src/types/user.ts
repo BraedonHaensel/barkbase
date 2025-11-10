@@ -11,4 +11,5 @@ interface User {
   lastName: string;
   phoneNum: string;
   address: string;
+  image_url: string;
 }

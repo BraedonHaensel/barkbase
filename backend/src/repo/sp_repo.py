@@ -19,14 +19,15 @@ class ServiceProviderRepo(BaseRepo):
         
         return sp
     
-    def create(self, email, password, f_name, l_name, address, phone_num) -> ServiceProvider:
+    def create(self, email, password, f_name, l_name, address, phone_num, image_filename) -> ServiceProvider:
         new_sp = ServiceProvider(
             email=email,
             password=password,
             f_name=f_name,
             l_name=l_name,
             address=address,
-            phone_num=phone_num
+            phone_num=phone_num,
+            image_filename=image_filename,
         )
 
         self.db.add(new_sp)

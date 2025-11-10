@@ -57,6 +57,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
           lastName: data.l_name,
           phoneNum: data.phone_num,
           address: data.address,
+          image_url: data.image_url,
         };
         setUser(userData);
         setIsLoading(false);

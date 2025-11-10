@@ -12,6 +12,7 @@ export const createAccountSchema = z
     password: z.string().min(5, 'Password must be at least 5 characters'),
     confirmPassword: z.string(),
     accountType: z.enum([AccountType.OWNER, AccountType.SERVICE_PROVIDER]),
+    image: z.file(),
   })
   // Password and confirm password fields must match
   .refine((data) => data.password === data.confirmPassword, {

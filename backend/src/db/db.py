@@ -50,7 +50,7 @@ class DB:
         # Add owners:
         owner = Owner(
             email="bob@gmail.com", password="pbkdf2:sha256:1000000$hShsiGaRHootXXdH$b6d33d6b698561763c2851fa73f0c3ae4b5b57fa5d217521ea4bf43ef82dbb1e", f_name="Bob", l_name="Doe",
-            address="123 Mt Norquay Pl SE", phone_num="4039987283")
+            address="123 Mt Norquay Pl SE", phone_num="4039987283", image_filename="3549e957-3b4d-43f7-b790-f230597a1711.jpg")
         self.db.add(owner)
         self.db.commit()
 
@@ -76,7 +76,7 @@ class DB:
         # Add service_provider:
         service_provider = ServiceProvider(
             email="alice@gmail.com", password="pbkdf2:sha256:1000000$hShsiGaRHootXXdH$b6d33d6b698561763c2851fa73f0c3ae4b5b57fa5d217521ea4bf43ef82dbb1e", f_name="Alice", l_name="Swift",
-            address="22 Nose Hill Way NW", phone_num="4038881234")
+            address="22 Nose Hill Way NW", phone_num="4038881234", image_filename="56b7a08a-1d08-42a4-960c-0601711523b6.jpg")
         self.db.add(service_provider)
         self.db.commit()
 
@@ -111,6 +111,7 @@ class DB:
                 "l_name": owner.l_name,
                 "address": owner.address,
                 "phone_num": owner.phone_num,
+                "image_filename": owner.image_filename,
             })
         return result
     
@@ -125,7 +126,8 @@ class DB:
             "f_name": owner.f_name,
             "l_name": owner.l_name,
             "address": owner.address,
-            "phone_num": owner.phone_num
+            "phone_num": owner.phone_num,
+            "image_filename": owner.image_filename,
         }
 
     # Filter by o_email
@@ -189,7 +191,8 @@ class DB:
                 "f_name": provider.f_name,
                 "l_name": provider.l_name,
                 "address": provider.address,
-                "phone_num": provider.phone_num
+                "phone_num": provider.phone_num,
+                "image_filename": provider.image_filename,
             })
 
         return results

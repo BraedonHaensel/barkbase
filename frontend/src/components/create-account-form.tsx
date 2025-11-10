@@ -29,6 +29,9 @@ type CreateAccountSchema = z.infer<typeof createAccountSchema>;
 const CreateAccountForm = () => {
   const [stageNum, setStageNum] = useState(1);
   const router = useRouter();
+  const [profileImagePreview, setProfileImagePreview] = useState<string | null>(
+    null
+  );
 
   // Form initialization
   const form = useForm<CreateAccountSchema>({
@@ -42,6 +45,7 @@ const CreateAccountForm = () => {
       password: '',
       confirmPassword: '',
       accountType: AccountType.OWNER,
+      image: undefined,
     },
   });
 
@@ -50,14 +54,21 @@ const CreateAccountForm = () => {
   // Create account API request
   const { mutate: postCreateAccount, isPending } = useMutation({
     mutationFn: async (input: CreateAccountSchema) => {
-      const response = await api.post('/auth/signup', {
-        address: input.address,
-        email: input.email,
-        f_name: input.firstName,
-        l_name: input.lastName,
-        password: input.password,
-        phone_num: input.phoneNumber,
-        role: input.accountType,
+      // Use a FormData to handle uploading the user image file
+      const formData = new FormData();
+      formData.append('address', input.address);
+      formData.append('email', input.email);
+      formData.append('f_name', input.firstName);
+      formData.append('l_name', input.lastName);
+      formData.append('password', input.password);
+      formData.append('phone_num', input.phoneNumber);
+      formData.append('role', input.accountType);
+      formData.append('image_file', input.image);
+
+      const response = await api.post('/auth/signup', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
       return response.data;
     },
@@ -250,14 +261,53 @@ const CreateAccountForm = () => {
                 </FormItem>
               )}
             />
+          </>
+        )}
+
+        {stageNum === 3 && (
+          <>
+            {/* Profile image field */}
+            {/* CITATION: Field developed with reference to:
+             * File uploads made easy with react and flask. (n.d.). Dunder Method Paper Company.
+             * Retrieved November 10, 2025, from https://dundermethodpaperco.hashnode.dev/file-uploads-made-easy-with-react-and-flask
+             */}
+            <FormField
+              control={form.control}
+              name="image"
+              render={({ field: { onChange, value, ...rest } }) => (
+                <FormItem>
+                  <FormLabel>Profile Image</FormLabel>
+                  <FormControl>
+                    <div className="flex flex-col gap-3">
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            setProfileImagePreview(URL.createObjectURL(file));
+                            onChange(file);
+                          }
+                        }}
+                        {...rest}
+                      />
+
+                      {profileImagePreview && (
+                        <img
+                          src={profileImagePreview}
+                          alt="Profile image preview"
+                          className="aspect-square w-full object-cover"
+                        />
+                      )}
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             {/* Form submit button */}
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={stageNum < 2 || isPending}
-              variant={stageNum === 2 ? 'default' : 'secondary'}
-            >
+            <Button type="submit" className="w-full" disabled={isPending}>
               {isPending ? (
                 <LoaderCircle className="h-6! w-6! animate-spin" />
               ) : (
@@ -281,7 +331,7 @@ const CreateAccountForm = () => {
         {/* Previous stage button */}
         <Button
           type="button"
-          disabled={stageNum >= 2}
+          disabled={stageNum >= 3}
           className="w-1/2 text-lg"
           onClick={async () => {
             const isValid = await form.trigger([
