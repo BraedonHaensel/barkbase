@@ -145,7 +145,7 @@ const EmergencyContactForm = ({
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>Email (optional)</FormLabel>
               <FormControl>
                 <Input placeholder="email@example.com" {...field} />
               </FormControl>
