@@ -22,7 +22,7 @@ Use [draw.io](https://www.drawio.com/) to view our relational schema: [BarkBase 
 
 ## How to run the application
 
-1. Clone the repository
+1. Clone the repository and then navigate into its root folder
 
     ```bash
     git clone https://csgit.ucalgary.ca/braedon.haensel/barkbase.git
@@ -38,12 +38,12 @@ Use [draw.io](https://www.drawio.com/) to view our relational schema: [BarkBase 
 
 4. Run the backend:
 
-    1. Navigate into the `frontend` directory at the root of the repository
+    1. Navigate into the `backend` directory at the root of the repository
 
     2. Use [pip](https://pypi.org/project/pip/) to install the required python packages
 
         ```bash
-        pip install -r < requirements.txt
+        pip install -r requirements.txt
         ```
 
     3. Run the backend. You should see a message such as "Running on http://127.0.0.1:5000"
@@ -54,7 +54,7 @@ Use [draw.io](https://www.drawio.com/) to view our relational schema: [BarkBase 
 
 5. With the backend still running, run the frontend **in a separate terminal**:
 
-    1. Navigate into the `backend` directory at the root of the repository
+    1. Navigate into the `frontend` directory at the root of the repository
 
     2. Use [Node.js](https://nodejs.org/en) to install the required npm packages
 
