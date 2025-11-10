@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+// Schema for the emergency contact management form
 export const emergencyContactSchema = z.object({
   phoneNumber: z.string().regex(/^\d{10,15}$/, 'Invalid phone number'),
   relationship: z.string().nonempty('Required field'),

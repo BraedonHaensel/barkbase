@@ -1,6 +1,7 @@
 import { AccountType } from '@/enums/account-type';
 import { z } from 'zod';
 
+// Schema for the create account form
 export const createAccountSchema = z
   .object({
     firstName: z.string().nonempty('Required field'),
@@ -12,6 +13,7 @@ export const createAccountSchema = z
     confirmPassword: z.string(),
     accountType: z.enum([AccountType.OWNER, AccountType.SERVICE_PROVIDER]),
   })
+  // Password and confirm password fields must match
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
     path: ['confirmPassword'],
