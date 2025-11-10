@@ -35,12 +35,8 @@ if __name__ == '__main__':
             "version": "1.0.0"
         }
     })
-    
+
     # initialize routes
     init_routes(app, db)
     init_auth_routes(app, owner_repo=owner_repo, sp_repo=sp_repo)
-    app.run(port=os.getenv('API_PORT'), debug=True)
-
-    # d = CI()
-    # d.main()
-    #app.run(debug=True)
+    app.run(port=3000, debug=True)
