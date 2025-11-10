@@ -1,7 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dog, Star } from 'lucide-react';
+import { Star } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
+// My reviews dashboard card
 const MyReviewsCard = () => {
   const router = useRouter();
 

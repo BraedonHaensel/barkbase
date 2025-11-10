@@ -15,6 +15,7 @@ import { SessionContext } from '@/context/session-context';
 import { UserContext } from '@/context/user-context';
 import { AccountType } from '@/enums/account-type';
 
+// User profile icon with a dropdown menu
 const ProvileNav = () => {
   const [open, setOpen] = useState(false);
   const { session, clearSession } = useContext(SessionContext);
@@ -22,6 +23,7 @@ const ProvileNav = () => {
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
+      {/* Profile icon button */}
       <DropdownMenuTrigger
         className="h-full w-full hover:opacity-60 focus:outline-none"
         disabled={!user}
@@ -36,8 +38,11 @@ const ProvileNav = () => {
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
+
+      {/* Dropdown contents */}
       {user && (
         <DropdownMenuContent className="max-w-[min(400px,100vw)]" align="end">
+          {/* User name and email */}
           <div className="p-2">
             <p className="truncate font-medium">
               {user.firstName} {user.lastName}
@@ -49,6 +54,7 @@ const ProvileNav = () => {
 
           <DropdownMenuSeparator />
 
+          {/* Profile page redirect */}
           <DropdownMenuItem
             onClick={() => {
               setOpen(false);
@@ -58,6 +64,7 @@ const ProvileNav = () => {
             Profile
           </DropdownMenuItem>
 
+          {/* Emergency contacts page redirect (owners only) */}
           {session && session.accountType === AccountType.OWNER && (
             <DropdownMenuItem
               onClick={() => {
@@ -71,6 +78,7 @@ const ProvileNav = () => {
 
           <DropdownMenuSeparator />
 
+          {/* Log out button */}
           <DropdownMenuItem
             variant="destructive"
             onClick={() => {

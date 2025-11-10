@@ -12,18 +12,21 @@ import {
 import { SessionContext } from './session-context';
 import { toast } from 'sonner';
 
+// Type for the UserContext
 interface UserContextType {
   user: User | null;
   refreshUser: () => void;
   clearUser: () => void;
 }
 
+// User Context default setup
 export const UserContext = createContext<UserContextType>({
   user: null,
   refreshUser: () => {},
   clearUser: () => {},
 });
 
+// Provider for the UserContext
 export const UserProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
@@ -31,6 +34,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
   const [isLoading, setIsLoading] = useState(true);
   const { session, clearSession } = useContext(SessionContext);
 
+  // Get the user information from the API
   const getUser = async () => {
     setIsLoading(true);
     clearUser();
@@ -45,6 +49,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
         },
       })
       .then((response) => {
+        // Parse user information fields from the response
         const data = response.data;
         const userData: User = {
           email: data.email,
@@ -57,6 +62,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
         setIsLoading(false);
       })
       .catch((error) => {
+        // Handle request errors
         const apiError = error?.response?.data?.error;
         if (apiError) {
           console.error(`API error: ${apiError}`);
@@ -70,12 +76,15 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
       });
   };
 
+  // Get the new user information after any session changes
   useEffect(() => {
     getUser();
   }, [session]);
 
+  // Clear user information
   const clearUser = () => setUser(null);
 
+  // Refresh the user information
   const refreshUser = () => {
     getUser();
   };

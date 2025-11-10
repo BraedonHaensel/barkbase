@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { History } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
+// Previous bookings dashboard card
 const PreviousBookingsCard = () => {
   const router = useRouter();
 

@@ -31,6 +31,7 @@ import {
 } from '@/components/ui/select';
 import { Dog } from '@/types/dog';
 
+// Schema for the dog form
 type DogSchema = z.infer<typeof dogSchema>;
 
 type Props = {
@@ -39,7 +40,9 @@ type Props = {
   setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
+// Form to view and edit the dog of an owner
 const DogCardForm = ({ dog, isEditing, setIsEditing }: Props) => {
+  // Form initialization
   const form = useForm<DogSchema>({
     resolver: zodResolver(dogSchema),
     defaultValues: dog
@@ -59,6 +62,7 @@ const DogCardForm = ({ dog, isEditing, setIsEditing }: Props) => {
 
   form.watch();
 
+  // Update dog request
   const { mutate: postUpdateDog, isPending } = useMutation({
     mutationFn: async (input: DogSchema) => {
       //TODO: Format breeds as array?
@@ -72,6 +76,7 @@ const DogCardForm = ({ dog, isEditing, setIsEditing }: Props) => {
     },
   });
 
+  // Handle form submission
   function onSubmit(input: DogSchema) {
     console.log(`Submitting:`, JSON.stringify(input));
     postUpdateDog(input, {
@@ -96,6 +101,7 @@ const DogCardForm = ({ dog, isEditing, setIsEditing }: Props) => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+        {/* Handle dog image uploads */}
         <div className="flex h-20 w-20 items-center gap-10">
           [TODO Upload]
           <img src="https://hips.hearstapps.com/hmg-prod/images/dog-puppy-on-garden-royalty-free-image-1586966191.jpg?crop=0.752xw:1.00xh;0.175xw,0&resize=1200:*" />

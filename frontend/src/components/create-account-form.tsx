@@ -22,12 +22,15 @@ import { toast } from 'sonner';
 import api from '@/lib/api';
 import { useRouter } from 'next/navigation';
 
+// Schema for the create account form
 type CreateAccountSchema = z.infer<typeof createAccountSchema>;
 
+// Create account form for both owners and service providers
 const CreateAccountForm = () => {
   const [stageNum, setStageNum] = useState(1);
   const router = useRouter();
 
+  // Form initialization
   const form = useForm<CreateAccountSchema>({
     resolver: zodResolver(createAccountSchema),
     defaultValues: {
@@ -44,6 +47,7 @@ const CreateAccountForm = () => {
 
   form.watch();
 
+  // Create account API request
   const { mutate: postCreateAccount, isPending } = useMutation({
     mutationFn: async (input: CreateAccountSchema) => {
       const response = await api.post('/auth/signup', {
@@ -59,6 +63,7 @@ const CreateAccountForm = () => {
     },
   });
 
+  // Handle form submission
   function onSubmit(input: CreateAccountSchema) {
     postCreateAccount(input, {
       onSuccess: ({ message }) => {
@@ -82,6 +87,7 @@ const CreateAccountForm = () => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+        {/* First stage of the form */}
         {stageNum === 1 && (
           <>
             {/* Email field */}
@@ -98,6 +104,7 @@ const CreateAccountForm = () => {
                 </FormItem>
               )}
             />
+
             {/* Password field */}
             <FormField
               control={form.control}
@@ -181,6 +188,7 @@ const CreateAccountForm = () => {
           </>
         )}
 
+        {/* Second stage of the form */}
         {stageNum === 2 && (
           <>
             {/* First name field */}
@@ -243,6 +251,7 @@ const CreateAccountForm = () => {
               )}
             />
 
+            {/* Form submit button */}
             <Button
               type="submit"
               className="w-full"
@@ -258,6 +267,7 @@ const CreateAccountForm = () => {
           </>
         )}
 
+        {/* Previous stage button */}
         <Button
           type="button"
           disabled={stageNum <= 1}
@@ -267,6 +277,8 @@ const CreateAccountForm = () => {
         >
           Previous
         </Button>
+
+        {/* Previous stage button */}
         <Button
           type="button"
           disabled={stageNum >= 2}

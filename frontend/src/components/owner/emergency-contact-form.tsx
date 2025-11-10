@@ -19,6 +19,7 @@ import { toast } from 'sonner';
 import api from '@/lib/api';
 import { emergencyContactSchema } from '@/lib/schemas/emergency-contact';
 
+// Schema for the emergency contact form
 type EmergencyContactSchema = z.infer<typeof emergencyContactSchema>;
 
 type Props = {
@@ -27,13 +28,13 @@ type Props = {
   setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
+// Emergency contact form for viewing and editing values
 const EmergencyContactForm = ({
   emergencyContact,
   isEditing,
   setIsEditing,
 }: Props) => {
-  // temporary emergency contact
-
+  // Form initialization
   const form = useForm<EmergencyContactSchema>({
     resolver: zodResolver(emergencyContactSchema),
     defaultValues: emergencyContact
@@ -56,6 +57,7 @@ const EmergencyContactForm = ({
 
   form.watch();
 
+  // Update emergency contact query
   const { mutate: postUpdateEmergencyContact, isPending } = useMutation({
     mutationFn: async (input: EmergencyContactSchema) => {
       const response = await api.post('/TODO', {
@@ -70,6 +72,7 @@ const EmergencyContactForm = ({
     },
   });
 
+  // Handle form submission
   function onSubmit(input: EmergencyContactSchema) {
     console.log(`Submitting:`, JSON.stringify(input));
     postUpdateEmergencyContact(input, {
