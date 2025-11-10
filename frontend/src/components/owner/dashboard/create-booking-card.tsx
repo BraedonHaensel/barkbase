@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { SquareArrowOutUpRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
+// Dashboard card to create a booking
 const CreateBookingCard = () => {
   const router = useRouter();
 

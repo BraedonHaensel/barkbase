@@ -3,6 +3,7 @@ import MyReviewsCard from '@/components/service-provider/dashboard/my-reviews-ca
 import PreviousBookingsCard from '@/components/service-provider/dashboard/previous-bookings-card';
 import UpcomingBookingsCard from '@/components/service-provider/dashboard/upcoming-bookings-card';
 
+// Service provider dashboard
 const ServiceProviderDashboard = () => {
   return (
     <div className="grid gap-6 md:grid-cols-2">

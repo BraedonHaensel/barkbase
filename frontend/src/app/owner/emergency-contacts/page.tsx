@@ -7,9 +7,11 @@ import { SquarePlus } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import { useContext, useEffect } from 'react';
 
+// Emergency contacts management page
 export default function EmergencyContactsPage() {
   const { session } = useContext(SessionContext);
 
+  // A session is required
   useEffect(() => {
     if (!session || session.accountType !== AccountType.OWNER) {
       redirect('/login');
@@ -38,13 +40,16 @@ export default function EmergencyContactsPage() {
 
   return (
     <div className="flex flex-col gap-4">
+      {/* Page title */}
       <p style={{ fontSize: '35px' }} className="text-center font-bold">
         Emergency Contacts
       </p>
       <div className="grid min-w-[400px] gap-6 md:grid-cols-2">
+        {/* Render a card for each emergency contact */}
         {emergencyContacts.map((emergencyContact, id) => (
           <EmergencyContactCard key={id} emergencyContact={emergencyContact} />
         ))}
+        {/* Add new emergency contacts button */}
         <div
           className="flex min-h-50 items-center justify-center"
           onClick={() => {
