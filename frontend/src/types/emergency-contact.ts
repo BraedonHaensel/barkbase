@@ -1,3 +1,4 @@
+// Emergency contact data type
 interface EmergencyContact {
   phoneNumber: string;
   relationship: string;

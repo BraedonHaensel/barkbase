@@ -1,6 +1,7 @@
 import { DogSize } from '@/enums/dog-size';
 import z from 'zod';
 
+// Schema for the dog management form
 export const dogSchema = z.object({
   name: z.string().nonempty('Required field'),
   date: z.date(),

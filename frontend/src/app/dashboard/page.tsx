@@ -7,9 +7,11 @@ import OwnerDashboard from './owner-dashboard';
 import { redirect } from 'next/navigation';
 import ServiceProviderDashboard from './service-provider-dashboard';
 
+// General dashboard page. Displays the corresponding dashboard layout for owners and service providers
 export default function DashboardPage() {
   const { session } = useContext(SessionContext);
 
+  // A session is required
   useEffect(() => {
     if (!session) {
       redirect('/login');

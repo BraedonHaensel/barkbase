@@ -15,6 +15,7 @@ import { useContext, useEffect } from 'react';
 export default function LoginPage() {
   const { session } = useContext(SessionContext);
 
+  // Redirect to dashbaord if a session already exists
   useEffect(() => {
     if (session) {
       redirect('/dashboard');

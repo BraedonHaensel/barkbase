@@ -7,6 +7,7 @@ type Props = {
   dog?: Dog;
 };
 
+// Base card to view and manage the dog of an owner
 const DogCard = ({ dog }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
 

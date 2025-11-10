@@ -8,9 +8,11 @@ import { SquarePlus } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import { useContext, useEffect } from 'react';
 
+// Manage dogs page
 export default function ManageDogsPage() {
   const { session } = useContext(SessionContext);
 
+  // A session is required
   useEffect(() => {
     if (!session || session.accountType !== AccountType.OWNER) {
       redirect('/login');
@@ -39,13 +41,16 @@ export default function ManageDogsPage() {
 
   return (
     <div className="flex flex-col gap-4">
+      {/* Page title */}
       <p style={{ fontSize: '35px' }} className="text-center font-bold">
         Dog Manager
       </p>
       <div className="grid min-w-[400px] gap-6 md:grid-cols-2">
+        {/* Render a card for each dog */}
         {dogs.map((dog, id) => (
           <DogCard key={id} dog={dog} />
         ))}
+        {/* Add new dogs button */}
         <div
           className="flex min-h-50 items-center justify-center"
           onClick={() => {

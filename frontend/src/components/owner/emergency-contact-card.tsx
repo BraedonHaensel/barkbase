@@ -6,6 +6,7 @@ type Props = {
   emergencyContact?: EmergencyContact;
 };
 
+// Base card to view and manage an emergency contact
 const EmergencyContactCard = ({ emergencyContact }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
 

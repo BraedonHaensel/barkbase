@@ -14,7 +14,6 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { AccountType } from '@/enums/account-type';
 import { LoaderCircle } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -24,12 +23,15 @@ import { BookingType } from '@/enums/booking-type';
 import { createBookingSchema } from '@/lib/schemas/create-booking';
 import DatePicker from '../date-picker';
 
+// Form schema to create a booking
 type CreateBookingSchema = z.infer<typeof createBookingSchema>;
 
+// Form to create a booking
 const CreateBookingForm = () => {
   const [stageNum, setStageNum] = useState(1);
   const router = useRouter();
 
+  // Initialize the form
   const form = useForm<CreateBookingSchema>({
     resolver: zodResolver(createBookingSchema),
     defaultValues: {
@@ -43,6 +45,7 @@ const CreateBookingForm = () => {
 
   form.watch();
 
+  // Create account request
   const { mutate: postCreateAccount, isPending } = useMutation({
     mutationFn: async (input: CreateBookingSchema) => {
       // TODO waiting for api
@@ -53,6 +56,7 @@ const CreateBookingForm = () => {
     },
   });
 
+  // Handle form submission
   function onSubmit(input: CreateBookingSchema) {
     console.log(input.startTime);
     postCreateAccount(input, {
@@ -77,6 +81,7 @@ const CreateBookingForm = () => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+        {/* First page of the form */}
         {stageNum === 1 && (
           <>
             {/* Booking type field */}
@@ -204,12 +209,14 @@ const CreateBookingForm = () => {
           </>
         )}
 
+        {/* Second page of the form */}
         {stageNum === 2 && (
           <>
             {/* TODO: Dog selection, address, etc. */}
 
             <p>More stages TODO...</p>
 
+            {/* Form submit button */}
             <Button
               type="submit"
               className="w-full"
@@ -225,6 +232,7 @@ const CreateBookingForm = () => {
           </>
         )}
 
+        {/* Previous page button */}
         <Button
           type="button"
           disabled={stageNum <= 1}
@@ -234,6 +242,8 @@ const CreateBookingForm = () => {
         >
           Previous
         </Button>
+
+        {/* Next page button */}
         <Button
           type="button"
           disabled={stageNum >= 2}

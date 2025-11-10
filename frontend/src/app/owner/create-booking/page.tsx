@@ -7,9 +7,11 @@ import { useContext, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import CreateBookingForm from '@/components/owner/create-booking-form';
 
+// Create booking page
 export default function CreateBookingPage() {
   const { session } = useContext(SessionContext);
 
+  // A session is required
   useEffect(() => {
     if (!session || session.accountType !== AccountType.OWNER) {
       redirect('/login');

@@ -5,9 +5,11 @@ import { AccountType } from '@/enums/account-type';
 import { redirect } from 'next/navigation';
 import { useContext, useEffect } from 'react';
 
+// Upcoming bookings page
 export default function UpcomingBookingsPage() {
   const { session } = useContext(SessionContext);
 
+  // A session is required
   useEffect(() => {
     if (!session || session.accountType !== AccountType.SERVICE_PROVIDER) {
       redirect('/login');

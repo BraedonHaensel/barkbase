@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BookUp2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
+// Dashboard card to view upcoming bookings
 const UpcomingBookingsCard = () => {
   const router = useRouter();
 
