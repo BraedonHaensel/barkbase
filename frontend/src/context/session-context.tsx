@@ -1,6 +1,7 @@
 'use client';
 
 import { LoaderCircle } from 'lucide-react';
+import { redirect } from 'next/navigation';
 import { createContext, ReactNode, useEffect, useState } from 'react';
 
 interface SessionContextType {
@@ -41,7 +42,10 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({
     }
   }, [session]);
 
-  const clearSession = () => setSession(null);
+  const clearSession = () => {
+    setSession(null);
+    redirect('/login');
+  };
 
   return (
     <>
