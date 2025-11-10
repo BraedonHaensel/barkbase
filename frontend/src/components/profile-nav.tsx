@@ -13,10 +13,11 @@ import { redirect } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { SessionContext } from '@/context/session-context';
 import { UserContext } from '@/context/user-context';
+import { AccountType } from '@/enums/account-type';
 
 const ProvileNav = () => {
   const [open, setOpen] = useState(false);
-  const { clearSession } = useContext(SessionContext);
+  const { session, clearSession } = useContext(SessionContext);
   const { user } = useContext(UserContext);
 
   return (
@@ -56,6 +57,17 @@ const ProvileNav = () => {
           >
             Profile
           </DropdownMenuItem>
+
+          {session && session.accountType === AccountType.OWNER && (
+            <DropdownMenuItem
+              onClick={() => {
+                setOpen(false);
+                redirect('/owner/emergency-contacts');
+              }}
+            >
+              Emergency Contacts
+            </DropdownMenuItem>
+          )}
 
           <DropdownMenuSeparator />
 

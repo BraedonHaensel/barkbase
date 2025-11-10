@@ -1,14 +1,13 @@
 'use client';
 
-import DogCard from '@/components/owner/dog-card';
+import EmergencyContactCard from '@/components/owner/emergency-contact-card';
 import { SessionContext } from '@/context/session-context';
 import { AccountType } from '@/enums/account-type';
-import { DogSize } from '@/enums/dog-size';
 import { SquarePlus } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import { useContext, useEffect } from 'react';
 
-export default function ManageDogsPage() {
+export default function EmergencyContactsPage() {
   const { session } = useContext(SessionContext);
 
   useEffect(() => {
@@ -17,41 +16,42 @@ export default function ManageDogsPage() {
     }
   }, [session]);
 
-  // TODO temporary dogs
-  const dog1 = {
-    name: 'Chico',
-    date: new Date('2024-11-03T07:00:00.000Z'),
-    size: DogSize.MEDIUM,
-    breeds: 'golden retriever, labrador',
+  // TODO temporary emergency contacts
+  const emergencyContact1: EmergencyContact = {
+    phoneNumber: '4039997777',
+    relationship: 'Mother',
+    firstName: 'Fred',
+    lastName: 'Smith',
+    email: 'friend@gmail.com',
   };
 
-  const dog2 = {
-    name: 'Bear',
-    date: new Date('2023-12-03T07:00:00.000Z'),
-    size: DogSize.MEDIUM,
-    breeds: 'chihuahua',
+  const emergencyContact2: EmergencyContact = {
+    phoneNumber: '4039997777',
+    relationship: 'Friend',
+    firstName: 'Jane',
+    lastName: 'Doe',
   };
 
-  const dogs = [dog1, dog2];
+  const emergencyContacts = [emergencyContact1, emergencyContact2];
 
-  // TODO refresh method passed to children?
-  // TODO limit dogs to 10
+  // TODO: Have a refresh method passed to children for when they save?
 
   return (
     <div className="flex flex-col gap-4">
       <p style={{ fontSize: '35px' }} className="text-center font-bold">
-        Dog Manager
+        Emergency Contacts
       </p>
       <div className="grid min-w-[400px] gap-6 md:grid-cols-2">
-        {dogs.map((dog, id) => (
-          <DogCard key={id} dog={dog} />
+        {emergencyContacts.map((emergencyContact, id) => (
+          <EmergencyContactCard key={id} emergencyContact={emergencyContact} />
         ))}
         <div
           className="flex min-h-50 items-center justify-center"
           onClick={() => {
-            console.log('TODO add new dog...');
+            console.log('TODO add new contact...');
           }}
         >
+          {/* TODO Emergency contact count <= 2 && */}
           <SquarePlus
             className="text-teal-600 hover:cursor-pointer hover:opacity-60"
             size={50}
