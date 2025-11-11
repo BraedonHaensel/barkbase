@@ -165,7 +165,8 @@ def init_dog_routes(app, db: DB):
         except Exception as e:
             return jsonify({"error": f"Non-existent dog: {name}"}), 400
 
-        db.removeDog(dog)
+        for i in dog:
+            db.remove_dog(i)
         return jsonify({"message": "Success"}), 205
 
 
@@ -225,6 +226,5 @@ def init_dog_routes(app, db: DB):
             word += ("[name:" + i.name + ",birth_date:" +
                 str(i.birth_date) + ",size:" + str(i.size) + "],")
         word = word[:-1] + "]"
-        return word, 200
-
+        return jsonify({"message": "Success", "dogs": word}), 200
 

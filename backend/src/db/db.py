@@ -1,5 +1,5 @@
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, and_
 from sqlalchemy.orm import sessionmaker
 from models.models import Base, Owner, Dog, DogBreed, EmergencyContact, ServiceProvider, Review, Booking, ServiceType, BookedDog
 from datetime import date, datetime
@@ -200,9 +200,17 @@ class DB:
         self.db.add(Dog(name=name, o_email=o_email, birth_date=birth_date, size=size))
         self.db.commit()
 
-    # dog should first be retrieved from database as a form of error checking
+
     def remove_dog(self, dog:Dog):
+        for i in self.db.query(BookedDog).filter(and_(
+            BookedDog.o_email == dog.o_email, BookedDog.d_name == dog.name)):
+            self.db.delete(i)
+        for i in self.db.query(DogBreed).filter(and_(
+            DogBreed.o_email == dog.o_email, DogBreed.d_name == dog.name)):
+            self.db.delete(i)
+        self.db.commit()  # required to remove foreign keys
         self.db.delete(dog)
+        self.db.commit()
 
     def get_my_dogs(self, o_email:str):
         return self.db.query(Dog).filter(Dog.o_email == o_email)
@@ -348,3 +356,7 @@ class DB:
 
         # 4) Return the booking ID as a string (for easy JSON serialization)
         return str(booking.id)
+
+
+
+
