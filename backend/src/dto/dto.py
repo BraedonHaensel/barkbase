@@ -53,4 +53,4 @@ class BookingCreateDto(TypedDict):
     end_datetime: str
     service_type: str        # e.g. "WALKING" or "SITTING"
     price: float
-    dog_names: list[str]
+    dog_names: List[str]
