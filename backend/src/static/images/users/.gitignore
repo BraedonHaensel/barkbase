@@ -1,0 +1,6 @@
+# Ignore all files except for the starter images
+*
+!.gitignore
+!56b7a08a-1d08-42a4-960c-0601711523b6.jpg
+!3549e957-3b4d-43f7-b790-f230597a1711.jpg
+
