@@ -52,7 +52,7 @@ export default function ManageDogsPage() {
         ))}
         {/* Add new dogs button */}
         <div
-          className="flex min-h-50 items-center justify-center"
+          className={`flex min-h-50 items-center justify-center ${dogs.length % 2 == 0 && 'col-span-2 mx-auto w-1/2'}`}
           onClick={() => {
             console.log('TODO add new dog...');
           }}

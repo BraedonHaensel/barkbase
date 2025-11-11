@@ -19,8 +19,8 @@ import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import api from '@/lib/api';
 import { useRouter } from 'next/navigation';
-import { BookingType } from '@/enums/booking-type';
-import { createBookingSchema } from '@/lib/schemas/create-booking';
+import { ServiceType } from '@/enums/service-type';
+import { createBookingSchema } from '@/lib/schemas/bookings';
 import DatePicker from '../date-picker';
 
 // Form schema to create a booking
@@ -35,7 +35,7 @@ const CreateBookingForm = () => {
   const form = useForm<CreateBookingSchema>({
     resolver: zodResolver(createBookingSchema),
     defaultValues: {
-      bookingType: BookingType.WALKING,
+      serviceType: ServiceType.WALKING,
       startDate: new Date(),
       startTime: '12:00',
       endDate: new Date(),
@@ -50,7 +50,7 @@ const CreateBookingForm = () => {
     mutationFn: async (input: CreateBookingSchema) => {
       // TODO waiting for api
       const response = await api.post('/TODO', {
-        booking_type: input.bookingType,
+        booking_type: input.serviceType,
       });
       return response.data;
     },
@@ -84,27 +84,27 @@ const CreateBookingForm = () => {
         {/* First page of the form */}
         {stageNum === 1 && (
           <>
-            {/* Booking type field */}
+            {/* Service type field */}
             <FormField
               control={form.control}
-              name="bookingType"
+              name="serviceType"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Booking Type</FormLabel>
+                  <FormLabel>Service Type</FormLabel>
                   <div className="flex">
                     <Button
                       type="button"
                       className="w-1/2 rounded-none rounded-l-lg"
                       onClick={() => {
                         form.setValue(
-                          'bookingType' as keyof CreateBookingSchema,
-                          BookingType.WALKING
+                          'serviceType' as keyof CreateBookingSchema,
+                          ServiceType.WALKING
                         );
                       }}
                       variant={
                         form.getValues(
-                          'bookingType' as keyof CreateBookingSchema
-                        ) === BookingType.WALKING
+                          'serviceType' as keyof CreateBookingSchema
+                        ) === ServiceType.WALKING
                           ? 'default'
                           : 'secondary'
                       }
@@ -116,14 +116,14 @@ const CreateBookingForm = () => {
                       className="w-1/2 rounded-none rounded-r-lg"
                       onClick={() => {
                         form.setValue(
-                          'bookingType' as keyof CreateBookingSchema,
-                          BookingType.SITTING
+                          'serviceType' as keyof CreateBookingSchema,
+                          ServiceType.SITTING
                         );
                       }}
                       variant={
                         form.getValues(
-                          'bookingType' as keyof CreateBookingSchema
-                        ) === BookingType.SITTING
+                          'serviceType' as keyof CreateBookingSchema
+                        ) === ServiceType.SITTING
                           ? 'default'
                           : 'secondary'
                       }
@@ -136,7 +136,7 @@ const CreateBookingForm = () => {
             />
 
             <FormLabel>Start date</FormLabel>
-            <div className="flex gap-2">
+            <div className="flex gap-4">
               {/* Start date field */}
               <FormField
                 control={form.control}
@@ -144,9 +144,7 @@ const CreateBookingForm = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <div className="flex items-center gap-3">
-                        <DatePicker blockPast {...field} />
-                      </div>
+                      <DatePicker blockPast {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -172,7 +170,7 @@ const CreateBookingForm = () => {
             </div>
 
             <FormLabel>End date</FormLabel>
-            <div className="flex gap-2">
+            <div className="flex gap-4">
               {/* End date field */}
               <FormField
                 control={form.control}
@@ -180,9 +178,7 @@ const CreateBookingForm = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <div className="flex items-center gap-3">
-                        <DatePicker blockPast {...field} />
-                      </div>
+                      <DatePicker blockPast {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
