@@ -23,7 +23,7 @@ def init_dog_routes(app, db: DB):
     @token_required
     def add_dog():
         """
-    Create a booking
+    Add a dog
     ---
     tags:
       - Dogs
@@ -107,13 +107,73 @@ def init_dog_routes(app, db: DB):
     @app.route("/owner/remove_dog", methods=["POST"])
     @token_required
     def remove_dog():
-        pass
+        """
+    Gets a list of dogs owned by the authenticated user
+    ---
+    tags:
+      - Dogs
+    security:
+      - bearerAuth: []        # requires JWT Authorization
+    summary: Removes a dog
+    description: |
+      This endpoint allows an authenticated **owner** to remove a dogs.
+      The request must include a valid JWT Bearer token in the Authorization header.
+    parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          required:
+            - name
+          properties:
+            name:
+              type: string
+              example: Olddy
+    responses:
+      205:
+        description: Success
+      401:
+        description: Invalid credentials
+      400:
+        description: Invalid data format / Non-existent dog
+
+        """
+        data = request.get_json()
+        user_info: TokenPayload = request.payload #comes from the decoded JWT
+        role = user_info["role"].lower()
+        email = user_info["email"]
+
+        if role != Role.OWNER:
+            return jsonify({"error": f"Invalid account type"}), 401
+
+        required = ["name"]
+        missing = [k for k in required if k not in data]
+        if missing:
+            return jsonify({"error": f"Missing fields: {', '.join(missing)}"}), 400
+
+        try:
+            name = data["name"]
+
+        except (KeyError, ValueError) as e:
+            return jsonify({"error": f"Invalid data format: {str(e)}"}), 400
+
+        try:
+            dog = db.getDog(email, name)
+            if dog == None:
+                return jsonify({"error": f"Non-existent dog: {name}"}), 400
+        except Exception as e:
+            return jsonify({"error": f"Non-existent dog: {name}"}), 400
+
+        db.removeDog(dog)
+        return jsonify({"message": "Success"}), 205
+
 
     @app.route("/owner/get_my_dog", methods=["POST"])
     @token_required
     def get_my_dogs():
         """
-    Create a booking
+    Gets a list of dogs owned by the authenticated user
     ---
     tags:
       - Dogs

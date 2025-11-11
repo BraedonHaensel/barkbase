@@ -200,6 +200,10 @@ class DB:
         self.db.add(Dog(name=name, o_email=o_email, birth_date=birth_date, size=size))
         self.db.commit()
 
+    # dog should first be retrieved from database as a form of error checking
+    def remove_dog(self, dog:Dog):
+        self.db.delete(dog)
+
     def get_my_dogs(self, o_email:str):
         return self.db.query(Dog).filter(Dog.o_email == o_email)
 
