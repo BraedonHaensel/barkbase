@@ -1,5 +1,7 @@
 # For now I'll just make this class extend DB. 
 # And this class will handle everything to do with owner CRUD
+from typing import List
+
 from sqlalchemy.orm import Session
 from repo.base_repo import BaseRepo
 # from dto.dto import OwnerDTO
@@ -8,7 +10,7 @@ from models.models import ServiceProvider
 
 # TODO: generate swagger for this
 class ServiceProviderRepo(BaseRepo):
-    def get_all(self) -> list[ServiceProvider]:
+    def get_all(self) -> List[ServiceProvider]:
         return self.db.query(ServiceProvider).all()
     
     def get_by_email(self, email):

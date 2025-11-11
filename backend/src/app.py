@@ -80,4 +80,5 @@ if __name__ == '__main__':
     init_user_routes(app, owner_repo=owner_repo, sp_repo=sp_repo)
     init_booking_routes(app, db)
     init_dog_routes(app, db)
+
     app.run(port=os.getenv('API_PORT'), debug=True)

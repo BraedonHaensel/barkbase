@@ -1,6 +1,6 @@
 # For now I'll just make this class extend DB. 
 # And this class will handle everything to do with owner CRUD
-from typing import Optional
+from typing import Optional, List
 from sqlalchemy.orm import Session
 from repo.base_repo import BaseRepo
 # from dto.dto import OwnerDTO
@@ -9,7 +9,7 @@ from models.models import Owner
 # TODO: generate swagger for this
 # Repos return the full shape as per the model
 class OwnerRepo(BaseRepo):
-    def get_all(self) -> list[Owner]:
+    def get_all(self) -> List[Owner]:
         owners = self.db.query(Owner).all()  # fetch all rows from owner table
 
         return owners
