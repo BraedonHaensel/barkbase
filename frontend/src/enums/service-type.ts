@@ -1,5 +1,5 @@
-// Booking types
-export enum BookingType {
+// Service types
+export enum ServiceType {
   WALKING = 'walking',
   SITTING = 'sitting',
 }
