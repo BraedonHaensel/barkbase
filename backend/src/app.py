@@ -2,6 +2,7 @@ from routes.routes import init_routes
 from routes.auth import init_auth_routes
 from routes.user import init_user_routes
 from routes.booking import init_booking_routes
+from routes.dogs import init_dog_routes
 from flask import Flask
 from db.db import DB
 from repo.owner_repo import OwnerRepo
@@ -9,6 +10,8 @@ from repo.sp_repo import ServiceProviderRepo
 from flasgger import Swagger
 from flask_cors import CORS
 import os
+
+
 
 if __name__ == '__main__':
     # TODO: populate DB
@@ -76,4 +79,5 @@ if __name__ == '__main__':
     init_auth_routes(app, owner_repo=owner_repo, sp_repo=sp_repo)
     init_user_routes(app, owner_repo=owner_repo, sp_repo=sp_repo)
     init_booking_routes(app, db)
+    init_dog_routes(app, db)
     app.run(port=os.getenv('API_PORT'), debug=True)

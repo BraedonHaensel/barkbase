@@ -17,10 +17,7 @@ def init_booking_routes(app, db: DB):
         return db.getAllBookedDogs()
     
     # Create booking
-    # TODO: ensure the primary keys EXIST before inserting anything.
-    # 1) Ensure owner exists
-    # 2) Ensure sp exists
-    # 3) Ensure all dogs exist
+    # Checking if keys exists was moved into db
     @app.route("/bookings", methods=["POST"])
     @token_required
     def create_booking():
