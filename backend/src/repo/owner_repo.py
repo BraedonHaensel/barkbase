@@ -22,7 +22,7 @@ class OwnerRepo(BaseRepo):
         
         return owner
     
-    def create(self, email, password, f_name, l_name, address, phone_num) -> Owner:
+    def create(self, email, password, f_name, l_name, address, phone_num, image_filename) -> Owner:
         # 1) Create an ORM instance
         new_owner = Owner(
             email=email,
@@ -30,7 +30,8 @@ class OwnerRepo(BaseRepo):
             f_name=f_name,
             l_name=l_name,
             address=address,
-            phone_num=phone_num
+            phone_num=phone_num,
+            image_filename=image_filename,
         )
 
         # 2) Add to the session

@@ -1,27 +1,31 @@
 'use client';
 
 import { LoaderCircle } from 'lucide-react';
+import { redirect } from 'next/navigation';
 import { createContext, ReactNode, useEffect, useState } from 'react';
 
+// Type for the SessionContext
 interface SessionContextType {
   session: Session | null;
   setSession: (user: Session) => void;
   clearSession: () => void;
 }
 
+// SessionContext default setup
 export const SessionContext = createContext<SessionContextType>({
   session: null,
   setSession: () => {},
   clearSession: () => {},
 });
 
+// Provider for the SessionContext
 export const SessionProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Try to load the session from localStorage
+  // Try to load the session from localStorage after mounting
   useEffect(() => {
     try {
       const stored = localStorage.getItem('session');
@@ -32,7 +36,7 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({
     setIsLoading(false);
   }, []);
 
-  // Update localStorage if the session changes
+  // Update localStorage to keep it in sync after session changes
   useEffect(() => {
     if (session) {
       localStorage.setItem('session', JSON.stringify(session));
@@ -41,7 +45,11 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({
     }
   }, [session]);
 
-  const clearSession = () => setSession(null);
+  // Clear the active session (log out)
+  const clearSession = () => {
+    setSession(null);
+    redirect('/login');
+  };
 
   return (
     <>

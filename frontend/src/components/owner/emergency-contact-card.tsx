@@ -1,14 +1,13 @@
 import { Card, CardContent } from '@/components/ui/card';
-import DogCardForm from './dog-card-form';
+import EmergencyContactForm from '@/components/owner/emergency-contact-form';
 import { useState } from 'react';
-import { Dog } from '@/types/dog';
 
 type Props = {
-  dog?: Dog;
+  emergencyContact?: EmergencyContact;
 };
 
-// Base card to view and manage the dog of an owner
-const DogCard = ({ dog }: Props) => {
+// Base card to view and manage an emergency contact
+const EmergencyContactCard = ({ emergencyContact }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
 
   return (
@@ -21,8 +20,8 @@ const DogCard = ({ dog }: Props) => {
       }}
     >
       <CardContent>
-        <DogCardForm
-          dog={dog}
+        <EmergencyContactForm
+          emergencyContact={emergencyContact}
           isEditing={isEditing}
           setIsEditing={setIsEditing}
         />
@@ -31,4 +30,4 @@ const DogCard = ({ dog }: Props) => {
   );
 };
 
-export default DogCard;
+export default EmergencyContactCard;

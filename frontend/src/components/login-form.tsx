@@ -23,13 +23,18 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { useContext } from 'react';
 import { SessionContext } from '@/context/session-context';
+import { UserContext } from '@/context/user-context';
 
+// Schema for the login form
 type LoginSchema = z.infer<typeof loginSchema>;
 
+// Login form for owners and service providers
 const LoginForm = () => {
   const router = useRouter();
   const { setSession } = useContext(SessionContext);
+  const { refreshUser } = useContext(UserContext);
 
+  // Form initialization
   const form = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -41,6 +46,7 @@ const LoginForm = () => {
 
   form.watch();
 
+  // Send the login request to the API
   const { mutate: postLogin, isPending } = useMutation({
     mutationFn: async (input: LoginSchema) => {
       const response = await api.post('/auth/login', {
@@ -52,11 +58,13 @@ const LoginForm = () => {
     },
   });
 
+  // Handle form submission
   function onSubmit(input: LoginSchema) {
     postLogin(input, {
       onSuccess: ({ role, token }) => {
         console.info(`Logged in as ${role} with token ${token}`);
         setSession({ token, accountType: role });
+        refreshUser();
         router.push('/dashboard');
       },
       onError: (error: any) => {
@@ -154,6 +162,7 @@ const LoginForm = () => {
           )}
         />
 
+        {/* Form submit button */}
         <Button type="submit" className="w-full" disabled={isPending}>
           {isPending ? (
             <LoaderCircle className="h-6! w-6! animate-spin" />
@@ -162,6 +171,7 @@ const LoginForm = () => {
           )}
         </Button>
 
+        {/* Sign up link */}
         <p className="text-sm">
           Don't have an account?{' '}
           <Link

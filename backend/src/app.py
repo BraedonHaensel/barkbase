@@ -31,6 +31,9 @@ if __name__ == '__main__':
     # allow CORS for front-end access to the api
     CORS(app)
 
+    # configure the path to the images folder
+    app.config['IMAGES_DIR'] = os.path.join('static', 'images')
+
     swagger_template = {
         "swagger": "2.0",
         "info": {

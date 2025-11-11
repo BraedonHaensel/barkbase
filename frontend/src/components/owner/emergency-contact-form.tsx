@@ -6,7 +6,6 @@ import z from 'zod';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -14,72 +13,69 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { dogSchema } from '@/lib/schemas/dog';
 import { LoaderCircle } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import api from '@/lib/api';
-import DatePicker from '../date-picker';
-import { dateToAge } from '@/lib/utils';
-import { DogSize } from '@/enums/dog-size';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Dog } from '@/types/dog';
+import { emergencyContactSchema } from '@/lib/schemas/emergency-contact';
 
-// Schema for the dog form
-type DogSchema = z.infer<typeof dogSchema>;
+// Schema for the emergency contact form
+type EmergencyContactSchema = z.infer<typeof emergencyContactSchema>;
 
 type Props = {
-  dog?: Dog;
+  emergencyContact?: EmergencyContact;
   isEditing: boolean;
   setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-// Form to view and edit the dog of an owner
-const DogCardForm = ({ dog, isEditing, setIsEditing }: Props) => {
+// Emergency contact form for viewing and editing values
+const EmergencyContactForm = ({
+  emergencyContact,
+  isEditing,
+  setIsEditing,
+}: Props) => {
   // Form initialization
-  const form = useForm<DogSchema>({
-    resolver: zodResolver(dogSchema),
-    defaultValues: dog
+  const form = useForm<EmergencyContactSchema>({
+    resolver: zodResolver(emergencyContactSchema),
+    defaultValues: emergencyContact
       ? {
-          name: dog.name,
-          date: dog.date,
-          size: dog.size,
-          breeds: dog.breeds,
+          phoneNumber: emergencyContact.phoneNumber,
+          relationship: emergencyContact.relationship,
+          // TODO: optional email
+          email: emergencyContact.email ? emergencyContact.email : '',
+          firstName: emergencyContact.firstName,
+          lastName: emergencyContact.lastName,
         }
       : {
-          name: '',
-          date: undefined,
-          size: DogSize.MEDIUM,
-          breeds: '',
+          phoneNumber: '',
+          relationship: '',
+          email: '',
+          firstName: '',
+          lastName: '',
         },
   });
 
   form.watch();
 
-  // Update dog request
-  const { mutate: postUpdateDog, isPending } = useMutation({
-    mutationFn: async (input: DogSchema) => {
-      //TODO: Format breeds as array?
+  // Update emergency contact query
+  const { mutate: postUpdateEmergencyContact, isPending } = useMutation({
+    mutationFn: async (input: EmergencyContactSchema) => {
       const response = await api.post('/TODO', {
-        name: input.name,
-        date: input.date,
-        size: input.size,
-        breeds: input.breeds,
+        phone_num: input.phoneNumber,
+        relationship: input.relationship,
+        //TODO: optional email
+        email: input.email,
+        f_name: input.firstName,
+        l_name: input.lastName,
       });
       return response.data;
     },
   });
 
   // Handle form submission
-  function onSubmit(input: DogSchema) {
+  function onSubmit(input: EmergencyContactSchema) {
     console.log(`Submitting:`, JSON.stringify(input));
-    postUpdateDog(input, {
+    postUpdateEmergencyContact(input, {
       onSuccess: ({ message }) => {
         console.info(message);
         toast.success('Saved changes.');
@@ -101,89 +97,76 @@ const DogCardForm = ({ dog, isEditing, setIsEditing }: Props) => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-        {/* Handle dog image uploads */}
-        <div className="flex h-20 w-20 items-center gap-10">
-          [TODO Upload]
-          <img src="https://hips.hearstapps.com/hmg-prod/images/dog-puppy-on-garden-royalty-free-image-1586966191.jpg?crop=0.752xw:1.00xh;0.175xw,0&resize=1200:*" />
-        </div>
-
-        {/* Name field */}
+        {/* First name field */}
         <FormField
           control={form.control}
-          name="name"
+          name="firstName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Name</FormLabel>
-              <Input {...field} />
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Date of birth field */}
-        <FormField
-          control={form.control}
-          name="date"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Date of Birth</FormLabel>
+              <FormLabel>First name</FormLabel>
               <FormControl>
-                <div className="flex items-center gap-3">
-                  <DatePicker blockFuture {...field} />
-                  {field.value && (
-                    <p className="text-muted-foreground">
-                      ({dateToAge(field.value)} old)
-                    </p>
-                  )}
-                </div>
+                <Input {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        {/* Size field */}
+        {/* Last name field */}
         <FormField
           control={form.control}
-          name="size"
+          name="lastName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Size</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {/* Citation: Size weights are taken from:
-                   * Rover.com: Book Dog Boarding, Dog Walking and More. (n.d.). Rover.com. Retrieved November 8, 2025, https://www.rover.com/ca/
-                   */}
-                  <SelectItem value={DogSize.SMALL}>
-                    Small (0-15 lbs)
-                  </SelectItem>
-                  <SelectItem value={DogSize.MEDIUM}>
-                    Medium (16-40 lbs)
-                  </SelectItem>
-                  <SelectItem value={DogSize.LARGE}>Large (41+ lbs)</SelectItem>
-                </SelectContent>
-              </Select>
+              <FormLabel>Last name</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        {/* Breeds field */}
+        {/* Phone number field */}
         <FormField
           control={form.control}
-          name="breeds"
+          name="phoneNumber"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Breeds</FormLabel>
-              <Input {...field} />
-              <FormDescription>
-                Separate multiple breeds with commas
-              </FormDescription>
+              <FormLabel>Phone number</FormLabel>
+              <FormControl>
+                <Input placeholder="1234567890" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Email field */}
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email (optional)</FormLabel>
+              <FormControl>
+                <Input placeholder="email@example.com" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Relationship field */}
+        <FormField
+          control={form.control}
+          name="relationship"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Relationship</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
@@ -233,4 +216,4 @@ const DogCardForm = ({ dog, isEditing, setIsEditing }: Props) => {
   );
 };
 
-export default DogCardForm;
+export default EmergencyContactForm;

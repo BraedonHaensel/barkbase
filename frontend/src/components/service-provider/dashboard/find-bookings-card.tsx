@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TextSearch } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
+// Find bookings dashboard card
 const FindBookingsCard = () => {
   const router = useRouter();
 

@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dog } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
+// Dashboard card to manage your dogs
 const ManageDogsCard = () => {
   const router = useRouter();
 

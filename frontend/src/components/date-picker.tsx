@@ -53,6 +53,7 @@ const DatePicker = ({
           captionLayout="dropdown"
           onSelect={(date) => {
             if (date) {
+              // Block invalid dates
               if (blockPast && date < startOfToday) {
                 toast.error("Date can't be in the past!");
               } else if (blockFuture && date > todayDate) {

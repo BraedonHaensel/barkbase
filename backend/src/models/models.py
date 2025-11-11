@@ -28,6 +28,7 @@ class Owner(Base):
     l_name: Mapped[str] = mapped_column(String(100))
     address: Mapped[str] = mapped_column(String(100))
     phone_num: Mapped[str] = mapped_column(String(100))
+    image_filename: Mapped[str] = mapped_column(String(100))
 
 
 class EmergencyContact(Base):
@@ -72,6 +73,7 @@ class ServiceProvider(Base):
     l_name: Mapped[str] = mapped_column(String(100))
     address: Mapped[str] = mapped_column(String(100))
     phone_num: Mapped[str] = mapped_column(String(100))
+    image_filename: Mapped[str] = mapped_column(String(100))
 
 
 class Review(Base):

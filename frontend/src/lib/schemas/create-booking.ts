@@ -1,6 +1,7 @@
 import { BookingType } from '@/enums/booking-type';
 import { z } from 'zod';
 
+// Schema for the create booking form
 export const createBookingSchema = z.object({
   bookingType: z.enum([BookingType.WALKING, BookingType.SITTING]),
   startDate: z.date(),
