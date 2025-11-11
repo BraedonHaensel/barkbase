@@ -128,6 +128,21 @@ class DB:
             "phone_num": owner.phone_num
         }
 
+    def getServiceProviderByEmail(self, email: str) -> Optional[ServiceProviderDTO]:
+        sp = self.db.query(ServiceProvider).filter(
+            ServiceProvider.email == email).first()
+
+        if not sp:
+            return None
+
+        return {
+            "email": sp.email,
+            "f_name": sp.f_name,
+            "l_name": sp.l_name,
+            "address": sp.address,
+            "phone_num": sp.phone_num
+        }
+
     # Filter by o_email
     def getEmergencyContact(self, o_email: str) -> List[EmergencyContactDto]:
         contacts = self.db.query(EmergencyContact).filter(EmergencyContact.o_email == o_email)
@@ -163,7 +178,31 @@ class DB:
 
     def getDog(self, o_email:str, name:str) -> Dog:
         return self.db.query(Dog).filter(and_(Dog.o_email == o_email, Dog.name == name))
-    
+
+    def addDog(self, request:DogDTO):
+
+        try:
+            o_email = request["o_email"]
+            name = request["sp_email"]
+            birth_date = request["start_datetime"]
+            size = request["end_datetime"]
+        except KeyError as e:
+            raise ValueError(f"Missing field: {e}")
+        except Exception as e:
+            raise ValueError(f"Invalid field format: {e}")
+
+        # Check if keys exist
+        if not self.getOwnerByEmail(o_email):
+            raise KeyError(f"Missing owner: {o_email}")
+        if self.getDog(o_email, name) != None:
+            raise KeyError(f"Non-unique dog: {name}")
+
+        self.db.add(Dog(name=name, o_email=o_email, birth_date=birth_date, size=size))
+        self.db.commit()
+
+    def get_my_dogs(self, o_email:str):
+        return self.db.query(Dog).filter(Dog.o_email == o_email)
+
     # DOG BREEDS
     def getAllDogBreeds(self):
         all = self.db.query(DogBreed).all()

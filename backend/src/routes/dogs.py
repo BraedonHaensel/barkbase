@@ -31,7 +31,7 @@ def init_dog_routes(app, db: DB):
       - bearerAuth: []        # requires JWT Authorization
     summary: Creates a new booking
     description: |
-      This endpoint allows an authenticated **owner** to create a booking.
+      This endpoint allows an authenticated **owner** to add a dog.
       The request must include a valid JWT Bearer token in the Authorization header.
 
     parameters:
@@ -121,33 +121,9 @@ def init_dog_routes(app, db: DB):
       - bearerAuth: []        # requires JWT Authorization
     summary: Creates a new booking
     description: |
-      This endpoint allows an authenticated **owner** to create a booking.
+      This endpoint allows an authenticated **owner** to get their dogs.
       The request must include a valid JWT Bearer token in the Authorization header.
 
-    parameters:
-      - in: body
-        name: body
-        required: true
-        schema:
-          type: object
-          required:
-            - name
-            - birth_date
-            - size
-          properties:
-            birth_date:
-              type: string
-              format: date-time
-              example: 2025-10-30T14:30:00
-            size:
-              type: string
-              enum:
-                - small
-                - medium
-                - large
-            name:
-              type: string
-              example: storm
     responses:
       200:
         description: Success
@@ -182,6 +158,13 @@ def init_dog_routes(app, db: DB):
         if role != Role.OWNER:
             return jsonify({"error": f"Invalid account type"}), 401
 
+        dogs = db.get_my_dogs(email)
+        word = "dogs: ["
 
+        for i in dogs:
+            word += ("[name:" + i.name + ",birth_date:" +
+                str(i.birth_date) + ",size:" + str(i.size) + "],")
+        word = word[:-1] + "]"
+        return word, 200
 
 
