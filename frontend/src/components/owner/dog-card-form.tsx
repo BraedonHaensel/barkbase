@@ -15,10 +15,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { dogSchema } from '@/lib/schemas/dog';
-import { LoaderCircle } from 'lucide-react';
-import { useMutation } from '@tanstack/react-query';
-import { toast } from 'sonner';
-import api from '@/lib/api';
 import DatePicker from '../date-picker';
 import { dateToAge } from '@/lib/utils';
 import { DogSize } from '@/enums/dog-size';
@@ -30,73 +26,68 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Dog } from '@/types/dog';
+import { useEffect } from 'react';
 
 // Schema for the dog form
 type DogSchema = z.infer<typeof dogSchema>;
 
 type Props = {
-  dog?: Dog;
+  dog: Dog;
   isEditing: boolean;
   setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
+  updateDog: (oldName: string, newDogData: Dog) => {};
+  deleteDog: (name: string) => {};
 };
 
 // Form to view and edit the dog of an owner
-const DogCardForm = ({ dog, isEditing, setIsEditing }: Props) => {
+const DogCardForm = ({
+  dog,
+  isEditing,
+  setIsEditing,
+  updateDog,
+  deleteDog,
+}: Props) => {
   // Form initialization
   const form = useForm<DogSchema>({
     resolver: zodResolver(dogSchema),
-    defaultValues: dog
-      ? {
-          name: dog.name,
-          date: dog.date,
-          size: dog.size,
-          breeds: dog.breeds,
-        }
-      : {
-          name: '',
-          date: undefined,
-          size: DogSize.MEDIUM,
-          breeds: '',
-        },
-  });
-
-  form.watch();
-
-  // Update dog request
-  const { mutate: postUpdateDog, isPending } = useMutation({
-    mutationFn: async (input: DogSchema) => {
-      //TODO: Format breeds as array?
-      const response = await api.post('/TODO', {
-        name: input.name,
-        date: input.date,
-        size: input.size,
-        breeds: input.breeds,
-      });
-      return response.data;
+    defaultValues: {
+      name: dog.name,
+      birthDate: dog.birthDate,
+      size: dog.size,
+      breeds: dog.breeds.join(', '),
     },
   });
 
+  const watchedValues = form.watch();
+
+  const formInputToDog = (input: DogSchema): Dog => {
+    const dog: Dog = {
+      name: input.name,
+      birthDate: input.birthDate,
+      size: input.size,
+      // Convert the comma-separated breeds string into a list
+      breeds: input.breeds.split(',').map((s) => s.trim()),
+    };
+    return dog;
+  };
+
+  const formContainsChanges = () => {
+    return (
+      JSON.stringify(dog) !== JSON.stringify(formInputToDog(form.getValues()))
+    );
+  };
+
   // Handle form submission
   function onSubmit(input: DogSchema) {
-    console.log(`Submitting:`, JSON.stringify(input));
-    postUpdateDog(input, {
-      onSuccess: ({ message }) => {
-        console.info(message);
-        toast.success('Saved changes.');
-        // TODO: reload page? Call parent update function?
-      },
-      onError: (error: any) => {
-        const apiError = error?.response?.data?.error;
-        if (apiError) {
-          console.error(`API error: ${apiError}`);
-          toast.error(`Failed to save changes: ${apiError}`);
-        } else {
-          console.error(error);
-          toast.error('Failed to save changes. Please try again.');
-        }
-      },
-    });
+    updateDog(dog.name, formInputToDog(input));
   }
+
+  useEffect(() => {
+    // Check if the form was edited in a way that bypassed the parent's isEditing check
+    if (formContainsChanges()) {
+      setIsEditing(true);
+    }
+  }, [watchedValues]);
 
   return (
     <Form {...form}>
@@ -123,7 +114,7 @@ const DogCardForm = ({ dog, isEditing, setIsEditing }: Props) => {
         {/* Date of birth field */}
         <FormField
           control={form.control}
-          name="date"
+          name="birthDate"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Date of Birth</FormLabel>
@@ -205,12 +196,12 @@ const DogCardForm = ({ dog, isEditing, setIsEditing }: Props) => {
             </Button>
 
             {/* Save changes button */}
-            <Button type="submit" className="w-full" disabled={isPending}>
-              {isPending ? (
-                <LoaderCircle className="h-6! w-6! animate-spin" />
-              ) : (
-                'Save Changes'
-              )}
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={!formContainsChanges()}
+            >
+              Save Changes
             </Button>
 
             {/* Delete button */}
@@ -220,7 +211,7 @@ const DogCardForm = ({ dog, isEditing, setIsEditing }: Props) => {
               variant="destructive"
               onClick={() => {
                 if (window.confirm(`Are you sure you want to delete?`)) {
-                  console.log('Deleting...');
+                  deleteDog(dog.name);
                 }
               }}
             >

@@ -4,11 +4,13 @@ import { useState } from 'react';
 import { Dog } from '@/types/dog';
 
 type Props = {
-  dog?: Dog;
+  dog: Dog;
+  updateDog: (oldName: string, newDogData: Dog) => {};
+  deleteDog: (name: string) => {};
 };
 
 // Base card to view and manage the dog of an owner
-const DogCard = ({ dog }: Props) => {
+const DogCard = ({ dog, updateDog, deleteDog }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
 
   return (
@@ -25,6 +27,8 @@ const DogCard = ({ dog }: Props) => {
           dog={dog}
           isEditing={isEditing}
           setIsEditing={setIsEditing}
+          updateDog={updateDog}
+          deleteDog={deleteDog}
         />
       </CardContent>
     </Card>

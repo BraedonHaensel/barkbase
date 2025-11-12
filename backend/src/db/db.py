@@ -73,6 +73,10 @@ class DB:
         # Add dog_breed:
         dog_breed = DogBreed(d_name="chico", o_email="bob@gmail.com", breed="Chihuahua")
         self.db.add(dog_breed)
+        dog_breed = DogBreed(d_name="amigo", o_email="bob@gmail.com", breed="Labrador")
+        self.db.add(dog_breed)
+        dog_breed = DogBreed(d_name="amigo", o_email="bob@gmail.com", breed="Golden Retriever")
+        self.db.add(dog_breed)
         self.db.commit()
 
         # Add service_provider:

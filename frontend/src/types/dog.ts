@@ -3,7 +3,7 @@ import { DogSize } from '@/enums/dog-size';
 // Dog data type
 export interface Dog {
   name: string;
-  date: Date;
+  birthDate: Date;
   size: DogSize;
-  breeds: string;
+  breeds: Array<string>;
 }
