@@ -17,6 +17,7 @@ export default function ManageDogsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [dogs, setDogs] = useState<Array<Dog>>([]);
   const { session } = useContext(SessionContext);
+  const [isEditingADog, setIsEditingADog] = useState(false);
 
   // A session is required
   useEffect(() => {
@@ -99,6 +100,7 @@ export default function ManageDogsPage() {
       .finally(() => {
         // Refresh the owner's dogs
         getDogs();
+        setIsEditingADog(false);
       });
   };
 
@@ -143,6 +145,7 @@ export default function ManageDogsPage() {
       .finally(() => {
         // Refresh the owner's dogs
         getDogs();
+        setIsEditingADog(false);
       });
   };
 
@@ -185,6 +188,7 @@ export default function ManageDogsPage() {
       .finally(() => {
         // Refresh the owner's dogs
         getDogs();
+        setIsEditingADog(false);
       });
   };
 
@@ -204,6 +208,8 @@ export default function ManageDogsPage() {
               <DogCard
                 key={id}
                 dog={dog}
+                isEditingADog={isEditingADog}
+                setIsEditingADog={setIsEditingADog}
                 updateDog={updateDog}
                 deleteDog={deleteDog}
               />

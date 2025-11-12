@@ -2,15 +2,24 @@ import { Card, CardContent } from '@/components/ui/card';
 import DogCardForm from './dog-card-form';
 import { useState } from 'react';
 import { Dog } from '@/types/dog';
+import { toast } from 'sonner';
 
 type Props = {
   dog: Dog;
+  isEditingADog: boolean;
+  setIsEditingADog: React.Dispatch<React.SetStateAction<boolean>>; // Called to notify parent when this card is  being edited
   updateDog: (oldName: string, newDogData: Dog) => {};
   deleteDog: (name: string) => {};
 };
 
 // Base card to view and manage the dog of an owner
-const DogCard = ({ dog, updateDog, deleteDog }: Props) => {
+const DogCard = ({
+  dog,
+  isEditingADog,
+  setIsEditingADog,
+  updateDog,
+  deleteDog,
+}: Props) => {
   const [isEditing, setIsEditing] = useState(false);
 
   return (
@@ -18,7 +27,13 @@ const DogCard = ({ dog, updateDog, deleteDog }: Props) => {
       className={`border-3 ${!isEditing && 'hover:cursor-pointer hover:opacity-60'}`}
       onClick={() => {
         if (!isEditing) {
-          setIsEditing(true);
+          // Check if another dog is already being edited
+          if (isEditingADog) {
+            toast.warning('Only one dog can be edited at a time!');
+          } else {
+            setIsEditing(true);
+            setIsEditingADog(true);
+          }
         }
       }}
     >
@@ -26,7 +41,10 @@ const DogCard = ({ dog, updateDog, deleteDog }: Props) => {
         <DogCardForm
           dog={dog}
           isEditing={isEditing}
-          setIsEditing={setIsEditing}
+          setIsEditing={(val) => {
+            setIsEditing(val);
+            setIsEditingADog(val);
+          }}
           updateDog={updateDog}
           deleteDog={deleteDog}
         />

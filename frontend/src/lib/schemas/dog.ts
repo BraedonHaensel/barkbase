@@ -6,5 +6,5 @@ export const dogSchema = z.object({
   name: z.string().nonempty('Required field'),
   birthDate: z.date(),
   size: z.enum([DogSize.SMALL, DogSize.MEDIUM, DogSize.LARGE]),
-  breeds: z.string(),
+  breeds: z.string().nonempty('Required field'),
 });
