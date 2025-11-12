@@ -10,6 +10,7 @@ import { redirect } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Dog } from '@/types/dog';
+import { dateToIsoStringYMD } from '@/lib/utils';
 
 // Manage dogs page
 export default function ManageDogsPage() {
@@ -39,7 +40,7 @@ export default function ManageDogsPage() {
         data.forEach((dog: any) => {
           const dogData: Dog = {
             name: dog.name,
-            birth_date: new Date(dog.birth_date),
+            birthDate: new Date(dog.birth_date),
             size: DogSize[dog.size.toUpperCase() as keyof typeof DogSize],
             breeds: dog.breeds,
           };
@@ -69,6 +70,50 @@ export default function ManageDogsPage() {
 
   // TODO limit dogs to 10
 
+  const updateDog = async (oldName: string, newDogData: Dog) => {
+    // TODO if name is '' then it's a new dog, do a post!
+
+    setIsLoading(true);
+    const payload: any = {
+      name: newDogData.name,
+      birth_date: dateToIsoStringYMD(newDogData.birthDate),
+      size: newDogData.size,
+      breeds: newDogData.breeds,
+    };
+    // Add old_name field if the dog's name changed
+    if (oldName !== newDogData.name) {
+      payload.old_name = oldName;
+    }
+    api
+      .put('/dogs', payload, {
+        headers: {
+          Authorization: `Bearer ${session?.token}`,
+        },
+      })
+      .then((response) => {
+        toast.success(response.data.message);
+      })
+      .catch((error) => {
+        // Handle request errors
+        const apiError = error?.response?.data?.error;
+        if (apiError) {
+          console.error(`API error: ${apiError}`);
+          toast.error(`Failed to save changes: ${apiError}`);
+        } else {
+          console.error(error);
+          toast.error(`Failed to save changes. Please try again.`);
+        }
+      })
+      .finally(() => {
+        // Refresh the owner's dogs
+        getDogs();
+      });
+  };
+
+  useEffect(() => {
+    getDogs();
+  }, []);
+
   const deleteDog = async (name: string) => {
     setIsLoading(true);
     api
@@ -88,10 +133,10 @@ export default function ManageDogsPage() {
         const apiError = error?.response?.data?.error;
         if (apiError) {
           console.error(`API error: ${apiError}`);
-          toast.error(`Failed to delete ${name}: ${apiError}`);
+          toast.error(`Failed to delete: ${apiError}`);
         } else {
           console.error(error);
-          toast.error(`Failed to delete ${name}. Please try again.`);
+          toast.error(`Failed to delete. Please try again.`);
         }
       })
       .finally(() => {
@@ -113,7 +158,12 @@ export default function ManageDogsPage() {
           <div className="grid min-w-[400px] gap-6 md:grid-cols-2">
             {/* Render a card for each dog */}
             {dogs.map((dog, id) => (
-              <DogCard key={id} dog={dog} deleteDog={deleteDog} />
+              <DogCard
+                key={id}
+                dog={dog}
+                updateDog={updateDog}
+                deleteDog={deleteDog}
+              />
             ))}
             {/* Add new dogs button */}
             <div

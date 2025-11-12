@@ -23,3 +23,8 @@ export function dateToAge(date: Date) {
   const days = Math.floor(secondsDiff / 60 / 60 / 24);
   return `${days} ${days === 1 ? 'day' : 'days'}`;
 }
+
+// Get an ISO string for a date with only the YYYY-MM-DD
+export function dateToIsoStringYMD(date: Date) {
+  return date.toISOString().split('T')[0];
+}
