@@ -11,7 +11,7 @@ type Props = {
   updateDog: (
     oldName: string,
     newDogData: Dog,
-    imageFile: File
+    imageFile: File | undefined
   ) => Promise<void>;
   deleteDog: (name: string) => Promise<void>;
 };

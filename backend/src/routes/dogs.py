@@ -223,7 +223,7 @@ def init_dog_routes(app, db: DB):
         except (KeyError, ValueError, TypeError) as e:
             return jsonify({"error": f"Invalid data format: {str(e)}"}), 400
 
-        # 5) Validate and save the dog profile image
+        # Validate and save the dog profile image
         if not validate_image_file(image_file):
             return jsonify({"error": "Unsupported image file type"}), 400
         image_filename = save_dog_image(app, image_file)
@@ -348,48 +348,57 @@ def init_dog_routes(app, db: DB):
     description: |
       This endpoint allows an authenticated **owner** to update one of their dogs.
       The dog is uniquely identified by the owner's email (from JWT token) and the dog's current name.
-      The request body must include all fields defined in `UpdateDogDTO` (full replacement).
+      The request body must include all fields defined in `UpdateDogDTO` except for the image_filename.
       The owner's email (o_email) is automatically extracted from the JWT token for security.
       To rename a dog, include both the current name (old_name) and the new name (name).
+      To change an image, include the image_file field.
     parameters:
-      - in: body
-        name: body
+      - in: formData
+        name: name
+        type: string
         required: true
-        schema:
-          type: object
-          required:
-            - name
-            - birth_date
-            - size
-            - breeds
+        default: Storm
+        description: The new name of the dog (or current name if not renaming)
+        example: Storm
+      - in: formData
+        name: old_name
+        type: string
+        required: false
+        description: The current name of the dog before the change (required only if renaming)
+        example: Storm
+      - in: formData
+        name: birth_date
+        type: string
+        format: date
+        required: true
+        default: 2010-01-20
+        description: The dog's birth date in YYYY-MM-DD format
+        example: 2010-01-20
+      - in: formData
+        name: size
+        type: string
+        required: true
+        enum: [small, medium, large]
+        default: medium
+        description: The size of the dog
+        example: medium
+      - in: formData
+        name: image_file
+        type: file
+        required: false
+        description: Dog image file
+      - in: formData
+        name: breeds
+        type: array
+        items:
+          type: string
+        required: true
+        default: ["Golden Retriever", "Labrador"]
+        description: |
+          A list of breeds describing the dog.
+          If not provided, the list defaults to empty.
+        example: ["Golden Retriever", "Labrador"]
           properties:
-            name:
-              type: string
-              description: The new name of the dog (or current name if not renaming)
-              example: "Stormy"
-            old_name:
-              type: string
-              description: The current name of the dog (required only if renaming)
-              example: "Storm"
-            birth_date:
-              type: string
-              format: date
-              description: The dog's birth date in YYYY-MM-DD format
-              example: "2010-01-20"
-            size:
-              type: string
-              enum:
-                - small
-                - medium
-                - large
-              description: The size category of the dog
-              example: "medium"
-            breeds:
-              type: array
-              description: A list of the dog's breeds
-              items:
-                type: string
-              example: ["Golden Retriever", "Labrador"]
     responses:
       200:
         description: Dog successfully updated
@@ -441,8 +450,8 @@ def init_dog_routes(app, db: DB):
               type: string
               example: "Invalid account type"
       """
+      data = request.form
 
-      data = request.get_json()
       user_info: TokenPayload = request.payload #comes from the decoded JWT
       account_type = AccountType(user_info["account_type"].lower())
       email = user_info["email"]
@@ -452,19 +461,28 @@ def init_dog_routes(app, db: DB):
 
       # Validate required fields
       required = ["name", "birth_date", "size", "breeds"]
-      missing = [k for k in required if k not in data]
+      missing = [k for k in required if not data.get(k)]
       if missing:
           return jsonify({"error": f"Missing fields: {', '.join(missing)}"}), 400
 
       try:
           # Parse the request data
-          name = data["name"]  # New name (or current name if not renaming)
+          name = data.get("name")  # New name (or current name if not renaming)
           old_name = data.get("old_name", name)  # If old_name provided, use it; otherwise assume name is the identifier
-          birth_date = date.fromisoformat(data["birth_date"])
-          size = Dog.Size[data["size"].upper()]
-          breeds = data["breeds"]
+          birth_date = date.fromisoformat(data.get("birth_date"))
+          size = Dog.Size[data.get("size").upper()]
+          image_file = request.files.get("image_file")
+          breeds = data.getlist("breeds")
       except (KeyError, ValueError) as e:
           return jsonify({"error": f"Invalid data format: {str(e)}"}), 400
+
+      # Validate and save the optional dog profile image change
+      if image_file:
+        if not validate_image_file(image_file):
+            return jsonify({"error": "Unsupported image file type"}), 400
+        image_filename = save_dog_image(app, image_file)
+      else:
+        image_filename = None
 
       try:
           # Prepare the update request in DogDTO format
@@ -473,6 +491,7 @@ def init_dog_routes(app, db: DB):
               "o_email": email,  # From token, not body
               "birth_date": birth_date,
               "size": size.name.lower(),  # Convert enum to string for DTO
+              "image_filename": image_filename,
               "breeds": breeds,
           }
           

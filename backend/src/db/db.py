@@ -232,6 +232,7 @@ class DB:
             new_name = request["name"]
             birth_date = request["birth_date"]
             size_str = request["size"]
+            image_filename = request["image_filename"]
             breeds = request.get("breeds", [])
         except KeyError as e:
             raise ValueError(f"Missing field: {e}")
@@ -254,6 +255,10 @@ class DB:
         # Update other fields
         dog.birth_date = birth_date
         dog.size = size
+
+        # Update image if it was changed
+        if image_filename:
+            dog.image_filename = image_filename
 
         # Replace breeds entirely (PUT semantics)
         self.db.query(DogBreed).filter_by(d_name=new_name, o_email=o_email).delete()

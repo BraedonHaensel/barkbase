@@ -39,7 +39,7 @@ type Props = {
   updateDog: (
     oldName: string,
     newDogData: Dog,
-    imageFile: File
+    imageFile: File | undefined
   ) => Promise<void>;
   deleteDog: (name: string) => Promise<void>;
 };
@@ -63,7 +63,8 @@ const DogCardForm = ({
       name: dog.name,
       birthDate: dog.birthDate,
       size: dog.size,
-      image: undefined,
+      // Mark image if it's unpopulated on a new dog
+      image: dog.name ? undefined : 'newDogNoImage',
       breeds: dog.breeds.join(', '),
     },
   });
@@ -90,6 +91,8 @@ const DogCardForm = ({
 
   // Handle form submission
   async function onSubmit(input: DogSchema) {
+    // Skip if new dog has no image
+    if (input.image === 'newDogNoImage') return;
     setIsSaving(true);
     await updateDog(dog.name, formInputToDog(input), input.image);
     setIsSaving(false);
