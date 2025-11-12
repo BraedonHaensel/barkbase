@@ -64,7 +64,6 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
           image_url: data.image_url,
         };
         setUser(userData);
-        setIsLoading(false);
       })
       .catch((error) => {
         // Handle request errors
@@ -77,6 +76,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
           toast.error('Failed to get user profile. Please try again.');
         }
         clearSession();
+      })
+      .finally(() => {
         setIsLoading(false);
       });
   };

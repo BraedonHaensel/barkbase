@@ -11,6 +11,8 @@ type Props = {
 const DogCard = ({ dog }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
 
+  console.log(`Got dog in card: ${JSON.stringify(dog)}`);
+
   return (
     <Card
       className={`border-3 ${!isEditing && 'hover:cursor-pointer hover:opacity-60'}`}

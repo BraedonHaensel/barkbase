@@ -48,15 +48,15 @@ const DogCardForm = ({ dog, isEditing, setIsEditing }: Props) => {
     defaultValues: dog
       ? {
           name: dog.name,
-          date: dog.date,
+          birth_date: dog.birth_date,
           size: dog.size,
           breeds: dog.breeds,
         }
       : {
           name: '',
-          date: undefined,
+          birth_date: undefined,
           size: DogSize.MEDIUM,
-          breeds: '',
+          breeds: [],
         },
   });
 
@@ -68,7 +68,7 @@ const DogCardForm = ({ dog, isEditing, setIsEditing }: Props) => {
       //TODO: Format breeds as array?
       const response = await api.post('/TODO', {
         name: input.name,
-        date: input.date,
+        birth_date: input.birth_date,
         size: input.size,
         breeds: input.breeds,
       });
@@ -123,7 +123,7 @@ const DogCardForm = ({ dog, isEditing, setIsEditing }: Props) => {
         {/* Date of birth field */}
         <FormField
           control={form.control}
-          name="date"
+          name="birth_date"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Date of Birth</FormLabel>
