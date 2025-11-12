@@ -57,7 +57,7 @@ class DogBreed(Base):
 
     d_name: Mapped[str] = mapped_column(String(100), primary_key=True)
     o_email: Mapped[str] = mapped_column(String(100), primary_key=True)
-    breed: Mapped[str] = mapped_column(String(100), primary_key=True) # Updated to `Treu` because the same dog can have multiple breeds
+    breed: Mapped[str] = mapped_column(String(100), primary_key=True)
 
     __table_args__ = (
         ForeignKeyConstraint(
