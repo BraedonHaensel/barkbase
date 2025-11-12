@@ -8,8 +8,12 @@ type Props = {
   dog: Dog;
   isEditingADog: boolean;
   setIsEditingADog: React.Dispatch<React.SetStateAction<boolean>>; // Called to notify parent when this card is  being edited
-  updateDog: (oldName: string, newDogData: Dog, imageFile: File) => {};
-  deleteDog: (name: string) => {};
+  updateDog: (
+    oldName: string,
+    newDogData: Dog,
+    imageFile: File
+  ) => Promise<void>;
+  deleteDog: (name: string) => Promise<void>;
 };
 
 // Base card to view and manage the dog of an owner

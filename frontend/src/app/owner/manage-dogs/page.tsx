@@ -73,7 +73,6 @@ export default function ManageDogsPage() {
 
   // Create a new dog
   const createDog = async (dogData: Dog, imageFile: File) => {
-    setIsLoading(true);
     const formData = new FormData();
     formData.append('name', dogData.name);
     formData.append('birth_date', dateToIsoStringYMD(dogData.birthDate));
@@ -105,7 +104,6 @@ export default function ManageDogsPage() {
           console.error(error);
           toast.error(`Failed to save changes. Please try again.`);
         }
-        setIsLoading(false);
       });
   };
 
@@ -165,9 +163,10 @@ export default function ManageDogsPage() {
       setDogs((prevDogs) => {
         return prevDogs.slice(0, -1);
       });
+      toast.success('Dog successfully deleted');
+      setIsEditingADog(false);
       return;
     }
-    setIsLoading(true);
     api
       .delete('/dogs', {
         headers: {
@@ -193,7 +192,6 @@ export default function ManageDogsPage() {
           console.error(error);
           toast.error(`Failed to delete. Please try again.`);
         }
-        setIsLoading(false);
       });
   };
 
