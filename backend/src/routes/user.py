@@ -41,14 +41,18 @@ def init_user_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
               email: "john.doe@gmail.com"
               f_name: "John"
               l_name: "Doe"
-              address: "55 Sunshine Pl NE"
+              province: "AB"
+              city: "Calgary"
+              street: "55 Sunshine Pl NE"
               phone_num: "4039997777"
               image_url: "http://127.0.0.1:5000/static/images/img.jpg"
             sp_example:
               email: "alice.swift@gmail.com"
               f_name: "Alice"
               l_name: "Swift"
-              address: "22 Nose Hill Way NW"
+              province: "AB"
+              city: "Calgary"
+              street: "22 Nose Hill Way NW"
               phone_num: "4038881234"
               image_url: "http://127.0.0.1:5000/static/images/img.jpg"
       400:
@@ -90,7 +94,9 @@ def init_user_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
                 "email": owner.email,
                 "f_name": owner.f_name,
                 "l_name": owner.l_name,
-                "address": owner.address,
+                "province": owner.province,
+                "city": owner.city,
+                "street": owner.street,
                 "phone_num": owner.phone_num,
                 "image_url": get_user_image_url(owner.image_filename),
             }
@@ -106,7 +112,9 @@ def init_user_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
                 "email": sp.email,
                 "f_name": sp.f_name,
                 "l_name": sp.l_name,
-                "address": sp.address,
+                "province": sp.province,
+                "city": sp.city,
+                "street": sp.street,
                 "phone_num": sp.phone_num,
                 "image_url": get_user_image_url(sp.image_filename),
             }

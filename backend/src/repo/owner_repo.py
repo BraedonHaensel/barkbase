@@ -22,14 +22,16 @@ class OwnerRepo(BaseRepo):
         
         return owner
     
-    def create(self, email, password, f_name, l_name, address, phone_num, image_filename) -> Owner:
+    def create(self, email, password, f_name, l_name, province, city, street, phone_num, image_filename) -> Owner:
         # 1) Create an ORM instance
         new_owner = Owner(
             email=email,
             password=password,
             f_name=f_name,
             l_name=l_name,
-            address=address,
+            province=province,
+            city=city,
+            street=street,
             phone_num=phone_num,
             image_filename=image_filename,
         )

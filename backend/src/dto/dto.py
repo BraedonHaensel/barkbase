@@ -19,7 +19,9 @@ class OwnerDTO(TypedDict):
     email: str
     f_name: str
     l_name: str
-    address: str
+    province: str
+    city: str
+    street: str
     phone_num: str
     image_url: str
 
@@ -62,7 +64,9 @@ class ServiceProviderDTO(TypedDict):
     email: str
     f_name: str
     l_name: str
-    address: str
+    province: str
+    city: str
+    street: str
     phone_num: str
     image_url: str
 
