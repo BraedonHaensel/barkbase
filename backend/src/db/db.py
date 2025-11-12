@@ -3,7 +3,7 @@ from sqlalchemy import create_engine, and_
 from sqlalchemy.orm import sessionmaker
 from models.models import Base, Owner, Dog, DogBreed, EmergencyContact, ServiceProvider, Review, Booking, ServiceType, BookedDog
 from datetime import date, datetime
-from dto.dto import OwnerDTO, EmergencyContactDto, DogDTO, ServiceProviderDTO, BookingCreateDto
+from dto.dto import OwnerDTO, EmergencyContactDto, DogDTO, ServiceProviderDTO, BookingCreateDto, CreateDogDTO
 from typing import Optional, List
 
 
@@ -163,55 +163,96 @@ class DB:
         return res
     
     # DOGS
-    def getAllDogs(self) -> List[DogDTO]:
+    def getAllDogs(self) -> List[Dog]:
         dogs = self.db.query(Dog).all()
 
-        result = [
-            {
-                "name": dog.name,
-                "o_email": dog.o_email,
-                "birth_date": dog.birth_date,
-                "size": dog.size.name  # convert Enum to string ("SMALL", "MEDIUM", "LARGE")
-            }
-            for dog in dogs
-        ]
+        return dogs
 
-        return result
+    def getDog(self, o_email:str, name:str) -> Optional[Dog]:
+        return self.db.query(Dog).filter(and_(Dog.o_email == o_email, Dog.name == name)).first()
 
-    def getDog(self, o_email:str, name:str) -> Dog:
-        return self.db.query(Dog).filter(and_(Dog.o_email == o_email, Dog.name == name))
-
-    def addDog(self, request:DogDTO):
-
+    def addDog(self, request: CreateDogDTO):
         try:
             o_email = request["o_email"]
-            name = request["sp_email"]
-            birth_date = request["start_datetime"]
-            size = request["end_datetime"]
+            name = request["name"]
+            birth_date = request["birth_date"]
+            size_str = request["size"]
+            breeds = request.get("breeds", [])
         except KeyError as e:
             raise ValueError(f"Missing field: {e}")
         except Exception as e:
             raise ValueError(f"Invalid field format: {e}")
 
-        # Check if keys exist
+        # Convert size string to enum
+        try:
+            size = Dog.Size[size_str.upper()]
+        except (KeyError, AttributeError):
+            raise ValueError(f"Invalid size: {size_str}")
+
+        # Validate owner and dog uniqueness
         if not self.getOwnerByEmail(o_email):
             raise KeyError(f"Missing owner: {o_email}")
-        if self.getDog(o_email, name) != None:
+        if self.getDog(o_email, name) is not None:
             raise KeyError(f"Non-unique dog: {name}")
 
-        self.db.add(Dog(name=name, o_email=o_email, birth_date=birth_date, size=size))
+        # Create dog
+        new_dog = Dog(name=name, o_email=o_email, birth_date=birth_date, size=size)
+        self.db.add(new_dog)
+        self.db.flush()  # ensures FK exists for DogBreed inserts
+
+        # Create associated DogBreed entries
+        for breed in breeds:
+            breed = breed.strip()
+            if breed:
+                self.db.add(DogBreed(d_name=name, o_email=o_email, breed=breed))
+
         self.db.commit()
 
-
     def remove_dog(self, dog:Dog):
-        for i in self.db.query(BookedDog).filter(and_(
-            BookedDog.o_email == dog.o_email, BookedDog.d_name == dog.name)):
-            self.db.delete(i)
-        for i in self.db.query(DogBreed).filter(and_(
-            DogBreed.o_email == dog.o_email, DogBreed.d_name == dog.name)):
-            self.db.delete(i)
-        self.db.commit()  # required to remove foreign keys
+        # Now safely delete the dog
         self.db.delete(dog)
+        self.db.commit()
+
+    def updateDog(self, o_email: str, old_name: str, request: DogDTO):
+        """
+        Update a dog identified by o_email and old_name.
+        The request should contain the updated values (name, birth_date, size).
+        size should be a Dog.Size enum value.
+        """
+        try:
+            new_name = request["name"]
+            birth_date = request["birth_date"]
+            size_str = request["size"]  # This comes as a string from DTO
+        except KeyError as e:
+            raise ValueError(f"Missing field: {e}")
+        except Exception as e:
+            raise ValueError(f"Invalid field format: {e}")
+
+        # Get the existing dog
+        dog = self.db.query(Dog).filter(and_(Dog.o_email == o_email, Dog.name == old_name)).first()
+        if not dog:
+            raise KeyError(f"Dog not found: {old_name}")
+
+        # Convert size string to enum
+        try:
+            size = Dog.Size[size_str.upper()]
+        except (KeyError, AttributeError):
+            raise ValueError(f"Invalid size: {size_str}")
+
+        # Update the dog's attributes
+        # If name changed, we need to handle it carefully since it's part of the primary key
+        if new_name != old_name:
+            # Check if new name already exists for this owner
+            existing_dog = self.db.query(Dog).filter(and_(Dog.o_email == o_email, Dog.name == new_name)).first()
+            if existing_dog:
+                raise KeyError(f"Dog with name {new_name} already exists")
+            # Update name
+            dog.name = new_name
+
+        # Update other fields
+        dog.birth_date = birth_date
+        dog.size = size
+
         self.db.commit()
 
     def get_my_dogs(self, o_email:str):
@@ -359,7 +400,3 @@ class DB:
 
         # 4) Return the booking ID as a string (for easy JSON serialization)
         return str(booking.id)
-
-
-
-

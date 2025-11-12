@@ -1,7 +1,7 @@
 from datetime import datetime, date
 import enum
 from sqlalchemy import *
-from sqlalchemy.orm import declarative_base, mapped_column, Mapped
+from sqlalchemy.orm import declarative_base, mapped_column, Mapped, relationship
 
 Base = declarative_base()
 
@@ -55,14 +55,28 @@ class Dog(Base):
     birth_date: Mapped["date"] = mapped_column(Date)
     size: Mapped[Size] = mapped_column(Enum(Size))
 
+    # Define relationship so future deletions will delete columns with FK references to this dog
+    breeds = relationship(
+        "DogBreed",
+        cascade="all, delete-orphan",
+        backref="dog"
+    )
 
 class DogBreed(Base):
     __tablename__ = 'dog_breed'
 
-    d_name: Mapped[str] = mapped_column(String(100), ForeignKey('dog.name'), primary_key=True)
-    o_email: Mapped[str] = mapped_column(String(100), ForeignKey('dog.o_email'), primary_key=True)
-    breed: Mapped[str] = mapped_column(String(100), primary_key=True)
+    d_name: Mapped[str] = mapped_column(String(100), primary_key=True)
+    o_email: Mapped[str] = mapped_column(String(100), primary_key=True)
+    breed: Mapped[str] = mapped_column(String(100), primary_key=True) # Updated to `Treu` because the same dog can have multiple breeds
 
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ['d_name', 'o_email'],  # local columns
+            ['dog.name', 'dog.o_email'],  # referenced columns
+            ondelete="CASCADE",
+            onupdate="CASCADE",
+        ),
+    )
 
 class ServiceProvider(Base):
     __tablename__ = 'service_provider'

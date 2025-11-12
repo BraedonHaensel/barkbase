@@ -27,50 +27,58 @@ def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
     ---
     tags:
       - Authentication
+    summary: Register a new user (Owner or Service Provider)
+    consumes:
+      - multipart/form-data
     parameters:
-      - in: body
-        name: body
+      - in: formData
+        name: role
+        type: string
         required: true
-        schema:
-          type: object
-          required:
-            - role
-            - email
-            - password
-            - f_name
-            - l_name
-            - address
-            - phone_num
-            - image_file
-          properties:
-            role:
-              type: string
-              enum:
-                - owner
-                - service_provider
-              example: owner
-            email:
-              type: string
-              example: john@gmail.com
-            password:
-              type: string
-              example: password
-            f_name:
-              type: string
-              example: John
-            l_name:
-              type: string
-              example: Doe
-            address:
-              type: string
-              example: 55 Sunshine Pl NE
-            phone_num:
-              type: string
-              example: "4039997777"
-            image_file:
-              type: string
-              format: binary
-              example: ""
+        enum: [owner, service_provider]
+        default: owner
+        example: owner
+      - in: formData
+        name: email
+        type: string
+        required: true
+        default: bob@gmail.com
+        example: bob@gmail.com
+      - in: formData
+        name: password
+        type: string
+        required: true
+        default: password
+        example: password
+      - in: formData
+        name: f_name
+        type: string
+        required: true
+        default: Bob
+        example: Bob
+      - in: formData
+        name: l_name
+        type: string
+        required: true
+        default: Doe
+        example: Doe
+      - in: formData
+        name: address
+        type: string
+        required: true
+        default: 55 Sunshine Pl NE
+        example: 55 Sunshine Pl NE
+      - in: formData
+        name: phone_num
+        type: string
+        required: true
+        default: "4039997777"
+        example: "4039997777"
+      - in: formData
+        name: image_file
+        type: file
+        required: true
+        description: Profile image file
     responses:
       201:
         description: Account created successfully
@@ -159,6 +167,7 @@ def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
     ---
     tags:
       - Authentication
+    summary: 2. Authenticate user and issue JWT
     parameters:
       - in: body
         name: body
@@ -177,7 +186,7 @@ def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
                 - service_provider
             email:
               type: string
-              example: john@gmail.com
+              example: bob@gmail.com
             password:
               type: string
               example: password
