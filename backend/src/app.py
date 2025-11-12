@@ -10,8 +10,6 @@ from flasgger import Swagger
 from flask_cors import CORS
 import os
 
-
-
 if __name__ == '__main__':
     # TODO: populate DB
     # load_dotenv()
@@ -75,7 +73,8 @@ if __name__ == '__main__':
                     "f_name": {"type": "string", "example": "John"},
                     "l_name": {"type": "string", "example": "Doe"},
                     "address": {"type": "string", "example": "55 Sunshine Pl NE"},
-                    "phone_num": {"type": "string", "example": "4039997777"}
+                    "phone_num": {"type": "string", "example": "4039997777"},
+                    "image_url": {"type": "string", "example": "https://example.com/images/john.png"}
                 }
             },
             "ServiceProviderDTO": {
@@ -85,7 +84,19 @@ if __name__ == '__main__':
                     "f_name": {"type": "string", "example": "Alice"},
                     "l_name": {"type": "string", "example": "Swift"},
                     "address": {"type": "string", "example": "22 Nose Hill Way NW"},
-                    "phone_num": {"type": "string", "example": "4038881234"}
+                    "phone_num": {"type": "string", "example": "4038881234"},
+                    "image_url": {"type": "string", "example": "https://example.com/images/alice.png"}
+                }
+            },
+            "EmergencyContactDto": {
+                "type": "object",
+                "properties": {
+                    "phone_num": {"type": "string", "example": "4031234321"},
+                    "owner_email": {"type": "string", "example": "bob@gmail.com"},
+                    "relationship": {"type": "string", "example": "Friend"},
+                    "email": {"type": "string", "example": "susan@gmail.com"},
+                    "f_name": {"type": "string", "example": "Susan"},
+                    "l_name": {"type": "string", "example": "Smith"}
                 }
             },
             "DogDTO": {
@@ -94,7 +105,83 @@ if __name__ == '__main__':
                     "name": {"type": "string", "example": "Storm"},
                     "o_email": {"type": "string", "example": "bob@gmail.com"},
                     "birth_date": {"type": "string", "format": "date", "example": "2010-01-20"},
-                    "size": {"type": "string", "enum": ["small", "medium", "large"], "example": "small"}
+                    "size": {
+                        "type": "string",
+                        "enum": ["small", "medium", "large"],
+                        "example": "small"
+                    },
+                    "breeds": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "example": ["Beagle", "Poodle"]
+                    }
+                }
+            },
+            "CreateDogDTO": {
+                "type": "object",
+                "required": ["name", "o_email", "birth_date", "size"],
+                "properties": {
+                    "name": {"type": "string", "example": "Storm"},
+                    "o_email": {"type": "string", "example": "bob@gmail.com"},
+                    "birth_date": {"type": "string", "format": "date", "example": "2010-01-20"},
+                    "size": {
+                        "type": "string",
+                        "enum": ["small", "medium", "large"],
+                        "example": "small"
+                    },
+                    "breeds": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "example": ["Golden Retriever", "Labrador"]
+                    }
+                }
+            },
+            "UpdateDogDTO": {
+                "type": "object",
+                "required": ["name", "o_email", "birth_date", "size", "breeds"],
+                "properties": {
+                    "name": {"type": "string", "example": "Stormy"},
+                    "o_email": {"type": "string", "example": "bob@gmail.com"},
+                    "birth_date": {"type": "string", "format": "date", "example": "2010-01-20"},
+                    "size": {
+                        "type": "string",
+                        "enum": ["small", "medium", "large"],
+                        "example": "medium"
+                    },
+                    "breeds": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "example": ["Golden Retriever", "Labrador"]
+                    }
+                }
+            },
+            "BookingCreateDto": {
+                "type": "object",
+                "required": ["o_email", "sp_email", "start_datetime", "end_datetime", "service_type", "price", "dog_names"],
+                "properties": {
+                    "o_email": {"type": "string", "example": "bob@gmail.com"},
+                    "sp_email": {"type": "string", "example": "alice@gmail.com"},
+                    "start_datetime": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-10-30T14:30:00"
+                    },
+                    "end_datetime": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-10-30T16:30:00"
+                    },
+                    "service_type": {
+                        "type": "string",
+                        "enum": ["WALKING", "SITTING"],
+                        "example": "WALKING"
+                    },
+                    "price": {"type": "number", "format": "float", "example": 60.0},
+                    "dog_names": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "example": ["Chico", "Amigo"]
+                    }
                 }
             }
         }

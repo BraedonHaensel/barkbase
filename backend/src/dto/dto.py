@@ -36,11 +36,22 @@ class DogDTO(TypedDict):
     o_email: str
     birth_date: date
     size: str  # Preserve enum type
+    breeds: List[str]
 
 """
 Represents the payload to create a new Dog and its breeds.
 """
 class CreateDogDTO(TypedDict):
+    name: str
+    o_email: str
+    birth_date: date
+    size: str
+    breeds: List[str]  # Allow multiple breeds per dog
+
+"""
+Represents the payload to update a Dog and its breeds.
+"""
+class UpdateDogDTO(TypedDict):
     name: str
     o_email: str
     birth_date: date

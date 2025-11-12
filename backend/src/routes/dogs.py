@@ -3,58 +3,39 @@ from flask import request, jsonify
 from datetime import date, datetime
 from models.models import *
 from middleware.auth_middleware import token_required
-from dto.dto import TokenPayload, DogDTO
+from dto.dto import TokenPayload, DogDTO, UpdateDogDTO
 from models.models import Role
 from models.models import Dog
 
 # helper to convert from Dog to DogDTO
-def convert_dog_to_dog_dto(dog: Dog) -> DogDTO:
-    return {
-        "name": dog.name,
-        "o_email": dog.o_email,
-        "birth_date": dog.birth_date,
-        "size": dog.size.name.lower()  # Convert enum to lowercase string (e.g., "SMALL" -> "small")
-    }
+def convert_dog_to_dog_dto(dog: Dog, db) -> DogDTO:
+  # Get breeds 
+  """
+  Converts a Dog ORM object to a DogDTO with all breeds included.
+  """
+  # Query DogBreed to get all breeds linked to this dog
+  breeds = (
+      db.db.query(DogBreed.breed)
+      .filter(and_(
+          DogBreed.d_name == dog.name,
+          DogBreed.o_email == dog.o_email
+      ))
+      .all()
+  )
+
+  # SQLAlchemy returns a list of tuples (e.g. [('Beagle',), ('Poodle',)])
+  breed_list = [b[0] for b in breeds]
+
+  return {
+      "name": dog.name,
+      "o_email": dog.o_email,
+      "birth_date": dog.birth_date,
+      "size": dog.size.name.lower(),  # Enum → lowercase string
+      "breeds": breed_list
+  }
 
 def init_dog_routes(app, db: DB):
-    # @app.route("/dogs")
-    # def get_all_dogs():
-    #     """
-    # Get all dogs
-    # ---
-    # tags:
-    #   - Dogs
-    # summary: Get all dogs
-    # description: |
-    #   Returns a list of all dogs in the system.
-    #   Each dog is represented as a DogDTO object.
-
-    # responses:
-    #   200:
-    #     description: Successfully retrieved all dogs
-    #     schema:
-    #       type: array
-    #       items:
-    #         $ref: '#/definitions/DogDTO'
-    #     examples:
-    #       application/json:
-    #         - name: "Storm"
-    #           o_email: "bob@gmail.com"
-    #           birth_date: "2010-01-20"
-    #           size: "small"
-    #         - name: "Amigo"
-    #           o_email: "bob@gmail.com"
-    #           birth_date: "2010-02-13"
-    #           size: "large"
-    #     """
-    #     dogs = db.getAllDogs()
-        
-    #     result: list[DogDTO] = []
-    #     for dog in dogs:
-    #         result.append(convert_dog_to_dog_dto(dog))
-        
-    #     return jsonify(result), 200 
-
+    # GET ALL OWNER'S DOGS
     @app.route("/dogs/me")
     @token_required
     def get_my_dogs():
@@ -84,10 +65,12 @@ def init_dog_routes(app, db: DB):
               o_email: "bob@gmail.com"
               birth_date: "2010-01-20"
               size: "small"
+              breeds: ["Golden Retriever", "Labrador"]
             - name: "Amigo"
               o_email: "bob@gmail.com"
               birth_date: "2010-02-13"
               size: "large"
+              breeds: []
       401:
         description: Invalid credentials or not an owner
         schema:
@@ -108,15 +91,11 @@ def init_dog_routes(app, db: DB):
         
         result: list[DogDTO] = []
         for dog in dogs:
-            result.append(convert_dog_to_dog_dto(dog))
+            result.append(convert_dog_to_dog_dto(dog, db))
         
         return jsonify(result), 200
 
-    # Get the breeds of all dogs
-    @app.route("/dog-breeds")
-    def get_all_dog_breeds():
-        return db.getAllDogBreeds()
-
+    # POST
     @app.route("/dogs", methods=["POST"])
     @token_required
     def create_dog():
@@ -263,132 +242,7 @@ def init_dog_routes(app, db: DB):
 
         return jsonify({"message": "Dog created successfully"}), 201
 
-
-    # @app.route("/dogs", methods=["POST"])
-    # @token_required
-    # def create_dog():
-    #     """
-    # Create a dog
-    # ---
-    # tags:
-    #   - Dogs
-    # security:
-    #   - bearerAuth: []        # requires JWT Authorization
-    # summary: Create a new dog
-    # description: |
-    #   This endpoint allows an authenticated **owner** to create a new dog.
-    #   The request must include a valid JWT Bearer token in the Authorization header.
-    #   The owner's email (o_email) is automatically extracted from the JWT token.
-
-    # parameters:
-    #   - in: body
-    #     name: body
-    #     required: true
-    #     schema:
-    #       type: object
-    #       required:
-    #         - name
-    #         - birth_date
-    #         - size
-    #       properties:
-    #         name:
-    #           type: string
-    #           description: The name of the dog
-    #           example: "Storm"
-    #         birth_date:
-    #           type: string
-    #           format: date
-    #           description: The dog's birth date in YYYY-MM-DD format
-    #           example: "2010-01-20"
-    #         size:
-    #           type: string
-    #           enum:
-    #             - small
-    #             - medium
-    #             - large
-    #           description: The size of the dog
-    #           example: "small"
-    #     examples:
-    #       application/json:
-    #         example1:
-    #           name: "Storm"
-    #           birth_date: "2010-01-20"
-    #           size: "small"
-    #         example2:
-    #           name: "Max"
-    #           birth_date: "2015-06-15"
-    #           size: "large"
-    # responses:
-    #   201:
-    #     description: Dog successfully created
-    #     schema:
-    #       type: object
-    #       properties:
-    #         message:
-    #           type: string
-    #           example: "Success"
-    #     examples:
-    #       application/json:
-    #         message: "Success"
-    #   400:
-    #     description: Invalid data format or missing required fields
-    #     schema:
-    #       type: object
-    #       properties:
-    #         error:
-    #           type: string
-    #           example: "Missing fields: birth_date, size"
-    #     examples:
-    #       application/json:
-    #         error: "Missing fields: birth_date, size"
-    #   401:
-    #     description: Invalid credentials or not an owner
-    #     schema:
-    #       type: object
-    #       properties:
-    #         error:
-    #           type: string
-    #           example: "Invalid account type"
-    #     examples:
-    #       application/json:
-    #         error: "Invalid account type"
-
-    #     """
-    #     data = request.get_json()
-    #     user_info: TokenPayload = request.payload #comes from the decoded JWT
-    #     role = user_info["role"].lower()
-    #     email = user_info["email"]
-
-    #     if role != Role.OWNER:
-    #         return jsonify({"error": f"Invalid account type"}), 401
-
-    #     required = [
-    #         "name", "birth_date", "size",
-    #     ]
-    #     missing = [k for k in required if k not in data]
-    #     if missing:
-    #         return jsonify({"error": f"Missing fields: {', '.join(missing)}"}), 400
-
-    #     try:
-    #         birth_date = date.fromisoformat(data["birth_date"])
-    #         size = data["size"]
-    #         name = data["name"]
-
-    #     except (KeyError, ValueError) as e:
-    #         return jsonify({"error": f"Invalid data format: {str(e)}"}), 400
-
-    #     try:
-    #         db.addDog({
-    #             "o_email": email,
-    #             "name": name,
-    #             "birth_date": birth_date,
-    #             "size": size
-    #         })
-    #     except KeyError as e:
-    #         return jsonify({"error": f"Invalid key: {str(e)}"}), 400
-
-    #     return jsonify({"message": "Success"}), 201
-
+    #DELETE
     @app.route("/dogs", methods=["DELETE"])
     @token_required
     def remove_dog():
@@ -473,23 +327,24 @@ def init_dog_routes(app, db: DB):
         except Exception as e:
             return jsonify({"error": f"Error deleting dog: {str(e)}"}), 500
 
+    #UPDATE
     @app.route("/dogs", methods=["PUT"])
     @token_required
     def update_dog():
-        """
+      """
     Update a dog
     ---
     tags:
       - Dogs
     security:
       - bearerAuth: []        # requires JWT Authorization
-    summary: Update a dog
+    summary: Update an existing dog
     description: |
       This endpoint allows an authenticated **owner** to update one of their dogs.
       The dog is uniquely identified by the owner's email (from JWT token) and the dog's current name.
-      The request body should be in DogDTO shape with the updated values.
+      The request body must include all fields defined in `UpdateDogDTO` (full replacement).
       The owner's email (o_email) is automatically extracted from the JWT token for security.
-      To rename a dog, include both "old_name" and "name" in the request body.
+      To rename a dog, include both the current name (old_name) and the new name (name).
     parameters:
       - in: body
         name: body
@@ -500,11 +355,12 @@ def init_dog_routes(app, db: DB):
             - name
             - birth_date
             - size
+            - breeds
           properties:
             name:
               type: string
               description: The new name of the dog (or current name if not renaming)
-              example: "Stormy1"
+              example: "Stormy"
             old_name:
               type: string
               description: The current name of the dog (required only if renaming)
@@ -512,6 +368,7 @@ def init_dog_routes(app, db: DB):
             birth_date:
               type: string
               format: date
+              description: The dog's birth date in YYYY-MM-DD format
               example: "2010-01-20"
             size:
               type: string
@@ -519,7 +376,14 @@ def init_dog_routes(app, db: DB):
                 - small
                 - medium
                 - large
-              example: "small"
+              description: The size category of the dog
+              example: "medium"
+            breeds:
+              type: array
+              description: A list of the dog's breeds
+              items:
+                type: string
+              example: ["Golden Retriever", "Labrador"]
     responses:
       200:
         description: Dog successfully updated
@@ -530,15 +394,38 @@ def init_dog_routes(app, db: DB):
               type: string
               example: "Dog successfully updated"
             dog:
-              $ref: '#/definitions/DogDTO'
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Stormy"
+                o_email:
+                  type: string
+                  example: "bob@gmail.com"
+                birth_date:
+                  type: string
+                  format: date
+                  example: "2010-01-20"
+                size:
+                  type: string
+                  enum:
+                    - small
+                    - medium
+                    - large
+                  example: "medium"
+                breeds:
+                  type: array
+                  items:
+                    type: string
+                  example: ["Golden Retriever", "Labrador"]
       400:
-        description: Invalid data format or dog not found
+        description: Invalid data format, missing fields, or dog not found
         schema:
           type: object
           properties:
             error:
               type: string
-              example: "Non-existent dog: Storm"
+              example: "Dog not found: Storm"
       401:
         description: Invalid credentials or not an owner
         schema:
@@ -547,59 +434,62 @@ def init_dog_routes(app, db: DB):
             error:
               type: string
               example: "Invalid account type"
-        """
-        data = request.get_json()
-        user_info: TokenPayload = request.payload #comes from the decoded JWT
-        role = user_info["role"].lower()
-        email = user_info["email"]
+      """
 
-        if role != Role.OWNER:
-            return jsonify({"error": f"Invalid account type"}), 401
+      data = request.get_json()
+      user_info: TokenPayload = request.payload #comes from the decoded JWT
+      role = user_info["role"].lower()
+      email = user_info["email"]
 
-        # Validate required fields
-        required = ["name", "birth_date", "size"]
-        missing = [k for k in required if k not in data]
-        if missing:
-            return jsonify({"error": f"Missing fields: {', '.join(missing)}"}), 400
+      if role != Role.OWNER:
+          return jsonify({"error": f"Invalid account type"}), 401
 
-        try:
-            # Parse the request data
-            name = data["name"]  # New name (or current name if not renaming)
-            old_name = data.get("old_name", name)  # If old_name provided, use it; otherwise assume name is the identifier
-            birth_date = date.fromisoformat(data["birth_date"])
-            size = Dog.Size[data["size"].upper()]
-        except (KeyError, ValueError) as e:
-            return jsonify({"error": f"Invalid data format: {str(e)}"}), 400
+      # Validate required fields
+      required = ["name", "birth_date", "size", "breeds"]
+      missing = [k for k in required if k not in data]
+      if missing:
+          return jsonify({"error": f"Missing fields: {', '.join(missing)}"}), 400
 
-        try:
-            # Prepare the update request in DogDTO format
-            update_request: DogDTO = {
-                "name": name,  # New name (or same if not renaming)
-                "o_email": email,  # From token, not body
-                "birth_date": birth_date,
-                "size": size.name.lower()  # Convert enum to string for DTO
-            }
-            
-            # Update the dog
-            db.updateDog(email, old_name, update_request)
-            
-            # Get the updated dog to return
-            updated_dog = db.getDog(email, name)
-            
-            if updated_dog is None:
-                return jsonify({"error": f"Failed to retrieve updated dog"}), 500
-            
-            # Convert to DTO for response
-            dog_dto = convert_dog_to_dog_dto(updated_dog)
-            
-            return jsonify({
-                "message": "Dog successfully updated",
-                "dog": dog_dto
-            }), 200
-            
-        except KeyError as e:
-            return jsonify({"error": f"Dog not found: {old_name}"}), 400
-        except ValueError as e:
-            return jsonify({"error": f"Invalid data: {str(e)}"}), 400
-        except Exception as e:
-            return jsonify({"error": f"Error updating dog: {str(e)}"}), 500
+      try:
+          # Parse the request data
+          name = data["name"]  # New name (or current name if not renaming)
+          old_name = data.get("old_name", name)  # If old_name provided, use it; otherwise assume name is the identifier
+          birth_date = date.fromisoformat(data["birth_date"])
+          size = Dog.Size[data["size"].upper()]
+          breeds = data["breeds"]
+      except (KeyError, ValueError) as e:
+          return jsonify({"error": f"Invalid data format: {str(e)}"}), 400
+
+      try:
+          # Prepare the update request in DogDTO format
+          update_request: UpdateDogDTO = {
+              "name": name,  # New name (or same if not renaming)
+              "o_email": email,  # From token, not body
+              "birth_date": birth_date,
+              "size": size.name.lower(),  # Convert enum to string for DTO
+              "breeds": breeds,
+          }
+          
+          # Update the dog
+          db.updateDog(email, old_name, update_request)
+          
+          # Get the updated dog to return
+          updated_dog = db.getDog(email, name)
+          
+          if updated_dog is None:
+              return jsonify({"error": f"Failed to retrieve updated dog"}), 500
+          
+          # Convert to DTO for response
+          dog_dto = convert_dog_to_dog_dto(updated_dog, db)
+          
+          return jsonify({
+              "message": "Dog successfully updated",
+              "dog": dog_dto
+          }), 200
+          
+      except KeyError as e:
+          return jsonify({"error": f"Dog not found: {old_name}"}), 400
+      except ValueError as e:
+          return jsonify({"error": f"Invalid data: {str(e)}"}), 400
+      except Exception as e:
+          return jsonify({"error": f"Error updating dog: {str(e)}"}), 500
