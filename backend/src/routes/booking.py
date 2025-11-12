@@ -4,7 +4,7 @@ from datetime import datetime
 from models.models import *
 from middleware.auth_middleware import token_required
 from dto.dto import TokenPayload
-from enums.enums import AccountType
+from enums.enums import AccountType, ServiceType
 
 
 def init_booking_routes(app, db: DB):
@@ -96,6 +96,7 @@ def init_booking_routes(app, db: DB):
         user_info: TokenPayload = request.payload #comes from the decoded JWT
         account_type = AccountType(user_info["account_type"].lower())
         email = user_info["email"]
+        service_type = ServiceType[data["service_type"].lower()]
 
         if account_type != AccountType.OWNER:
             return jsonify({"error": f"Invalid account type"}), 401
@@ -113,9 +114,6 @@ def init_booking_routes(app, db: DB):
             # parse ISO8601 timestamps like "2025-10-30T14:30:00"
             start_datetime = datetime.fromisoformat(data["start_datetime"])
             end_datetime = datetime.fromisoformat(data["end_datetime"])
-
-            # enum conversion
-            service_type = ServiceType[data["service_type"].upper()]  # e.g. "WALKING" → ServiceType.WALKING
 
             price = float(data["price"])
             dog_names = data["dog_names"]

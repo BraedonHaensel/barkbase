@@ -2,13 +2,10 @@ from datetime import datetime, date
 import enum
 from sqlalchemy import *
 from sqlalchemy.orm import declarative_base, mapped_column, Mapped, relationship
-from enums.enums import Province
+from enums.enums import Province, ServiceType
 
 Base = declarative_base()
 
-class ServiceType(enum.Enum):
-    WALKING = enum.auto()
-    SITTING = enum.auto()
 
 class Owner(Base):
     __tablename__ = 'owner'

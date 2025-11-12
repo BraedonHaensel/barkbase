@@ -10,6 +10,15 @@ class AccountType(str, Enum):
         return self.value
 
 
+class ServiceType(str, Enum):
+    """Enum for booking service types."""
+    WALKING = "walking"
+    SITTING = "sitting"
+
+    def __str__(self) -> str:
+        return self.value
+
+
 class Province(str, Enum):
     """Enum for province and territory abbreviations."""
     AB = "AB"

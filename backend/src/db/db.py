@@ -1,11 +1,11 @@
 
 from sqlalchemy import create_engine, and_
 from sqlalchemy.orm import sessionmaker
-from models.models import Base, Owner, Dog, DogBreed, EmergencyContact, ServiceProvider, Review, Booking, ServiceType, BookedDog
+from models.models import Base, Owner, Dog, DogBreed, EmergencyContact, ServiceProvider, Review, Booking, BookedDog
 from datetime import date, datetime
 from dto.dto import OwnerDTO, EmergencyContactDto, ServiceProviderDTO, BookingCreateDto, CreateDogDTO, UpdateDogDTO
 from typing import Optional, List
-from enums.enums import Province
+from enums.enums import Province, ServiceType
 
 
 from dotenv import load_dotenv
