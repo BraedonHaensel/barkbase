@@ -1,4 +1,3 @@
-from routes.routes import init_routes
 from routes.auth import init_auth_routes
 from routes.user import init_user_routes
 from routes.booking import init_booking_routes
@@ -41,6 +40,24 @@ if __name__ == '__main__':
             "description": "API documentation for BarkBase backend",
             "version": "1.0.0"
         },
+        "tags": [
+            {
+                "name": "Authentication",
+                "description": "User authentication endpoints"
+            },
+            {
+                "name": "Users",
+                "description": "User management endpoints"
+            },
+            {
+                "name": "Dogs",
+                "description": "Dog management endpoints"
+            },
+            {
+                "name": "Bookings",
+                "description": "Booking management endpoints"
+            }
+        ],
         "securityDefinitions": {
             "bearerAuth": {
                 "type": "apiKey",
@@ -70,15 +87,36 @@ if __name__ == '__main__':
                     "address": {"type": "string", "example": "22 Nose Hill Way NW"},
                     "phone_num": {"type": "string", "example": "4038881234"}
                 }
+            },
+            "DogDTO": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string", "example": "Storm"},
+                    "o_email": {"type": "string", "example": "bob@gmail.com"},
+                    "birth_date": {"type": "string", "format": "date", "example": "2010-01-20"},
+                    "size": {"type": "string", "enum": ["small", "medium", "large"], "example": "small"}
+                }
             }
         }
     }
 
     # swagger docs
-    swagger = Swagger(app, template=swagger_template)
+    swagger = Swagger(app, template=swagger_template, config={
+    "headers": [],
+    "specs": [
+        {
+            "endpoint": 'spec',
+            "route": '/apidocs/spec.json',   # this exposes the JSON spec
+            "rule_filter": lambda rule: True,  # include all endpoints
+            "model_filter": lambda tag: True,  # include all models
+        }
+    ],
+    "static_url_path": "/flasgger_static",
+    "swagger_ui": True,
+    "specs_route": "/apidocs/"
+    })
     
     # initialize routes
-    init_routes(app, db)
     init_auth_routes(app, owner_repo=owner_repo, sp_repo=sp_repo)
     init_user_routes(app, owner_repo=owner_repo, sp_repo=sp_repo)
     init_booking_routes(app, db)

@@ -60,17 +60,6 @@ def init_routes(app, db: DB):
         
         return jsonify(contacts)
 
-    # 3) DOG ROUTES
-    @app.route("/dogs")
-    def get_all_dogs():
-        return db.getAllDogs()
-
-    # Get the breeds of all dogs
-    @app.route("/dog-breeds")
-    def get_all_dog_breeds():
-        return db.getAllDogBreeds()
-    #     return get_table_data(DogBreed)
-
     # 4) SERVICE PROVIDER ROUTES
     @app.route("/service-providers")
     def service_provider():
