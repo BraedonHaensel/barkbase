@@ -114,6 +114,7 @@ if __name__ == '__main__':
                         "enum": ["small", "medium", "large"],
                         "example": "small"
                     },
+                    "image_url": {"type": "string", "example": "https://example.com/images/john.png"},
                     "breeds": {
                         "type": "array",
                         "items": {"type": "string"},

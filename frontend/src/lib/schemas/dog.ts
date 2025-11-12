@@ -7,4 +7,5 @@ export const dogSchema = z.object({
   birthDate: z.date(),
   size: z.enum([DogSize.SMALL, DogSize.MEDIUM, DogSize.LARGE]),
   breeds: z.string().nonempty('Required field'),
+  image: z.file(),
 });

@@ -139,7 +139,7 @@ def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
         hashed_pw = generate_password_hash(password, method="pbkdf2:sha256")
 
         # 5) Validate and save the user profile image
-        if not validate_image_file:
+        if not validate_image_file(image_file):
             return jsonify({"error": "Unsupported image file type"}), 400
         image_filename = save_user_image(app, image_file)
 

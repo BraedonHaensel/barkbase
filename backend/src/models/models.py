@@ -44,6 +44,7 @@ class Dog(Base):
     o_email: Mapped[str] = mapped_column(String(100), ForeignKey('owner.email'), primary_key=True)
     birth_date: Mapped["date"] = mapped_column(Date)
     size: Mapped[Size] = mapped_column(Enum(Size))
+    image_filename: Mapped[str] = mapped_column(String(100))
 
     # Define relationship so future deletions will delete columns with FK references to this dog
     breeds = relationship(

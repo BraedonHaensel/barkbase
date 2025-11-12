@@ -26,6 +26,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Dog } from '@/types/dog';
+import { useState } from 'react';
 
 // Schema for the dog form
 type DogSchema = z.infer<typeof dogSchema>;
@@ -34,7 +35,7 @@ type Props = {
   dog: Dog;
   isEditing: boolean;
   setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
-  updateDog: (oldName: string, newDogData: Dog) => {};
+  updateDog: (oldName: string, newDogData: Dog, imageFile: File) => {};
   deleteDog: (name: string) => {};
 };
 
@@ -46,6 +47,8 @@ const DogCardForm = ({
   updateDog,
   deleteDog,
 }: Props) => {
+  const [dogImagePreview, setDogImagePreview] = useState<string>(dog.imageUrl);
+
   // Form initialization
   const form = useForm<DogSchema>({
     resolver: zodResolver(dogSchema),
@@ -53,6 +56,7 @@ const DogCardForm = ({
       name: dog.name,
       birthDate: dog.birthDate,
       size: dog.size,
+      image: undefined,
       breeds: dog.breeds.join(', '),
     },
   });
@@ -64,6 +68,7 @@ const DogCardForm = ({
       name: input.name,
       birthDate: input.birthDate,
       size: input.size,
+      imageUrl: dogImagePreview,
       // Convert the comma-separated breeds string into a list
       breeds: input.breeds.split(',').map((s) => s.trim()),
     };
@@ -78,18 +83,52 @@ const DogCardForm = ({
 
   // Handle form submission
   function onSubmit(input: DogSchema) {
-    updateDog(dog.name, formInputToDog(input));
+    updateDog(dog.name, formInputToDog(input), input.image);
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <fieldset disabled={!isEditing} className="space-y-5">
-          {/* Handle dog image uploads */}
-          <div className="flex h-20 w-20 items-center gap-10">
-            [TODO Upload]
-            <img src="https://hips.hearstapps.com/hmg-prod/images/dog-puppy-on-garden-royalty-free-image-1586966191.jpg?crop=0.752xw:1.00xh;0.175xw,0&resize=1200:*" />
-          </div>
+          {/* Profile image field */}
+          {/* CITATION: Field developed with reference to:
+           * File uploads made easy with react and flask. (n.d.). Dunder Method Paper Company.
+           * Retrieved November 10, 2025, from https://dundermethodpaperco.hashnode.dev/file-uploads-made-easy-with-react-and-flask
+           */}
+          <FormField
+            control={form.control}
+            name="image"
+            render={({ field: { onChange, value, ...rest } }) => (
+              <FormItem>
+                <FormLabel>Dog image</FormLabel>
+                <FormControl>
+                  <div className="flex flex-col gap-3">
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setDogImagePreview(URL.createObjectURL(file));
+                          onChange(file);
+                        }
+                      }}
+                      {...rest}
+                    />
+
+                    {dogImagePreview && (
+                      <img
+                        src={dogImagePreview}
+                        alt="Profile image preview"
+                        className="aspect-square w-full object-cover"
+                      />
+                    )}
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           {/* Name field */}
           <FormField
