@@ -3,8 +3,9 @@ from sqlalchemy import create_engine, and_
 from sqlalchemy.orm import sessionmaker
 from models.models import Base, Owner, Dog, DogBreed, EmergencyContact, ServiceProvider, Review, Booking, ServiceType, BookedDog
 from datetime import date, datetime
-from dto.dto import OwnerDTO, EmergencyContactDto, DogDTO, ServiceProviderDTO, BookingCreateDto, CreateDogDTO, UpdateDogDTO
+from dto.dto import OwnerDTO, EmergencyContactDto, ServiceProviderDTO, BookingCreateDto, CreateDogDTO, UpdateDogDTO
 from typing import Optional, List
+from enums.enums import Province
 
 
 from dotenv import load_dotenv
@@ -50,7 +51,7 @@ class DB:
         # Add owners:
         owner = Owner(
             email="bob@gmail.com", password="pbkdf2:sha256:1000000$hShsiGaRHootXXdH$b6d33d6b698561763c2851fa73f0c3ae4b5b57fa5d217521ea4bf43ef82dbb1e", f_name="Bob", l_name="Doe",
-            province="AB", city="Calgary", street="123 Mt Norquay Pl SE", phone_num="4039987283",
+            province=Province.AB, city="Calgary", street="123 Mt Norquay Pl SE", phone_num="4039987283",
             image_filename="3549e957-3b4d-43f7-b790-f230597a1711.jpg")
         self.db.add(owner)
         self.db.commit()
@@ -77,7 +78,7 @@ class DB:
         # Add service_provider:
         service_provider = ServiceProvider(
             email="alice@gmail.com", password="pbkdf2:sha256:1000000$hShsiGaRHootXXdH$b6d33d6b698561763c2851fa73f0c3ae4b5b57fa5d217521ea4bf43ef82dbb1e", f_name="Alice", l_name="Swift",
-            province="AB", city="Calgary", street="22 Nose Hill Way NW", phone_num="4038881234",
+            province=Province.AB, city="Calgary", street="22 Nose Hill Way NW", phone_num="4038881234",
             image_filename="56b7a08a-1d08-42a4-960c-0601711523b6.jpg")
         self.db.add(service_provider)
         self.db.commit()
@@ -95,7 +96,7 @@ class DB:
             id=-2,
             o_email="bob@gmail.com", sp_email="alice@gmail.com",
             start_datetime=datetime(2025, 10, 30, 14, 30), end_datetime=datetime(2025, 10, 30, 16, 30),
-            service_type=ServiceType.WALKING, price=60, city="calgary", street="55 Sunshine Pl NE",
+            service_type=ServiceType.WALKING, price=60, province=Province.AB, city="Calgary", street="55 Sunshine Pl NE",
             note="My dog barks a lot.")
         self.db.add(booking)
         self.db.commit()

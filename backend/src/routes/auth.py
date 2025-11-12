@@ -9,8 +9,7 @@ import datetime
 import os
 from models.models import Role
 from utils.images import save_user_image, validate_image_file
-
-
+from enums.enums import Province
 
 
 def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
@@ -112,7 +111,7 @@ def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
         password = data.get("password")
         f_name = data.get("f_name")
         l_name = data.get("l_name")
-        province = data.get("province")
+        province = Province(data.get("province").upper())
         city = data.get("city")
         street = data.get("street")
         phone_num = data.get("phone_num")
