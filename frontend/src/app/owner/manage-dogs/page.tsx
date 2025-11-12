@@ -26,6 +26,7 @@ export default function ManageDogsPage() {
     }
   }, [session]);
 
+  // Fetch all of the owner's dogs from the API
   const getDogs = async () => {
     setIsLoading(true);
     api
@@ -35,7 +36,7 @@ export default function ManageDogsPage() {
         },
       })
       .then((response) => {
-        // Parse dog information fields from the response
+        // Parse each dog from the response
         const newDogs: Array<Dog> = [];
         const data = response.data;
         data.forEach((dog: any) => {
@@ -69,6 +70,7 @@ export default function ManageDogsPage() {
     getDogs();
   }, []);
 
+  // Create a new dog
   const createDog = async (dogData: Dog) => {
     setIsLoading(true);
     const payload: any = {
@@ -104,6 +106,7 @@ export default function ManageDogsPage() {
       });
   };
 
+  // Update the details for an existing dog
   const updateDog = async (oldName: string, newDogData: Dog) => {
     if (oldName === '') {
       // This is a new dog, use a POST request to create it
@@ -149,10 +152,7 @@ export default function ManageDogsPage() {
       });
   };
 
-  useEffect(() => {
-    getDogs();
-  }, []);
-
+  // Delete a dog
   const deleteDog = async (name: string) => {
     if (name === '') {
       // This is the newest dog. Delete it directly
@@ -192,73 +192,67 @@ export default function ManageDogsPage() {
       });
   };
 
-  return (
-    <>
-      {isLoading ? (
-        <LoaderCircle className="mx-auto mt-3 h-10 w-10 animate-spin" />
-      ) : (
-        <div className="flex flex-col gap-4">
-          {/* Page title */}
-          <p style={{ fontSize: '35px' }} className="text-center font-bold">
-            Dog Manager
-          </p>
-          <div className="grid min-w-[400px] gap-6 md:grid-cols-2">
-            {/* Render a card for each dog */}
-            {dogs.map((dog, id) => (
-              <DogCard
-                key={id}
-                dog={dog}
-                isEditingADog={isEditingADog}
-                setIsEditingADog={setIsEditingADog}
-                updateDog={updateDog}
-                deleteDog={deleteDog}
-              />
-            ))}
-            {/* Add new dogs button */}
-            <div
-              className={`flex min-h-50 items-center justify-center ${dogs.length % 2 == 0 && 'col-span-2 mx-auto w-1/2'}`}
-            >
-              <SquarePlus
-                className="text-teal-600 hover:cursor-pointer hover:opacity-60"
-                size={50}
-                onClick={() => {
-                  // Check for max number of dogs
-                  if (dogs.length >= 10) {
-                    toast.warning('Maximum number of dogs reached!');
-                    return;
-                  }
+  return isLoading ? (
+    <LoaderCircle className="mx-auto mt-3 h-10 w-10 animate-spin" />
+  ) : (
+    <div className="flex flex-col gap-4">
+      {/* Page title */}
+      <p style={{ fontSize: '35px' }} className="text-center font-bold">
+        Dog Manager
+      </p>
+      <div className="grid min-w-[400px] gap-6 md:grid-cols-2">
+        {/* Render a card for each dog */}
+        {dogs.map((dog, id) => (
+          <DogCard
+            key={id}
+            dog={dog}
+            isEditingADog={isEditingADog}
+            setIsEditingADog={setIsEditingADog}
+            updateDog={updateDog}
+            deleteDog={deleteDog}
+          />
+        ))}
+        {/* Add new dogs button */}
+        <div
+          className={`flex min-h-50 items-center justify-center ${dogs.length % 2 == 0 && 'col-span-2 mx-auto w-1/2'}`}
+        >
+          <SquarePlus
+            className="text-teal-600 hover:cursor-pointer hover:opacity-60"
+            size={50}
+            onClick={() => {
+              // Check for max number of dogs
+              if (dogs.length >= 10) {
+                toast.warning('Maximum number of dogs reached!');
+                return;
+              }
 
-                  // Check if another dog is currently being edited
-                  if (isEditingADog) {
-                    toast.warning(
-                      'Finish editing all dogs before adding a new one!'
-                    );
-                    return;
-                  }
+              // Check if another dog is currently being edited
+              if (isEditingADog) {
+                toast.warning(
+                  'Finish editing all dogs before adding a new one!'
+                );
+                return;
+              }
 
-                  // Check if the previous dog is new and needs to be saved first
-                  if (dogs.length >= 1 && dogs[dogs.length - 1].name === '') {
-                    toast.warning(
-                      'Save the previous dog before adding a new one!'
-                    );
-                    return;
-                  }
+              // Check if the previous dog is new and needs to be saved first
+              if (dogs.length >= 1 && dogs[dogs.length - 1].name === '') {
+                toast.warning('Save the previous dog before adding a new one!');
+                return;
+              }
 
-                  setDogs((prevDogs) => {
-                    const newDog: Dog = {
-                      name: '',
-                      birthDate: new Date(),
-                      size: DogSize.MEDIUM,
-                      breeds: [],
-                    };
-                    return [...prevDogs, newDog];
-                  });
-                }}
-              />
-            </div>
-          </div>
+              setDogs((prevDogs) => {
+                const newDog: Dog = {
+                  name: '',
+                  birthDate: new Date(),
+                  size: DogSize.MEDIUM,
+                  breeds: [],
+                };
+                return [...prevDogs, newDog];
+              });
+            }}
+          />
         </div>
-      )}
-    </>
+      </div>
+    </div>
   );
 }
