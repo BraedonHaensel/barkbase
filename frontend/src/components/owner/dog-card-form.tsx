@@ -26,7 +26,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Dog } from '@/types/dog';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 // Schema for the dog form
 type DogSchema = z.infer<typeof dogSchema>;

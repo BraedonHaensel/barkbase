@@ -68,10 +68,46 @@ export default function ManageDogsPage() {
     getDogs();
   }, []);
 
-  // TODO limit dogs to 10
+  const createDog = async (dogData: Dog) => {
+    setIsLoading(true);
+    const payload: any = {
+      name: dogData.name,
+      birth_date: dateToIsoStringYMD(dogData.birthDate),
+      size: dogData.size,
+      breeds: dogData.breeds,
+    };
+    api
+      .post('/dogs', payload, {
+        headers: {
+          Authorization: `Bearer ${session?.token}`,
+        },
+      })
+      .then((response) => {
+        toast.success(response.data.message);
+      })
+      .catch((error) => {
+        // Handle request errors
+        const apiError = error?.response?.data?.error;
+        if (apiError) {
+          console.error(`API error: ${apiError}`);
+          toast.error(`Failed to save changes: ${apiError}`);
+        } else {
+          console.error(error);
+          toast.error(`Failed to save changes. Please try again.`);
+        }
+      })
+      .finally(() => {
+        // Refresh the owner's dogs
+        getDogs();
+      });
+  };
 
   const updateDog = async (oldName: string, newDogData: Dog) => {
-    // TODO if name is '' then it's a new dog, do a post!
+    if (oldName === '') {
+      // This is a new dog, use a POST request to create it
+      createDog(newDogData);
+      return;
+    }
 
     setIsLoading(true);
     const payload: any = {
@@ -115,6 +151,13 @@ export default function ManageDogsPage() {
   }, []);
 
   const deleteDog = async (name: string) => {
+    if (name === '') {
+      // This is the newest dog. Delete it directly
+      setDogs((prevDogs) => {
+        return prevDogs.slice(0, -1);
+      });
+      return;
+    }
     setIsLoading(true);
     api
       .delete('/dogs', {
@@ -168,13 +211,33 @@ export default function ManageDogsPage() {
             {/* Add new dogs button */}
             <div
               className={`flex min-h-50 items-center justify-center ${dogs.length % 2 == 0 && 'col-span-2 mx-auto w-1/2'}`}
-              onClick={() => {
-                console.log('TODO add new dog...');
-              }}
             >
               <SquarePlus
                 className="text-teal-600 hover:cursor-pointer hover:opacity-60"
                 size={50}
+                onClick={() => {
+                  // Check for max number of dogs
+                  if (dogs.length >= 10) {
+                    toast.warning('Maximum number of dogs reached!');
+                    return;
+                  }
+                  // Check if the previous dog is new and needs to be saved first
+                  if (dogs.length >= 1 && dogs[dogs.length - 1].name === '') {
+                    toast.warning(
+                      'Save the previous dog before adding a new one!'
+                    );
+                    return;
+                  }
+                  setDogs((prevDogs) => {
+                    const newDog: Dog = {
+                      name: '',
+                      birthDate: new Date(),
+                      size: DogSize.MEDIUM,
+                      breeds: [],
+                    };
+                    return [...prevDogs, newDog];
+                  });
+                }}
               />
             </div>
           </div>
