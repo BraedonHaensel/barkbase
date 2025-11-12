@@ -52,7 +52,7 @@ const LoginForm = () => {
       const response = await api.post('/auth/login', {
         email: input.email,
         password: input.password,
-        role: input.accountType,
+        account_type: input.accountType,
       });
       return response.data;
     },
@@ -61,9 +61,9 @@ const LoginForm = () => {
   // Handle form submission
   function onSubmit(input: LoginSchema) {
     postLogin(input, {
-      onSuccess: ({ role, token }) => {
-        console.info(`Logged in as ${role} with token ${token}`);
-        setSession({ token, accountType: role });
+      onSuccess: ({ account_type, token }) => {
+        console.info(`Logged in as ${account_type} with token ${token}`);
+        setSession({ token, accountType: account_type });
         refreshUser();
         router.push('/dashboard');
       },

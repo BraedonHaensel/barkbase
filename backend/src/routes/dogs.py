@@ -1,11 +1,12 @@
 from db.db import DB
 from flask import request, jsonify
-from datetime import date, datetime
+from datetime import date
 from models.models import *
 from middleware.auth_middleware import token_required
 from dto.dto import TokenPayload, DogDTO, UpdateDogDTO
-from models.models import Role
 from models.models import Dog
+from enums.enums import AccountType
+
 
 # helper to convert from Dog to DogDTO
 def convert_dog_to_dog_dto(dog: Dog, db) -> DogDTO:
@@ -81,10 +82,10 @@ def init_dog_routes(app, db: DB):
               example: Invalid account type
         """
         user_info: TokenPayload = request.payload #comes from the decoded JWT
-        role = user_info["role"].lower()
+        account_type = AccountType(user_info["account_type"].lower())
         email = user_info["email"]
 
-        if role != Role.OWNER:
+        if account_type != AccountType.OWNER:
             return jsonify({"error": f"Invalid account type"}), 401
 
         dogs = db.get_my_dogs(email)
@@ -200,10 +201,10 @@ def init_dog_routes(app, db: DB):
         """
         data = request.get_json()
         user_info: TokenPayload = request.payload  # comes from the decoded JWT
-        role = user_info["role"].lower()
+        account_type = AccountType(user_info["account_type"].lower())
         email = user_info["email"]
 
-        if role != Role.OWNER:
+        if account_type != AccountType.OWNER:
             return jsonify({"error": "Invalid account type"}), 401
 
         # Required fields check
@@ -299,10 +300,10 @@ def init_dog_routes(app, db: DB):
         """
         data = request.get_json()
         user_info: TokenPayload = request.payload #comes from the decoded JWT
-        role = user_info["role"].lower()
+        account_type = AccountType(user_info["account_type"].lower())
         email = user_info["email"]
 
-        if role != Role.OWNER:
+        if account_type != AccountType.OWNER:
             return jsonify({"error": f"Invalid account type"}), 401
 
         required = ["name"]
@@ -438,10 +439,10 @@ def init_dog_routes(app, db: DB):
 
       data = request.get_json()
       user_info: TokenPayload = request.payload #comes from the decoded JWT
-      role = user_info["role"].lower()
+      account_type = AccountType(user_info["account_type"].lower())
       email = user_info["email"]
 
-      if role != Role.OWNER:
+      if account_type != AccountType.OWNER:
           return jsonify({"error": f"Invalid account type"}), 401
 
       # Validate required fields

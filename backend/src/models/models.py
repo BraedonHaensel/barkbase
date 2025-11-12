@@ -10,16 +10,6 @@ class ServiceType(enum.Enum):
     WALKING = enum.auto()
     SITTING = enum.auto()
 
-class Role(Enum):
-    """
-    Enum representing user roles in the system.
-    """
-    OWNER = "owner"
-    SERVICE_PROVIDER = "service_provider"
-
-    def __str__(self) -> str:
-        return self.value
-
 class Owner(Base):
     __tablename__ = 'owner'
 

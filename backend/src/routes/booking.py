@@ -1,10 +1,11 @@
 from db.db import DB
 from flask import request, jsonify
-from datetime import date, datetime
+from datetime import datetime
 from models.models import *
 from middleware.auth_middleware import token_required
 from dto.dto import TokenPayload
-from models.models import Role
+from enums.enums import AccountType
+
 
 def init_booking_routes(app, db: DB):
     # 6) BOOKING ROUTES
@@ -93,10 +94,10 @@ def init_booking_routes(app, db: DB):
 
         data = request.get_json()
         user_info: TokenPayload = request.payload #comes from the decoded JWT
-        role = user_info["role"].lower()
+        account_type = AccountType(user_info["account_type"].lower())
         email = user_info["email"]
 
-        if role != Role.OWNER:
+        if account_type != AccountType.OWNER:
             return jsonify({"error": f"Invalid account type"}), 401
 
         # Extract + validate required fields
@@ -109,14 +110,6 @@ def init_booking_routes(app, db: DB):
             return jsonify({"error": f"Missing fields: {', '.join(missing)}"}), 400
 
         try:
-            # token = utils.details_from_token(data["token"])
-
-            # if token == None:
-            #     return jsonify({"error": f"Invalid token"}), 401
-            # if token[1] != "owner":
-            #     return jsonify({"error": f"Invalid account type"}), 401
-            # o_email = token[0]
-
             # parse ISO8601 timestamps like "2025-10-30T14:30:00"
             start_datetime = datetime.fromisoformat(data["start_datetime"])
             end_datetime = datetime.fromisoformat(data["end_datetime"])

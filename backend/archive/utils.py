@@ -1,3 +1,6 @@
+# ARCHIVE NOTE;
+#   This is not needed. See booking.py for examples of how to use the token
+
 from typing import Tuple, Union
 
 from repo.owner_repo import OwnerRepo

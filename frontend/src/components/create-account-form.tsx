@@ -74,7 +74,7 @@ const CreateAccountForm = () => {
       formData.append('l_name', input.lastName);
       formData.append('password', input.password);
       formData.append('phone_num', input.phoneNumber);
-      formData.append('role', input.accountType);
+      formData.append('account_type', input.accountType);
       formData.append('image_file', input.image);
 
       const response = await api.post('/auth/signup', formData, {

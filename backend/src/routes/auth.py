@@ -7,9 +7,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
 import datetime
 import os
-from models.models import Role
 from utils.images import save_user_image, validate_image_file
-from enums.enums import Province
+from enums.enums import AccountType, Province
 
 
 def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
@@ -31,7 +30,7 @@ def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
       - multipart/form-data
     parameters:
       - in: formData
-        name: role
+        name: account_type
         type: string
         required: true
         enum: [owner, service_provider]
@@ -115,22 +114,22 @@ def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
         city = data.get("city")
         street = data.get("street")
         phone_num = data.get("phone_num")
-        role = data.get("role")  # "owner" or "service_provider"
+        account_type = AccountType(data.get("account_type").lower())
         image_file = request.files.get("image_file")
 
         # 1) validate input
-        required_fields = ["email", "password", "f_name", "l_name", "province", "city", "street", "phone_num", "role"]
+        required_fields = ["email", "password", "f_name", "l_name", "province", "city", "street", "phone_num", "account_type"]
         missing = [f for f in required_fields if not data.get(f)]
         if missing:
             return jsonify({"error": f"Missing fields: {', '.join(missing)}"}), 400
 
-        # 2) choose correct repo based on role
-        if role.lower() == Role.OWNER.lower():
+        # 2) choose correct repo based on account type
+        if account_type == AccountType.OWNER:
             existing_user = owner_repo.get_by_email(email)
-        elif role.lower() == Role.SERVICE_PROVIDER.lower():
+        elif account_type == AccountType.SERVICE_PROVIDER:
             existing_user = sp_repo.get_by_email(email)
         else:
-            return jsonify({"error": "Invalid role"}), 400
+            return jsonify({"error": "Invalid account type"}), 400
 
         # 3) Check if user already exists
         if existing_user:
@@ -146,7 +145,7 @@ def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
 
         # 6) Create new user 
         try:
-            if role.lower() == "owner":
+            if account_type == AccountType.OWNER:
                 owner_repo.create(
                     email=email,
                     password=hashed_pw,
@@ -171,7 +170,7 @@ def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
                     image_filename=image_filename,
                 )
 
-            return jsonify({"message": f"{role.capitalize()} account created successfully."}), 201
+            return jsonify({"message": f"{account_type.capitalize()} account created successfully."}), 201
 
         except Exception as e:
             print("Error during signup:", e)
@@ -192,11 +191,11 @@ def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
         schema:
           type: object
           required:
-            - role
+            - account_type
             - email
             - password
           properties:
-            role:
+            account_type:
               type: string
               enum:
                 - owner
@@ -216,7 +215,7 @@ def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
             token:
               type: string
               description: JWT access token
-            role:
+            account_type:
               type: string
               example: owner
       400:
@@ -228,31 +227,31 @@ def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
         data = request.get_json()
         email = data.get("email")
         password = data.get("password")
-        role = data.get("role")  # "owner" or "service_provider"
+        account_type = AccountType(data.get("account_type").lower())
 
-        required_fields = ["email", "password", "role"]
+        required_fields = ["email", "password", "account_type"]
         missing = [f for f in required_fields if not data.get(f)] # list of missing fields
         if missing:
             return jsonify({"error": f"Missing fields: {', '.join(missing)}"}), 400
 
-        # 1. choose correct repo based on role
-        if role.lower() == "owner":
+        # 1. choose correct repo based on account type
+        if account_type == AccountType.OWNER:
             user = owner_repo.get_by_email(email)
-        elif role.lower() == "service_provider":
+        elif account_type == AccountType.SERVICE_PROVIDER:
             user = sp_repo.get_by_email(email)
         else:
-            return jsonify({"error": "Invalid role"}), 400
+            return jsonify({"error": "Invalid account type"}), 400
 
         if not user or not check_password_hash(user.password, password):
             return jsonify({"error": "Invalid credentials"}), 401
         
-        # Encode role inside JWT, send to client
+        # Encode account type inside JWT, send to client
         SECRET_KEY = os.getenv("JWT_SECRET_KEY")
         payload = {
         "email": email,
-        "role": role.lower(),
+        "account_type": account_type,
         "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=24)
         }
         token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
 
-        return jsonify({"token": token, "role": role}), 200
+        return jsonify({"token": token, "account_type": account_type}), 200

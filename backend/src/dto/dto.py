@@ -5,7 +5,6 @@ They are known as DTOs (Data Transfer Objects).
 
 from typing import TypedDict, List
 from datetime import date
-from models.models import Role
 
 # JWT token
 class TokenPayload(TypedDict):
@@ -13,7 +12,7 @@ class TokenPayload(TypedDict):
     Represents the decoded JWT payload structure.
     """
     email: str
-    role: str
+    account_type: str
 
 class OwnerDTO(TypedDict):
     email: str
