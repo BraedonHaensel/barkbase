@@ -1,15 +1,19 @@
+import { Province } from '@/enums/province';
+
 // User login session data type
-interface Session {
+export interface Session {
   token: string;
   accountType: string;
 }
 
 // General user information data type
-interface User {
+export interface User {
   email: string;
   firstName: string;
   lastName: string;
   phoneNum: string;
-  address: string;
+  province: Province;
+  city: string;
+  street: string;
   image_url: string;
 }

@@ -245,7 +245,13 @@ const CreateBookingForm = () => {
           disabled={stageNum >= 2}
           className="w-1/2 text-lg"
           onClick={async () => {
-            const isValid = await form.trigger(['startDate', 'startTime']);
+            const isValid = await form.trigger([
+              'serviceType',
+              'startDate',
+              'startTime',
+              'endDate',
+              'endTime',
+            ]);
             if (isValid) {
               setStageNum(stageNum + 1);
             }

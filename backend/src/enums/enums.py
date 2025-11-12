@@ -1,7 +1,7 @@
-from enum import Enum, auto
+from enum import Enum
 
 
-class Province(Enum):
+class Province(str, Enum):
     """Enum for province and territory abbreviations"""
     AB = "AB"
     BC = "BC"
