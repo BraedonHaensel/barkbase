@@ -57,6 +57,7 @@ class UpdateDogDTO(TypedDict):
     o_email: str
     birth_date: date
     size: str
+    image_filename: str
     breeds: List[str]  # Allow multiple breeds per dog
 
 class ServiceProviderDTO(TypedDict):

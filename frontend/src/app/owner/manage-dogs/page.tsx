@@ -44,6 +44,7 @@ export default function ManageDogsPage() {
             name: dog.name,
             birthDate: new Date(dog.birth_date),
             size: DogSize[dog.size.toUpperCase() as keyof typeof DogSize],
+            imageUrl: dog.image_url,
             breeds: dog.breeds,
           };
           newDogs.push(dogData);
@@ -71,22 +72,28 @@ export default function ManageDogsPage() {
   }, []);
 
   // Create a new dog
-  const createDog = async (dogData: Dog) => {
-    setIsLoading(true);
-    const payload: any = {
-      name: dogData.name,
-      birth_date: dateToIsoStringYMD(dogData.birthDate),
-      size: dogData.size,
-      breeds: dogData.breeds,
-    };
+  const createDog = async (dogData: Dog, imageFile: File) => {
+    // Use a FormData to handle uploading the dog image file
+    const formData = new FormData();
+    formData.append('name', dogData.name);
+    formData.append('birth_date', dateToIsoStringYMD(dogData.birthDate));
+    formData.append('size', dogData.size);
+    formData.append('image_file', imageFile);
+    // Add an item for each breed
+    dogData.breeds.forEach((breed) => {
+      formData.append('breeds', breed);
+    });
     api
-      .post('/dogs', payload, {
+      .post('/dogs', formData, {
         headers: {
           Authorization: `Bearer ${session?.token}`,
         },
       })
       .then((response) => {
         toast.success(response.data.message);
+        // Refresh the owner's dogs
+        getDogs();
+        setIsEditingADog(false);
       })
       .catch((error) => {
         // Handle request errors
@@ -98,41 +105,52 @@ export default function ManageDogsPage() {
           console.error(error);
           toast.error(`Failed to save changes. Please try again.`);
         }
-      })
-      .finally(() => {
-        // Refresh the owner's dogs
-        getDogs();
-        setIsEditingADog(false);
       });
   };
 
   // Update the details for an existing dog
-  const updateDog = async (oldName: string, newDogData: Dog) => {
+  const updateDog = async (
+    oldName: string,
+    newDogData: Dog,
+    imageFile: File | undefined
+  ) => {
+    // Check if this is a new dog
     if (oldName === '') {
-      // This is a new dog, use a POST request to create it
-      createDog(newDogData);
+      if (imageFile === undefined) {
+        toast.error('Image error. Please upload a new image');
+      } else {
+        // This is a new dog, use a POST request to create it
+        createDog(newDogData, imageFile);
+      }
       return;
     }
 
-    setIsLoading(true);
-    const payload: any = {
-      name: newDogData.name,
-      birth_date: dateToIsoStringYMD(newDogData.birthDate),
-      size: newDogData.size,
-      breeds: newDogData.breeds,
-    };
+    // Updating an existing dog
+    // Use a FormData to handle uploading the dog image file
+    const formData = new FormData();
+    formData.append('name', newDogData.name);
+    formData.append('birth_date', dateToIsoStringYMD(newDogData.birthDate));
+    formData.append('size', newDogData.size);
+    if (imageFile) formData.append('image_file', imageFile);
+    // Add an item for each breed
+    newDogData.breeds.forEach((breed) => {
+      formData.append('breeds', breed);
+    });
     // Add old_name field if the dog's name changed
     if (oldName !== newDogData.name) {
-      payload.old_name = oldName;
+      formData.append('old_name', oldName);
     }
     api
-      .put('/dogs', payload, {
+      .put('/dogs', formData, {
         headers: {
           Authorization: `Bearer ${session?.token}`,
         },
       })
       .then((response) => {
         toast.success(response.data.message);
+        // Refresh the owner's dogs
+        getDogs();
+        setIsEditingADog(false);
       })
       .catch((error) => {
         // Handle request errors
@@ -144,11 +162,6 @@ export default function ManageDogsPage() {
           console.error(error);
           toast.error(`Failed to save changes. Please try again.`);
         }
-      })
-      .finally(() => {
-        // Refresh the owner's dogs
-        getDogs();
-        setIsEditingADog(false);
       });
   };
 
@@ -159,9 +172,10 @@ export default function ManageDogsPage() {
       setDogs((prevDogs) => {
         return prevDogs.slice(0, -1);
       });
+      toast.success('Dog successfully deleted');
+      setIsEditingADog(false);
       return;
     }
-    setIsLoading(true);
     api
       .delete('/dogs', {
         headers: {
@@ -173,6 +187,9 @@ export default function ManageDogsPage() {
       })
       .then((response) => {
         toast.success(response.data.message);
+        // Refresh the owner's dogs
+        getDogs();
+        setIsEditingADog(false);
       })
       .catch((error) => {
         // Handle request errors
@@ -184,11 +201,6 @@ export default function ManageDogsPage() {
           console.error(error);
           toast.error(`Failed to delete. Please try again.`);
         }
-      })
-      .finally(() => {
-        // Refresh the owner's dogs
-        getDogs();
-        setIsEditingADog(false);
       });
   };
 
@@ -214,7 +226,7 @@ export default function ManageDogsPage() {
         ))}
         {/* Add new dogs button */}
         <div
-          className={`flex min-h-50 items-center justify-center ${dogs.length % 2 == 0 && 'col-span-2 mx-auto w-1/2'}`}
+          className={`flex min-h-50 items-center justify-center ${dogs.length % 2 == 0 && 'md:col-span-2'}`}
         >
           <SquarePlus
             className="text-teal-600 hover:cursor-pointer hover:opacity-60"
@@ -245,6 +257,7 @@ export default function ManageDogsPage() {
                   name: '',
                   birthDate: new Date(),
                   size: DogSize.MEDIUM,
+                  imageUrl: '',
                   breeds: [],
                 };
                 return [...prevDogs, newDog];

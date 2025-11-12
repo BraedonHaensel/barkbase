@@ -64,9 +64,9 @@ class DB:
         self.db.commit()
 
         # Add dog:
-        dog = Dog(name="chico", o_email="bob@gmail.com", birth_date=date(2010, 1, 20), size=Dog.Size.SMALL)
+        dog = Dog(name="chico", o_email="bob@gmail.com", birth_date=date(2010, 1, 20), size=Dog.Size.SMALL, image_filename="4d76b811-e1f3-4648-bd85-29b30cc838d5.jpg")
         self.db.add(dog)
-        dog = Dog(name="amigo", o_email="bob@gmail.com", birth_date=date(2010, 2, 13), size=Dog.Size.LARGE)
+        dog = Dog(name="amigo", o_email="bob@gmail.com", birth_date=date(2010, 2, 13), size=Dog.Size.LARGE, image_filename="bd0048f4-3b94-4172-8c5d-01df3b1c37f3.jpg")
         self.db.add(dog)
         self.db.commit()
 
@@ -190,6 +190,7 @@ class DB:
             name = request["name"]
             birth_date = request["birth_date"]
             size_str = request["size"]
+            image_filename = request["image_filename"]
             breeds = request.get("breeds", [])
         except KeyError as e:
             raise ValueError(f"Missing field: {e}")
@@ -209,7 +210,7 @@ class DB:
             raise KeyError(f"Non-unique dog: {name}")
 
         # Create dog
-        new_dog = Dog(name=name, o_email=o_email, birth_date=birth_date, size=size)
+        new_dog = Dog(name=name, o_email=o_email, birth_date=birth_date, size=size, image_filename=image_filename)
         self.db.add(new_dog)
         self.db.flush()  # ensures FK exists for DogBreed inserts
 
@@ -231,6 +232,7 @@ class DB:
             new_name = request["name"]
             birth_date = request["birth_date"]
             size_str = request["size"]
+            image_filename = request["image_filename"]
             breeds = request.get("breeds", [])
         except KeyError as e:
             raise ValueError(f"Missing field: {e}")
@@ -253,6 +255,10 @@ class DB:
         # Update other fields
         dog.birth_date = birth_date
         dog.size = size
+
+        # Update image if it was changed
+        if image_filename:
+            dog.image_filename = image_filename
 
         # Replace breeds entirely (PUT semantics)
         self.db.query(DogBreed).filter_by(d_name=new_name, o_email=o_email).delete()

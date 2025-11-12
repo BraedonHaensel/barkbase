@@ -26,6 +26,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Dog } from '@/types/dog';
+import { useState } from 'react';
+import { LoaderCircle } from 'lucide-react';
 
 // Schema for the dog form
 type DogSchema = z.infer<typeof dogSchema>;
@@ -34,8 +36,12 @@ type Props = {
   dog: Dog;
   isEditing: boolean;
   setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
-  updateDog: (oldName: string, newDogData: Dog) => {};
-  deleteDog: (name: string) => {};
+  updateDog: (
+    oldName: string,
+    newDogData: Dog,
+    imageFile: File | undefined
+  ) => Promise<void>;
+  deleteDog: (name: string) => Promise<void>;
 };
 
 // Form to view and edit the dog of an owner
@@ -46,6 +52,10 @@ const DogCardForm = ({
   updateDog,
   deleteDog,
 }: Props) => {
+  const [dogImagePreview, setDogImagePreview] = useState<string>(dog.imageUrl);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   // Form initialization
   const form = useForm<DogSchema>({
     resolver: zodResolver(dogSchema),
@@ -53,6 +63,8 @@ const DogCardForm = ({
       name: dog.name,
       birthDate: dog.birthDate,
       size: dog.size,
+      // Mark image if it's unpopulated on a new dog
+      image: dog.name ? undefined : 'newDogNoImage',
       breeds: dog.breeds.join(', '),
     },
   });
@@ -64,6 +76,7 @@ const DogCardForm = ({
       name: input.name,
       birthDate: input.birthDate,
       size: input.size,
+      imageUrl: dogImagePreview,
       // Convert the comma-separated breeds string into a list
       breeds: input.breeds.split(',').map((s) => s.trim()),
     };
@@ -77,19 +90,62 @@ const DogCardForm = ({
   };
 
   // Handle form submission
-  function onSubmit(input: DogSchema) {
-    updateDog(dog.name, formInputToDog(input));
+  async function onSubmit(input: DogSchema) {
+    // Skip if new dog has no image
+    if (input.image === 'newDogNoImage') return;
+    setIsSaving(true);
+    await updateDog(dog.name, formInputToDog(input), input.image);
+    setIsSaving(false);
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        <fieldset disabled={!isEditing} className="space-y-5">
-          {/* Handle dog image uploads */}
-          <div className="flex h-20 w-20 items-center gap-10">
-            [TODO Upload]
-            <img src="https://hips.hearstapps.com/hmg-prod/images/dog-puppy-on-garden-royalty-free-image-1586966191.jpg?crop=0.752xw:1.00xh;0.175xw,0&resize=1200:*" />
-          </div>
+        <fieldset
+          disabled={!isEditing || isSaving || isDeleting}
+          className="space-y-5"
+        >
+          {/* Profile image field */}
+          {/* CITATION: Field developed with reference to:
+           * File uploads made easy with react and flask. (n.d.). Dunder Method Paper Company.
+           * Retrieved November 10, 2025, from https://dundermethodpaperco.hashnode.dev/file-uploads-made-easy-with-react-and-flask
+           */}
+          <FormField
+            control={form.control}
+            name="image"
+            render={({ field: { onChange, value, ...rest } }) => (
+              <FormItem>
+                <FormLabel>Dog image</FormLabel>
+                <FormControl>
+                  <div className="flex flex-col gap-3">
+                    {(isEditing || !dogImagePreview) && (
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            setDogImagePreview(URL.createObjectURL(file));
+                            onChange(file);
+                          }
+                        }}
+                        {...rest}
+                      />
+                    )}
+
+                    {dogImagePreview && (
+                      <img
+                        src={dogImagePreview}
+                        alt="Profile image preview"
+                        className="mx-auto aspect-square w-2/3 object-cover"
+                      />
+                    )}
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           {/* Name field */}
           <FormField
@@ -186,6 +242,7 @@ const DogCardForm = ({
                 className="w-full"
                 onClick={() => {
                   form.reset();
+                  setDogImagePreview(dog.imageUrl);
                   setIsEditing(false);
                 }}
                 variant="secondary"
@@ -199,7 +256,11 @@ const DogCardForm = ({
                 className="w-full"
                 disabled={!formContainsChanges()}
               >
-                Save Changes
+                {isSaving ? (
+                  <LoaderCircle className="animate-spin" />
+                ) : (
+                  'Save Changes'
+                )}
               </Button>
 
               {/* Delete button */}
@@ -207,13 +268,19 @@ const DogCardForm = ({
                 type="button"
                 className="bg-destructive/30 mt-4 w-full"
                 variant="destructive"
-                onClick={() => {
+                onClick={async () => {
+                  setIsDeleting(true);
                   if (window.confirm(`Are you sure you want to delete?`)) {
-                    deleteDog(dog.name);
+                    await deleteDog(dog.name);
                   }
+                  setIsDeleting(false);
                 }}
               >
-                Delete
+                {isDeleting ? (
+                  <LoaderCircle className="animate-spin" />
+                ) : (
+                  'Delete'
+                )}
               </Button>
             </div>
           )}
