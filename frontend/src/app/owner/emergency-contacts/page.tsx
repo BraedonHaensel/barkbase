@@ -51,7 +51,7 @@ export default function EmergencyContactsPage() {
         ))}
         {/* Add new emergency contacts button */}
         <div
-          className="flex min-h-50 items-center justify-center"
+          className={`flex min-h-50 items-center justify-center ${emergencyContacts.length % 2 == 0 && 'col-span-2 mx-auto w-1/2'}`}
           onClick={() => {
             console.log('TODO add new contact...');
           }}

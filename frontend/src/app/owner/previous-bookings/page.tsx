@@ -1,7 +1,6 @@
 'use client';
 
 import OUpcomingBookingCard from '@/components/owner/upcoming-booking-card';
-import OwnerUpcomingBookingCard from '@/components/owner/upcoming-booking-card';
 import { SessionContext } from '@/context/session-context';
 import { AccountType } from '@/enums/account-type';
 import { Province } from '@/enums/province';
@@ -21,7 +20,7 @@ export default function PreviousBookingsPage() {
     }
   }, [session]);
 
-  // TODO temporary booking, using the same layout as upcoming bookings for now...
+  // TODO using same as upcoming bookings for current demo
   const bk1: OUpcomingBooking = {
     dogNames: ['Chico', 'Bear'],
     startDate: new Date(),
@@ -38,26 +37,32 @@ Please keep him on a tight leash!
 `,
   };
 
-  const bookings = [bk1];
+  const bookings: Array<OUpcomingBooking> = [bk1];
 
   return (
     <div className="flex flex-col gap-4">
       {/* Page title */}
       <p style={{ fontSize: '35px' }} className="text-center font-bold">
-        Previous Bookings
+        Upcoming Bookings
       </p>
-      <div
-        className={
-          bookings.length == 1
-            ? 'mx-auto w-1/2'
-            : 'grid min-w-[400px] gap-6 md:grid-cols-2'
-        }
-      >
-        {/* Render a card for each upcoming booking */}
-        {bookings.map((booking, id) => (
-          <OUpcomingBookingCard key={id} booking={booking} />
-        ))}
-      </div>
+      {bookings.length == 0 ? (
+        <div className="flex justify-center">
+          <p className="text-muted-foreground">No upcoming bookings.</p>
+        </div>
+      ) : (
+        <div
+          className={
+            bookings.length == 1
+              ? 'mx-auto w-1/2'
+              : 'grid min-w-[400px] gap-6 md:grid-cols-2'
+          }
+        >
+          {/* Render a card for each previous booking */}
+          {bookings.map((booking, id) => (
+            <OUpcomingBookingCard key={id} booking={booking} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

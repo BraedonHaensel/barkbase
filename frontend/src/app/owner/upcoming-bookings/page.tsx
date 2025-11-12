@@ -1,7 +1,6 @@
 'use client';
 
 import OUpcomingBookingCard from '@/components/owner/upcoming-booking-card';
-import OwnerUpcomingBookingCard from '@/components/owner/upcoming-booking-card';
 import { SessionContext } from '@/context/session-context';
 import { AccountType } from '@/enums/account-type';
 import { Province } from '@/enums/province';
@@ -37,7 +36,7 @@ Please keep him on a tight leash!
 `,
   };
 
-  const bookings = [bk1];
+  const bookings: Array<OUpcomingBooking> = [bk1];
 
   return (
     <div className="flex flex-col gap-4">
@@ -45,18 +44,24 @@ Please keep him on a tight leash!
       <p style={{ fontSize: '35px' }} className="text-center font-bold">
         Upcoming Bookings
       </p>
-      <div
-        className={
-          bookings.length == 1
-            ? 'mx-auto w-1/2'
-            : 'grid min-w-[400px] gap-6 md:grid-cols-2'
-        }
-      >
-        {/* Render a card for each upcoming booking */}
-        {bookings.map((booking, id) => (
-          <OUpcomingBookingCard key={id} booking={booking} />
-        ))}
-      </div>
+      {bookings.length == 0 ? (
+        <div className="flex justify-center">
+          <p className="text-muted-foreground">No upcoming bookings.</p>
+        </div>
+      ) : (
+        <div
+          className={
+            bookings.length == 1
+              ? 'mx-auto w-1/2'
+              : 'grid min-w-[400px] gap-6 md:grid-cols-2'
+          }
+        >
+          {/* Render a card for each upcoming booking */}
+          {bookings.map((booking, id) => (
+            <OUpcomingBookingCard key={id} booking={booking} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
