@@ -56,7 +56,7 @@ export default function EmergencyContactsPage() {
             console.log('TODO add new contact...');
           }}
         >
-          {/* TODO Emergency contact count <= 2 && */}
+          {/* TODO Emergency contact count <= 2 &&*/}
           <SquarePlus
             className="text-teal-600 hover:cursor-pointer hover:opacity-60"
             size={50}

@@ -45,6 +45,7 @@ def init_booking_routes(app, db: DB):
             - service_type
             - price
             - dog_names
+            - province
             - city
             - street
           properties:
@@ -66,6 +67,9 @@ def init_booking_routes(app, db: DB):
             dog_names:
               type: array
               items: string
+            province:
+              type: string
+              example: AB
             city:
               type: string
               example: Calgary
@@ -98,7 +102,7 @@ def init_booking_routes(app, db: DB):
         # Extract + validate required fields
         required = [
             "start_datetime", "end_datetime",
-            "service_type", "price", "dog_names", "city", "street",
+            "service_type", "price", "dog_names", "province", "city", "street",
         ]
         missing = [k for k in required if k not in data]
         if missing:
@@ -123,6 +127,7 @@ def init_booking_routes(app, db: DB):
             price = float(data["price"])
             dog_names = data["dog_names"]
 
+            province = data["province"]
             city = data["city"]
             street = data["street"]
 
@@ -138,6 +143,7 @@ def init_booking_routes(app, db: DB):
                 "service_type": service_type,
                 "price": price,
                 "dog_names": dog_names,
+                "province": province,
                 "street": street,
                 "city": city
             }

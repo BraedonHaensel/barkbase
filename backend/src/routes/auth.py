@@ -9,8 +9,7 @@ import datetime
 import os
 from models.models import Role
 from utils.images import save_user_image, validate_image_file
-
-
+from enums.enums import Province
 
 
 def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
@@ -63,7 +62,19 @@ def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
         default: Doe
         example: Doe
       - in: formData
-        name: address
+        name: province
+        type: string
+        required: true
+        default: AB
+        example: AB
+      - in: formData
+        name: city
+        type: string
+        required: true
+        default: Calgary
+        example: Calgary
+      - in: formData
+        name: street
         type: string
         required: true
         default: 55 Sunshine Pl NE
@@ -100,13 +111,15 @@ def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
         password = data.get("password")
         f_name = data.get("f_name")
         l_name = data.get("l_name")
-        address = data.get("address")
+        province = Province(data.get("province").upper())
+        city = data.get("city")
+        street = data.get("street")
         phone_num = data.get("phone_num")
         role = data.get("role")  # "owner" or "service_provider"
         image_file = request.files.get("image_file")
 
         # 1) validate input
-        required_fields = ["email", "password", "f_name", "l_name", "address", "phone_num", "role"]
+        required_fields = ["email", "password", "f_name", "l_name", "province", "city", "street", "phone_num", "role"]
         missing = [f for f in required_fields if not data.get(f)]
         if missing:
             return jsonify({"error": f"Missing fields: {', '.join(missing)}"}), 400
@@ -139,7 +152,9 @@ def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
                     password=hashed_pw,
                     f_name=f_name,
                     l_name=l_name,
-                    address=address,
+                    province=province,
+                    city=city,
+                    street=street,
                     phone_num=phone_num,
                     image_filename=image_filename,
                 )
@@ -149,7 +164,9 @@ def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
                     password=hashed_pw,
                     f_name=f_name,
                     l_name=l_name,
-                    address=address,
+                    province=province,
+                    city=city,
+                    street=street,
                     phone_num=phone_num,
                     image_filename=image_filename,
                 )

@@ -72,7 +72,9 @@ if __name__ == '__main__':
                     "email": {"type": "string", "example": "john.doe@gmail.com"},
                     "f_name": {"type": "string", "example": "John"},
                     "l_name": {"type": "string", "example": "Doe"},
-                    "address": {"type": "string", "example": "55 Sunshine Pl NE"},
+                    "province": {"type": "string", "example": "AB"},
+                    "city": {"type": "string", "example": "Calgary"},
+                    "street": {"type": "string", "example": "55 Sunshine Pl NE"},
                     "phone_num": {"type": "string", "example": "4039997777"},
                     "image_url": {"type": "string", "example": "https://example.com/images/john.png"}
                 }
@@ -83,7 +85,9 @@ if __name__ == '__main__':
                     "email": {"type": "string", "example": "alice.swift@gmail.com"},
                     "f_name": {"type": "string", "example": "Alice"},
                     "l_name": {"type": "string", "example": "Swift"},
-                    "address": {"type": "string", "example": "22 Nose Hill Way NW"},
+                    "province": {"type": "string", "example": "AB"},
+                    "city": {"type": "string", "example": "Calgary"},
+                    "street": {"type": "string", "example": "22 Nose Hill Way NW"},
                     "phone_num": {"type": "string", "example": "4038881234"},
                     "image_url": {"type": "string", "example": "https://example.com/images/alice.png"}
                 }

@@ -2,6 +2,7 @@ from datetime import datetime, date
 import enum
 from sqlalchemy import *
 from sqlalchemy.orm import declarative_base, mapped_column, Mapped, relationship
+from enums.enums import Province
 
 Base = declarative_base()
 
@@ -26,7 +27,9 @@ class Owner(Base):
     password: Mapped[str] = mapped_column(String(255)) # 256 to match length of hashed passwords
     f_name: Mapped[str] = mapped_column(String(100))
     l_name: Mapped[str] = mapped_column(String(100))
-    address: Mapped[str] = mapped_column(String(100))
+    province: Mapped[Province] = mapped_column(Enum(Province))
+    city: Mapped[str] = mapped_column(String(100))
+    street: Mapped[str] = mapped_column(String(100))
     phone_num: Mapped[str] = mapped_column(String(100))
     image_filename: Mapped[str] = mapped_column(String(100))
 
@@ -85,7 +88,9 @@ class ServiceProvider(Base):
     password: Mapped[str] = mapped_column(String(255)) # 256 to match length of hashed passwords
     f_name: Mapped[str] = mapped_column(String(100))
     l_name: Mapped[str] = mapped_column(String(100))
-    address: Mapped[str] = mapped_column(String(100))
+    province: Mapped[Province] = mapped_column(Enum(Province))
+    city: Mapped[str] = mapped_column(String(100))
+    street: Mapped[str] = mapped_column(String(100))
     phone_num: Mapped[str] = mapped_column(String(100))
     image_filename: Mapped[str] = mapped_column(String(100))
 
@@ -114,6 +119,7 @@ class Booking(Base):
     end_datetime: Mapped[datetime] = mapped_column(DateTime)
     service_type: Mapped[ServiceType] = mapped_column(Enum(ServiceType))
     price: Mapped[float] = mapped_column(Numeric(6, 2))
+    province: Mapped[Province] = mapped_column(Enum(Province))
     city: Mapped[str] = mapped_column(String(100))
     street: Mapped[str] = mapped_column(String(100))
     note: Mapped[str] = mapped_column(String(100))

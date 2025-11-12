@@ -21,6 +21,14 @@ import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import api from '@/lib/api';
 import { useRouter } from 'next/navigation';
+import { Province } from '@/enums/province';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './ui/select';
 
 // Schema for the create account form
 type CreateAccountSchema = z.infer<typeof createAccountSchema>;
@@ -41,7 +49,9 @@ const CreateAccountForm = () => {
       lastName: '',
       email: '',
       phoneNumber: '',
-      address: '',
+      province: Province.AB,
+      city: '',
+      street: '',
       password: '',
       confirmPassword: '',
       accountType: AccountType.OWNER,
@@ -56,7 +66,9 @@ const CreateAccountForm = () => {
     mutationFn: async (input: CreateAccountSchema) => {
       // Use a FormData to handle uploading the user image file
       const formData = new FormData();
-      formData.append('address', input.address);
+      formData.append('province', input.province);
+      formData.append('city', input.city);
+      formData.append('street', input.street);
       formData.append('email', input.email);
       formData.append('f_name', input.firstName);
       formData.append('l_name', input.lastName);
@@ -202,35 +214,37 @@ const CreateAccountForm = () => {
         {/* Second stage of the form */}
         {stageNum === 2 && (
           <>
-            {/* First name field */}
-            <FormField
-              control={form.control}
-              name="firstName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>First name</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="flex gap-4">
+              {/* First name field */}
+              <FormField
+                control={form.control}
+                name="firstName"
+                render={({ field }) => (
+                  <FormItem className="h-full w-1/2">
+                    <FormLabel>First name</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            {/* Last name field */}
-            <FormField
-              control={form.control}
-              name="lastName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Last name</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              {/* Last name field */}
+              <FormField
+                control={form.control}
+                name="lastName"
+                render={({ field }) => (
+                  <FormItem className="h-full w-1/2">
+                    <FormLabel>Last name</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             {/* Phone number field */}
             <FormField
@@ -247,13 +261,13 @@ const CreateAccountForm = () => {
               )}
             />
 
-            {/* Address field */}
+            {/* Street field */}
             <FormField
               control={form.control}
-              name="address"
+              name="street"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Address</FormLabel>
+                  <FormLabel>Street</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -261,6 +275,52 @@ const CreateAccountForm = () => {
                 </FormItem>
               )}
             />
+
+            <div className="flex gap-4">
+              {/* City field */}
+              <FormField
+                control={form.control}
+                name="city"
+                render={({ field }) => (
+                  <FormItem className="h-full w-1/2">
+                    <FormLabel>City</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Province field */}
+              <FormField
+                control={form.control}
+                name="province"
+                render={({ field }) => (
+                  <FormItem className="h-full w-1/2">
+                    <FormLabel>Province / Territory</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl className="w-full">
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {Object.values(Province).map((province) => (
+                          <SelectItem key={province} value={province}>
+                            {province}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
           </>
         )}
 
@@ -328,18 +388,24 @@ const CreateAccountForm = () => {
           Previous
         </Button>
 
-        {/* Previous stage button */}
+        {/* Next stage button */}
         <Button
           type="button"
           disabled={stageNum >= 3}
           className="w-1/2 text-lg"
           onClick={async () => {
-            const isValid = await form.trigger([
-              'email',
-              'password',
-              'confirmPassword',
-              'accountType',
-            ]);
+            const isValid = await form.trigger(
+              stageNum === 1
+                ? ['email', 'password', 'confirmPassword', 'accountType']
+                : [
+                    'firstName',
+                    'lastName',
+                    'phoneNumber',
+                    'street',
+                    'city',
+                    'province',
+                  ]
+            );
             if (isValid) {
               setStageNum(stageNum + 1);
             }
