@@ -227,6 +227,15 @@ export default function ManageDogsPage() {
                     toast.warning('Maximum number of dogs reached!');
                     return;
                   }
+
+                  // Check if another dog is currently being edited
+                  if (isEditingADog) {
+                    toast.warning(
+                      'Finish editing all dogs before adding a new one!'
+                    );
+                    return;
+                  }
+
                   // Check if the previous dog is new and needs to be saved first
                   if (dogs.length >= 1 && dogs[dogs.length - 1].name === '') {
                     toast.warning(
@@ -234,6 +243,7 @@ export default function ManageDogsPage() {
                     );
                     return;
                   }
+
                   setDogs((prevDogs) => {
                     const newDog: Dog = {
                       name: '',
