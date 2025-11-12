@@ -38,10 +38,11 @@ type Props = {
   dog?: Dog;
   isEditing: boolean;
   setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
+  deleteDog: (name: string) => {};
 };
 
 // Form to view and edit the dog of an owner
-const DogCardForm = ({ dog, isEditing, setIsEditing }: Props) => {
+const DogCardForm = ({ dog, isEditing, setIsEditing, deleteDog }: Props) => {
   // Form initialization
   const form = useForm<DogSchema>({
     resolver: zodResolver(dogSchema),
@@ -221,6 +222,8 @@ const DogCardForm = ({ dog, isEditing, setIsEditing }: Props) => {
               onClick={() => {
                 if (window.confirm(`Are you sure you want to delete?`)) {
                   console.log('Deleting...');
+                  // TODO What if new card so no dog name?
+                  deleteDog(dog?.name ? dog.name : 'TOOD');
                 }
               }}
             >

@@ -24,52 +24,81 @@ export default function ManageDogsPage() {
     }
   }, [session]);
 
-  useEffect(() => {
-    const getDogs = async () => {
-      setIsLoading(true);
-      api
-        .get('/dogs/me', {
-          headers: {
-            Authorization: `Bearer ${session?.token}`,
-          },
-        })
-        .then((response) => {
-          // Parse dog information fields from the response
-          const newDogs: Array<Dog> = [];
-          const data = response.data;
-          data.forEach((dog: any) => {
-            const dogData: Dog = {
-              name: dog.name,
-              birth_date: new Date(dog.birth_date),
-              size: DogSize[dog.size.toUpperCase() as keyof typeof DogSize],
-              breeds: dog.breeds,
-            };
-            console.log(`Parsed dog: ${JSON.stringify(dogData)}`);
-            newDogs.push(dogData);
-          });
-          setDogs(newDogs);
-        })
-        .catch((error) => {
-          // Handle request errors
-          const apiError = error?.response?.data?.error;
-          if (apiError) {
-            console.error(`API error: ${apiError}`);
-            toast.error(`Failed to get dogs: ${apiError}`);
-          } else {
-            console.error(error);
-            toast.error('Failed to get dogs. Please try again.');
-          }
-        })
-        .finally(() => {
-          setIsLoading(false);
+  const getDogs = async () => {
+    setIsLoading(true);
+    api
+      .get('/dogs/me', {
+        headers: {
+          Authorization: `Bearer ${session?.token}`,
+        },
+      })
+      .then((response) => {
+        // Parse dog information fields from the response
+        const newDogs: Array<Dog> = [];
+        const data = response.data;
+        data.forEach((dog: any) => {
+          const dogData: Dog = {
+            name: dog.name,
+            birth_date: new Date(dog.birth_date),
+            size: DogSize[dog.size.toUpperCase() as keyof typeof DogSize],
+            breeds: dog.breeds,
+          };
+          newDogs.push(dogData);
         });
-    };
+        setDogs(newDogs);
+      })
+      .catch((error) => {
+        // Handle request errors
+        const apiError = error?.response?.data?.error;
+        if (apiError) {
+          console.error(`API error: ${apiError}`);
+          toast.error(`Failed to get dogs: ${apiError}`);
+        } else {
+          console.error(error);
+          toast.error('Failed to get dogs. Please try again.');
+        }
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
 
+  useEffect(() => {
     getDogs();
   }, []);
 
-  // TODO refresh method passed to children?
   // TODO limit dogs to 10
+
+  const deleteDog = async (name: string) => {
+    setIsLoading(true);
+    api
+      .delete('/dogs', {
+        headers: {
+          Authorization: `Bearer ${session?.token}`,
+        },
+        data: {
+          name,
+        },
+      })
+      .then((response) => {
+        toast.success(response.data.message);
+      })
+      .catch((error) => {
+        // Handle request errors
+        const apiError = error?.response?.data?.error;
+        if (apiError) {
+          console.error(`API error: ${apiError}`);
+          toast.error(`Failed to delete ${name}: ${apiError}`);
+        } else {
+          console.error(error);
+          toast.error(`Failed to delete ${name}. Please try again.`);
+        }
+      })
+      .finally(() => {
+        // Refresh the owner's dogs
+        getDogs();
+      });
+  };
 
   return (
     <>
@@ -84,7 +113,7 @@ export default function ManageDogsPage() {
           <div className="grid min-w-[400px] gap-6 md:grid-cols-2">
             {/* Render a card for each dog */}
             {dogs.map((dog, id) => (
-              <DogCard key={id} dog={dog} />
+              <DogCard key={id} dog={dog} deleteDog={deleteDog} />
             ))}
             {/* Add new dogs button */}
             <div
