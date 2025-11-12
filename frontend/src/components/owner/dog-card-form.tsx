@@ -50,13 +50,13 @@ const DogCardForm = ({ dog, isEditing, setIsEditing }: Props) => {
           name: dog.name,
           birth_date: dog.birth_date,
           size: dog.size,
-          breeds: dog.breeds,
+          breeds: dog.breeds.join(', '),
         }
       : {
           name: '',
           birth_date: undefined,
           size: DogSize.MEDIUM,
-          breeds: [],
+          breeds: '',
         },
   });
 

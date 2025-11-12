@@ -25,10 +25,10 @@ def convert_dog_to_dog_dto(dog: Dog, db) -> DogDTO:
   )
 
   # SQLAlchemy returns a list of tuples (e.g. [('Beagle',), ('Poodle',)])
-  breed_list = [b[0] for b in breeds]
+  breed_list = [b[0].title() for b in breeds]
 
   return {
-      "name": dog.name,
+      "name": dog.name.title(),
       "o_email": dog.o_email,
       "birth_date": dog.birth_date,
       "size": dog.size.name.lower(),  # Enum → lowercase string
