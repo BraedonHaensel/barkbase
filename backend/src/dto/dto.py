@@ -37,6 +37,7 @@ class DogDTO(TypedDict):
     o_email: str
     birth_date: date
     size: str  # Preserve enum type
+    image_url: str
     breeds: List[str]
 
 """
@@ -47,6 +48,7 @@ class CreateDogDTO(TypedDict):
     o_email: str
     birth_date: date
     size: str
+    image_filename: str
     breeds: List[str]  # Allow multiple breeds per dog
 
 """

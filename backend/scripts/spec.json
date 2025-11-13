@@ -1,10 +1,126 @@
 {
   "definitions": {
+    "BookingCreateDto": {
+      "properties": {
+        "dog_names": {
+          "example": [
+            "Chico",
+            "Amigo"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "end_datetime": {
+          "example": "2025-10-30T16:30:00",
+          "format": "date-time",
+          "type": "string"
+        },
+        "o_email": {
+          "example": "bob@gmail.com",
+          "type": "string"
+        },
+        "price": {
+          "example": 60.0,
+          "format": "float",
+          "type": "number"
+        },
+        "service_type": {
+          "enum": [
+            "WALKING",
+            "SITTING"
+          ],
+          "example": "WALKING",
+          "type": "string"
+        },
+        "sp_email": {
+          "example": "alice@gmail.com",
+          "type": "string"
+        },
+        "start_datetime": {
+          "example": "2025-10-30T14:30:00",
+          "format": "date-time",
+          "type": "string"
+        }
+      },
+      "required": [
+        "o_email",
+        "sp_email",
+        "start_datetime",
+        "end_datetime",
+        "service_type",
+        "price",
+        "dog_names"
+      ],
+      "type": "object"
+    },
+    "CreateDogDTO": {
+      "properties": {
+        "birth_date": {
+          "example": "2010-01-20",
+          "format": "date",
+          "type": "string"
+        },
+        "breeds": {
+          "example": [
+            "Golden Retriever",
+            "Labrador"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "image_filename": {
+          "example": "image.jpg",
+          "type": "string"
+        },
+        "name": {
+          "example": "Storm",
+          "type": "string"
+        },
+        "o_email": {
+          "example": "bob@gmail.com",
+          "type": "string"
+        },
+        "size": {
+          "enum": [
+            "small",
+            "medium",
+            "large"
+          ],
+          "example": "small",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "o_email",
+        "birth_date",
+        "size"
+      ],
+      "type": "object"
+    },
     "DogDTO": {
       "properties": {
         "birth_date": {
           "example": "2010-01-20",
           "format": "date",
+          "type": "string"
+        },
+        "breeds": {
+          "example": [
+            "Beagle",
+            "Poodle"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "image_url": {
+          "example": "https://example.com/images/john.png",
           "type": "string"
         },
         "name": {
@@ -27,10 +143,39 @@
       },
       "type": "object"
     },
+    "EmergencyContactDto": {
+      "properties": {
+        "email": {
+          "example": "susan@gmail.com",
+          "type": "string"
+        },
+        "f_name": {
+          "example": "Susan",
+          "type": "string"
+        },
+        "l_name": {
+          "example": "Smith",
+          "type": "string"
+        },
+        "owner_email": {
+          "example": "bob@gmail.com",
+          "type": "string"
+        },
+        "phone_num": {
+          "example": "4031234321",
+          "type": "string"
+        },
+        "relationship": {
+          "example": "Friend",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
     "OwnerDTO": {
       "properties": {
-        "address": {
-          "example": "55 Sunshine Pl NE",
+        "city": {
+          "example": "Calgary",
           "type": "string"
         },
         "email": {
@@ -41,6 +186,10 @@
           "example": "John",
           "type": "string"
         },
+        "image_url": {
+          "example": "https://example.com/images/john.png",
+          "type": "string"
+        },
         "l_name": {
           "example": "Doe",
           "type": "string"
@@ -48,14 +197,22 @@
         "phone_num": {
           "example": "4039997777",
           "type": "string"
+        },
+        "province": {
+          "example": "AB",
+          "type": "string"
+        },
+        "street": {
+          "example": "55 Sunshine Pl NE",
+          "type": "string"
         }
       },
       "type": "object"
     },
     "ServiceProviderDTO": {
       "properties": {
-        "address": {
-          "example": "22 Nose Hill Way NW",
+        "city": {
+          "example": "Calgary",
           "type": "string"
         },
         "email": {
@@ -66,6 +223,10 @@
           "example": "Alice",
           "type": "string"
         },
+        "image_url": {
+          "example": "https://example.com/images/alice.png",
+          "type": "string"
+        },
         "l_name": {
           "example": "Swift",
           "type": "string"
@@ -73,8 +234,64 @@
         "phone_num": {
           "example": "4038881234",
           "type": "string"
+        },
+        "province": {
+          "example": "AB",
+          "type": "string"
+        },
+        "street": {
+          "example": "22 Nose Hill Way NW",
+          "type": "string"
         }
       },
+      "type": "object"
+    },
+    "UpdateDogDTO": {
+      "properties": {
+        "birth_date": {
+          "example": "2010-01-20",
+          "format": "date",
+          "type": "string"
+        },
+        "breeds": {
+          "example": [
+            "Golden Retriever",
+            "Labrador"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "image_filename": {
+          "example": "image.jpg",
+          "type": "string"
+        },
+        "name": {
+          "example": "Stormy",
+          "type": "string"
+        },
+        "o_email": {
+          "example": "bob@gmail.com",
+          "type": "string"
+        },
+        "size": {
+          "enum": [
+            "small",
+            "medium",
+            "large"
+          ],
+          "example": "medium",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "o_email",
+        "birth_date",
+        "size",
+        "breeds"
+      ],
       "type": "object"
     }
   },
@@ -93,6 +310,13 @@
             "required": true,
             "schema": {
               "properties": {
+                "account_type": {
+                  "enum": [
+                    "owner",
+                    "service_provider"
+                  ],
+                  "type": "string"
+                },
                 "email": {
                   "example": "bob@gmail.com",
                   "type": "string"
@@ -100,17 +324,10 @@
                 "password": {
                   "example": "password",
                   "type": "string"
-                },
-                "role": {
-                  "enum": [
-                    "owner",
-                    "service_provider"
-                  ],
-                  "type": "string"
                 }
               },
               "required": [
-                "role",
+                "account_type",
                 "email",
                 "password"
               ],
@@ -123,7 +340,7 @@
             "description": "Successful login",
             "schema": {
               "properties": {
-                "role": {
+                "account_type": {
                   "example": "owner",
                   "type": "string"
                 },
@@ -162,7 +379,7 @@
             ],
             "example": "owner",
             "in": "formData",
-            "name": "role",
+            "name": "account_type",
             "required": true,
             "type": "string"
           },
@@ -199,10 +416,26 @@
             "type": "string"
           },
           {
+            "default": "AB",
+            "example": "AB",
+            "in": "formData",
+            "name": "province",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "default": "Calgary",
+            "example": "Calgary",
+            "in": "formData",
+            "name": "city",
+            "required": true,
+            "type": "string"
+          },
+          {
             "default": "55 Sunshine Pl NE",
             "example": "55 Sunshine Pl NE",
             "in": "formData",
-            "name": "address",
+            "name": "street",
             "required": true,
             "type": "string"
           },
@@ -274,6 +507,10 @@
                 "price": {
                   "type": "integer"
                 },
+                "province": {
+                  "example": "AB",
+                  "type": "string"
+                },
                 "service_type": {
                   "enum": [
                     "sitting",
@@ -297,6 +534,7 @@
                 "service_type",
                 "price",
                 "dog_names",
+                "province",
                 "city",
                 "street"
               ],
@@ -406,57 +644,68 @@
         ]
       },
       "post": {
-        "description": "This endpoint allows an authenticated **owner** to create a new dog.\nThe request must include a valid JWT Bearer token in the Authorization header.\nThe owner's email (o_email) is automatically extracted from the JWT token.\n",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "description": "This endpoint allows an authenticated **owner** to create a new dog.\nThe request must include a valid JWT Bearer token in the Authorization header.\nThe owner's email (`o_email`) is automatically extracted from the JWT token.\n\nYou can optionally include a list of breeds for the dog.\nEach entry in the `breeds` list will be saved in the `dog_breed` table.\n",
         "parameters": [
           {
-            "examples": {
-              "application/json": {
-                "example1": {
-                  "birth_date": "2010-01-20",
-                  "name": "Storm",
-                  "size": "small"
-                },
-                "example2": {
-                  "birth_date": "2015-06-15",
-                  "name": "Max",
-                  "size": "large"
-                }
-              }
-            },
-            "in": "body",
-            "name": "body",
+            "default": "Storm",
+            "description": "The name of the dog",
+            "example": "Storm",
+            "in": "formData",
+            "name": "name",
             "required": true,
-            "schema": {
-              "properties": {
-                "birth_date": {
-                  "description": "The dog's birth date in YYYY-MM-DD format",
-                  "example": "2010-01-20",
-                  "format": "date",
-                  "type": "string"
-                },
-                "name": {
-                  "description": "The name of the dog",
-                  "example": "Storm",
-                  "type": "string"
-                },
-                "size": {
-                  "description": "The size of the dog",
-                  "enum": [
-                    "small",
-                    "medium",
-                    "large"
-                  ],
-                  "example": "small",
-                  "type": "string"
-                }
-              },
-              "required": [
-                "name",
-                "birth_date",
-                "size"
-              ],
-              "type": "object"
-            }
+            "type": "string"
+          },
+          {
+            "default": "Wed, 20 Jan 2010 00:00:00 GMT",
+            "description": "The dog's birth date in YYYY-MM-DD format",
+            "example": "Wed, 20 Jan 2010 00:00:00 GMT",
+            "format": "date",
+            "in": "formData",
+            "name": "birth_date",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "default": "medium",
+            "description": "The size of the dog",
+            "enum": [
+              "small",
+              "medium",
+              "large"
+            ],
+            "example": "medium",
+            "in": "formData",
+            "name": "size",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Dog image file",
+            "in": "formData",
+            "name": "image_file",
+            "required": true,
+            "type": "file"
+          },
+          {
+            "default": [
+              "Golden Retriever",
+              "Labrador"
+            ],
+            "description": "A list of breeds describing the dog.\nIf not provided, the list defaults to empty.\n",
+            "example": [
+              "Golden Retriever",
+              "Labrador"
+            ],
+            "in": "formData",
+            "items": {
+              "type": "string"
+            },
+            "name": "breeds",
+            "required": true,
+            "type": "array"
           }
         ],
         "responses": {
@@ -464,13 +713,13 @@
             "description": "Dog successfully created",
             "examples": {
               "application/json": {
-                "message": "Success"
+                "message": "Dog created successfully"
               }
             },
             "schema": {
               "properties": {
                 "message": {
-                  "example": "Success",
+                  "example": "Dog created successfully",
                   "type": "string"
                 }
               },
@@ -523,46 +772,73 @@
         ]
       },
       "put": {
-        "description": "This endpoint allows an authenticated **owner** to update one of their dogs.\nThe dog is uniquely identified by the owner's email (from JWT token) and the dog's current name.\nThe request body should be in DogDTO shape with the updated values.\nThe owner's email (o_email) is automatically extracted from the JWT token for security.\nTo rename a dog, include both \"old_name\" and \"name\" in the request body.\n",
+        "description": "This endpoint allows an authenticated **owner** to update one of their dogs.\nThe dog is uniquely identified by the owner's email (from JWT token) and the dog's current name.\nThe request body must include all fields defined in `UpdateDogDTO` except for the image_filename.\nThe owner's email (o_email) is automatically extracted from the JWT token for security.\nTo rename a dog, include both the current name (old_name) and the new name (name).\nTo change an image, include the image_file field.\n",
         "parameters": [
           {
-            "in": "body",
-            "name": "body",
+            "default": "Storm",
+            "description": "The new name of the dog (or current name if not renaming)",
+            "example": "Storm",
+            "in": "formData",
+            "name": "name",
             "required": true,
-            "schema": {
-              "properties": {
-                "birth_date": {
-                  "example": "2010-01-20",
-                  "format": "date",
-                  "type": "string"
-                },
-                "name": {
-                  "description": "The new name of the dog (or current name if not renaming)",
-                  "example": "Storm",
-                  "type": "string"
-                },
-                "old_name": {
-                  "description": "The current name of the dog (required only if renaming)",
-                  "example": "OldName",
-                  "type": "string"
-                },
-                "size": {
-                  "enum": [
-                    "small",
-                    "medium",
-                    "large"
-                  ],
-                  "example": "small",
-                  "type": "string"
-                }
-              },
-              "required": [
-                "name",
-                "birth_date",
-                "size"
-              ],
-              "type": "object"
-            }
+            "type": "string"
+          },
+          {
+            "description": "The current name of the dog before the change (required only if renaming)",
+            "example": "Storm",
+            "in": "formData",
+            "name": "old_name",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "default": "Wed, 20 Jan 2010 00:00:00 GMT",
+            "description": "The dog's birth date in YYYY-MM-DD format",
+            "example": "Wed, 20 Jan 2010 00:00:00 GMT",
+            "format": "date",
+            "in": "formData",
+            "name": "birth_date",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "default": "medium",
+            "description": "The size of the dog",
+            "enum": [
+              "small",
+              "medium",
+              "large"
+            ],
+            "example": "medium",
+            "in": "formData",
+            "name": "size",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Dog image file",
+            "in": "formData",
+            "name": "image_file",
+            "required": false,
+            "type": "file"
+          },
+          {
+            "default": [
+              "Golden Retriever",
+              "Labrador"
+            ],
+            "description": "A list of breeds describing the dog.\nIf not provided, the list defaults to empty.\n",
+            "example": [
+              "Golden Retriever",
+              "Labrador"
+            ],
+            "in": "formData",
+            "items": {
+              "type": "string"
+            },
+            "name": "breeds",
+            "required": true,
+            "type": "array"
           }
         ],
         "responses": {
@@ -571,7 +847,41 @@
             "schema": {
               "properties": {
                 "dog": {
-                  "$ref": "#/definitions/DogDTO"
+                  "properties": {
+                    "birth_date": {
+                      "example": "2010-01-20",
+                      "format": "date",
+                      "type": "string"
+                    },
+                    "breeds": {
+                      "example": [
+                        "Golden Retriever",
+                        "Labrador"
+                      ],
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "name": {
+                      "example": "Stormy",
+                      "type": "string"
+                    },
+                    "o_email": {
+                      "example": "bob@gmail.com",
+                      "type": "string"
+                    },
+                    "size": {
+                      "enum": [
+                        "small",
+                        "medium",
+                        "large"
+                      ],
+                      "example": "medium",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
                 },
                 "message": {
                   "example": "Dog successfully updated",
@@ -582,11 +892,11 @@
             }
           },
           "400": {
-            "description": "Invalid data format or dog not found",
+            "description": "Invalid data format, missing fields, or dog not found",
             "schema": {
               "properties": {
                 "error": {
-                  "example": "Non-existent dog: Storm",
+                  "example": "Dog not found: Storm",
                   "type": "string"
                 }
               },
@@ -627,12 +937,19 @@
               "application/json": [
                 {
                   "birth_date": "2010-01-20",
+                  "breeds": [
+                    "Golden Retriever",
+                    "Labrador"
+                  ],
+                  "image_url": "https://example.com/images/john.png",
                   "name": "Storm",
                   "o_email": "bob@gmail.com",
                   "size": "small"
                 },
                 {
                   "birth_date": "2010-02-13",
+                  "breeds": [],
+                  "image_url": "https://example.com/images/john.png",
                   "name": "Amigo",
                   "o_email": "bob@gmail.com",
                   "size": "large"
@@ -670,78 +987,33 @@
         ]
       }
     },
-    "/owner/get_my_dog": {
-      "post": {
-        "description": "This endpoint allows an authenticated **owner** to get their dogs.\nThe request must include a valid JWT Bearer token in the Authorization header.\n",
-        "responses": {
-          "200": {
-            "description": "Success",
-            "schema": {
-              "properties": {
-                "dogs": {
-                  "items": "object",
-                  "properties": {
-                    "birth_date": {
-                      "example": "Thu, 30 Oct 2025 14:30:00 GMT",
-                      "type": "string"
-                    },
-                    "name": {
-                      "example": "storm",
-                      "type": "string"
-                    },
-                    "size": {
-                      "enum": [
-                        "small",
-                        "medium",
-                        "large"
-                      ],
-                      "type": "string"
-                    }
-                  },
-                  "type": "array"
-                }
-              },
-              "type": "object"
-            }
-          },
-          "401": {
-            "description": "Invalid credentials"
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "summary": "Gets a list of dogs owned by the authenticated user",
-        "tags": [
-          "Dogs"
-        ]
-      }
-    },
     "/users/me": {
       "get": {
-        "description": "Returns the details of the user associated with the provided JWT token.\nThe structure of the response depends on the user's role:\n- **Owner:** Returns an OwnerDTO.\n- **Service Provider:** Returns a ServiceProviderDTO.\n",
+        "description": "Returns the details of the user associated with the provided JWT token.\nThe structure of the response depends on the user's account type:\n- **Owner:** Returns an OwnerDTO.\n- **Service Provider:** Returns a ServiceProviderDTO.\n",
         "responses": {
           "200": {
             "description": "Successfully retrieved user details",
             "examples": {
               "application/json": {
                 "owner_example": {
-                  "address": "55 Sunshine Pl NE",
+                  "city": "Calgary",
                   "email": "john.doe@gmail.com",
                   "f_name": "John",
                   "image_url": "http://127.0.0.1:5000/static/images/img.jpg",
                   "l_name": "Doe",
-                  "phone_num": "4039997777"
+                  "phone_num": "4039997777",
+                  "province": "AB",
+                  "street": "55 Sunshine Pl NE"
                 },
                 "sp_example": {
-                  "address": "22 Nose Hill Way NW",
+                  "city": "Calgary",
                   "email": "alice.swift@gmail.com",
                   "f_name": "Alice",
                   "image_url": "http://127.0.0.1:5000/static/images/img.jpg",
                   "l_name": "Swift",
-                  "phone_num": "4038881234"
+                  "phone_num": "4038881234",
+                  "province": "AB",
+                  "street": "22 Nose Hill Way NW"
                 }
               }
             },
@@ -758,11 +1030,11 @@
             }
           },
           "400": {
-            "description": "Invalid role specified in token",
+            "description": "Invalid account type specified in token",
             "schema": {
               "properties": {
                 "error": {
-                  "example": "Invalid role",
+                  "example": "Invalid account type",
                   "type": "string"
                 }
               },

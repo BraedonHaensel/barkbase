@@ -213,7 +213,7 @@ def init_dog_routes(app, db: DB):
 
         # Parse and validate fields
         try:
-            name = data.get("name")
+            name = data.get("name").lower()
             birth_date = date.fromisoformat(data.get("birth_date"))
             size = data.get("size")
             image_file = request.files.get("image_file")
@@ -398,7 +398,6 @@ def init_dog_routes(app, db: DB):
           A list of breeds describing the dog.
           If not provided, the list defaults to empty.
         example: ["Golden Retriever", "Labrador"]
-          properties:
     responses:
       200:
         description: Dog successfully updated
@@ -467,8 +466,8 @@ def init_dog_routes(app, db: DB):
 
       try:
           # Parse the request data
-          name = data.get("name")  # New name (or current name if not renaming)
-          old_name = data.get("old_name", name)  # If old_name provided, use it; otherwise assume name is the identifier
+          name = data.get("name").lower()  # New name (or current name if not renaming)
+          old_name = data.get("old_name", name).lower()  # If old_name provided, use it; otherwise assume name is the identifier
           birth_date = date.fromisoformat(data.get("birth_date"))
           size = Dog.Size[data.get("size").upper()]
           image_file = request.files.get("image_file")
@@ -497,6 +496,8 @@ def init_dog_routes(app, db: DB):
           
           # Update the dog
           db.updateDog(email, old_name, update_request)
+
+          print("Now failed?")
           
           # Get the updated dog to return
           updated_dog = db.getDog(email, name)
@@ -513,6 +514,10 @@ def init_dog_routes(app, db: DB):
           }), 200
           
       except KeyError as e:
+          print("Error!")
+          print(e)
+          if "already exists" in str(e):
+              return jsonify({"error": str(e)}), 409
           return jsonify({"error": f"Dog not found: {old_name}"}), 400
       except ValueError as e:
           return jsonify({"error": f"Invalid data: {str(e)}"}), 400

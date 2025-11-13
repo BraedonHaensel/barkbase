@@ -134,6 +134,7 @@ if __name__ == '__main__':
                         "enum": ["small", "medium", "large"],
                         "example": "small"
                     },
+                    "image_filename": {"type": "string", "example": "image.jpg"},
                     "breeds": {
                         "type": "array",
                         "items": {"type": "string"},
@@ -153,6 +154,7 @@ if __name__ == '__main__':
                         "enum": ["small", "medium", "large"],
                         "example": "medium"
                     },
+                    "image_filename": {"type": "string", "example": "image.jpg"},
                     "breeds": {
                         "type": "array",
                         "items": {"type": "string"},
