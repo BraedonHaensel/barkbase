@@ -29,7 +29,7 @@ def convert_dog_to_dog_dto(dog: Dog, db) -> DogDTO:
   breed_list = [b[0].title() for b in breeds]
 
   return {
-      "name": dog.name.title(),
+      "name": dog.name.title(), # cnert to upp
       "o_email": dog.o_email,
       "birth_date": dog.birth_date,
       "size": dog.size.name.lower(),  # Enum → lowercase string
