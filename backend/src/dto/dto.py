@@ -6,13 +6,16 @@ They are known as DTOs (Data Transfer Objects).
 from typing import TypedDict, List
 from datetime import date
 
+
 # JWT token
 class TokenPayload(TypedDict):
     """
     Represents the decoded JWT payload structure.
     """
+
     email: str
     account_type: str
+
 
 class OwnerDTO(TypedDict):
     email: str
@@ -24,6 +27,7 @@ class OwnerDTO(TypedDict):
     phone_num: str
     image_url: str
 
+
 class EmergencyContactDto(TypedDict):
     phone_num: str
     owner_email: str
@@ -31,6 +35,7 @@ class EmergencyContactDto(TypedDict):
     email: str
     f_name: str
     l_name: str
+
 
 class DogDTO(TypedDict):
     name: str
@@ -40,9 +45,12 @@ class DogDTO(TypedDict):
     image_url: str
     breeds: List[str]
 
+
 """
 Represents the payload to create a new Dog and its breeds.
 """
+
+
 class CreateDogDTO(TypedDict):
     name: str
     o_email: str
@@ -51,9 +59,12 @@ class CreateDogDTO(TypedDict):
     image_filename: str
     breeds: List[str]  # Allow multiple breeds per dog
 
+
 """
 Represents the payload to update a Dog and its breeds.
 """
+
+
 class UpdateDogDTO(TypedDict):
     name: str
     o_email: str
@@ -61,6 +72,7 @@ class UpdateDogDTO(TypedDict):
     size: str
     image_filename: str
     breeds: List[str]  # Allow multiple breeds per dog
+
 
 class ServiceProviderDTO(TypedDict):
     email: str
@@ -72,12 +84,47 @@ class ServiceProviderDTO(TypedDict):
     phone_num: str
     image_url: str
 
+
 # Request body shape to create booking
 class BookingCreateDto(TypedDict):
     o_email: str
     sp_email: str
-    start_datetime: str      # serialized ISO string, not datetime object
+    start_datetime: str  # serialized ISO string, not datetime object
     end_datetime: str
-    service_type: str        # e.g. "WALKING" or "SITTING"
+    service_type: str  # e.g. "WALKING" or "SITTING"
     price: float
     dog_names: List[str]
+    province: str  # e.g. "AB"
+    city: str  # e.g. "Calgary"
+    street: str  # e.g. "2500 University Drive NW"]
+    note: str
+
+
+# Request body shape to create booking
+class BookingDto(TypedDict):
+    id: str
+    o_email: str
+    sp_email: str
+    start_datetime: str  # serialized ISO string, not datetime object
+    end_datetime: str
+    service_type: str  # e.g. "WALKING" or "SITTING"
+    price: float
+    dog_names: List[str]
+    province: str  # e.g. "AB"
+    city: str  # e.g. "Calgary"
+    street: str  # e.g. "2500 University Drive NW"]
+    note: str
+
+
+# Request body shape to create booking
+class BookingUpdateDto(TypedDict):
+    sp_email: str
+    start_datetime: str  # serialized ISO string, not datetime object
+    end_datetime: str
+    service_type: str  # e.g. "WALKING" or "SITTING"
+    price: float
+    dog_names: List[str]
+    province: str  # e.g. "AB"
+    city: str  # e.g. "Calgary"
+    street: str  # e.g. "2500 University Drive NW"]
+    note: str
