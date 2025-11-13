@@ -66,16 +66,16 @@ class DB:
         # Add dog:
         dog = Dog(name="chico", o_email="bob@gmail.com", birth_date=date(2010, 1, 20), size=Dog.Size.SMALL, image_filename="4d76b811-e1f3-4648-bd85-29b30cc838d5.jpg")
         self.db.add(dog)
-        dog = Dog(name="amigo", o_email="bob@gmail.com", birth_date=date(2010, 2, 13), size=Dog.Size.LARGE, image_filename="bd0048f4-3b94-4172-8c5d-01df3b1c37f3.jpg")
+        dog = Dog(name="amigo", o_email="bob@gmail.com", birth_date=date(2010, 2, 13), size=Dog.Size.LARGE, image_filename="cb3dab85-2a81-4254-bda3-524ef18c8b9d.jpg")
         self.db.add(dog)
         self.db.commit()
 
         # Add dog_breed:
-        dog_breed = DogBreed(d_name="chico", o_email="bob@gmail.com", breed="Chihuahua")
+        dog_breed = DogBreed(d_name="chico", o_email="bob@gmail.com", breed="Shiba Inu")
         self.db.add(dog_breed)
-        dog_breed = DogBreed(d_name="amigo", o_email="bob@gmail.com", breed="Labrador")
+        dog_breed = DogBreed(d_name="amigo", o_email="bob@gmail.com", breed="Jack Russel Terrier")
         self.db.add(dog_breed)
-        dog_breed = DogBreed(d_name="amigo", o_email="bob@gmail.com", breed="Golden Retriever")
+        dog_breed = DogBreed(d_name="amigo", o_email="bob@gmail.com", breed="Border Collie")
         self.db.add(dog_breed)
         self.db.commit()
 
