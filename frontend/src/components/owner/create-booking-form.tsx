@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
 import {
@@ -22,14 +22,74 @@ import { useRouter } from 'next/navigation';
 import { ServiceType } from '@/enums/service-type';
 import { createBookingSchema } from '@/lib/schemas/bookings';
 import DatePicker from '../date-picker';
+import { SessionContext } from '@/context/session-context';
+import { MultiSelect } from '../multi-select';
+import { Textarea } from '../ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Province } from '@/enums/province';
+import { dateToIsoStringYMD } from '@/lib/utils';
 
 // Form schema to create a booking
 type CreateBookingSchema = z.infer<typeof createBookingSchema>;
 
 // Form to create a booking
 const CreateBookingForm = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const [stageNum, setStageNum] = useState(1);
   const router = useRouter();
+  const [dogNames, setDogNames] = useState<Array<string>>([]);
+  const { session } = useContext(SessionContext);
+
+  // Fetch all of the owner's dog names from the API
+  const getDogNames = async () => {
+    setIsLoading(true);
+    api
+      .get('/dogs/me', {
+        headers: {
+          Authorization: `Bearer ${session?.token}`,
+        },
+      })
+      .then((response) => {
+        // Parse each dog name from the response
+        const newDogNames: Array<string> = [];
+        const data = response.data;
+        data.forEach((dog: any) => {
+          newDogNames.push(dog.name);
+        });
+        if (newDogNames.length == 0) {
+          toast.error(
+            'No dogs! You need at least one dog to create a booking!'
+          );
+          router.push('/owner/manage-dogs');
+        }
+        setDogNames(newDogNames);
+      })
+      .catch((error) => {
+        // Handle request errors
+        const apiError = error?.response?.data?.error;
+        if (apiError) {
+          console.error(`API error: ${apiError}`);
+          toast.error(`Failed to get dogs: ${apiError}`);
+        } else {
+          console.error(error);
+          toast.error('Failed to get dogs. Please try again.');
+        }
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    // Get owner's dogs to select for the booking
+    getDogNames();
+  }, []);
 
   // Initialize the form
   const form = useForm<CreateBookingSchema>({
@@ -40,42 +100,67 @@ const CreateBookingForm = () => {
       startTime: '12:00',
       endDate: new Date(),
       endTime: '13:00',
+      dogNames: [],
+      street: '',
+      city: '',
+      province: '',
+      price: '',
+      note: '',
     },
   });
 
   form.watch();
 
-  // Create account request
-  const { mutate: postCreateAccount, isPending } = useMutation({
+  // Create booking request
+  const { mutate: postCreateBooking, isPending } = useMutation({
     mutationFn: async (input: CreateBookingSchema) => {
-      // TODO waiting for api
-      const response = await api.post('/TODO', {
-        booking_type: input.serviceType,
-      });
+      const response = await api.post(
+        '/bookings',
+        {
+          service_type: input.serviceType,
+          // Format the dates as "2025-10-30T14:30:00"
+          start_datetime: `${dateToIsoStringYMD(input.startDate)}T${input.startTime}:00`,
+          end_datetime: `${dateToIsoStringYMD(input.endDate)}T${input.endTime}:00`,
+          dog_names: input.dogNames,
+          street: input.street,
+          city: input.city,
+          province: input.province,
+          price: input.price,
+          ...(input.note ? { note: input.note } : {}),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${session?.token}`,
+          },
+        }
+      );
       return response.data;
     },
   });
 
   // Handle form submission
   function onSubmit(input: CreateBookingSchema) {
-    console.log(input.startTime);
-    postCreateAccount(input, {
+    postCreateBooking(input, {
       onSuccess: ({ message }) => {
         console.info(message);
-        toast.success('Account created! Please log in.');
-        router.push('/login');
+        toast.success('Booking created!');
+        router.push('/owner/upcoming-bookings');
       },
       onError: (error: any) => {
         const apiError = error?.response?.data?.error;
         if (apiError) {
           console.error(`API error: ${apiError}`);
-          toast.error(`Failed to create account: ${apiError}`);
+          toast.error(`Failed to create booking: ${apiError}`);
         } else {
           console.error(error);
-          toast.error('Failed to create account. Please try again.');
+          toast.error('Failed to create booking. Please try again.');
         }
       },
     });
+  }
+
+  if (isLoading) {
+    return <LoaderCircle className="mx-auto mt-3 h-10 w-10 animate-spin" />;
   }
 
   return (
@@ -164,6 +249,7 @@ const CreateBookingForm = () => {
                         {...field}
                       />
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -198,6 +284,7 @@ const CreateBookingForm = () => {
                         {...field}
                       />
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -208,16 +295,137 @@ const CreateBookingForm = () => {
         {/* Second page of the form */}
         {stageNum === 2 && (
           <>
-            {/* TODO: Dog selection, address, etc. */}
+            {/* Select dogs field */}
+            <FormField
+              control={form.control}
+              name="dogNames"
+              render={({ field: { value, onChange } }) => (
+                <FormItem>
+                  <FormLabel>Dogs</FormLabel>
+                  <FormControl>
+                    <MultiSelect
+                      options={dogNames.map((name) => ({
+                        value: name,
+                        label: name,
+                      }))}
+                      onValueChange={onChange}
+                      defaultValue={value}
+                      placeholder="Select dogs..."
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            <p>More stages TODO...</p>
+            {/* Street field */}
+            <FormField
+              control={form.control}
+              name="street"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Street</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="flex gap-4">
+              {/* City field */}
+              <FormField
+                control={form.control}
+                name="city"
+                render={({ field }) => (
+                  <FormItem className="h-full w-1/2">
+                    <FormLabel>City</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Province field */}
+              <FormField
+                control={form.control}
+                name="province"
+                render={({ field }) => (
+                  <FormItem className="h-full w-1/2">
+                    <FormLabel>Province / Territory</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl className="w-full">
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {Object.values(Province).map((province) => (
+                          <SelectItem key={province} value={province}>
+                            {province}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </>
+        )}
+
+        {/* Third page of the form */}
+        {stageNum === 3 && (
+          <>
+            {/* Price field */}
+            <FormField
+              control={form.control}
+              name="price"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Total Price ($)</FormLabel>
+                  <FormControl>
+                    <Input placeholder="30" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Note field */}
+            <FormField
+              control={form.control}
+              name="note"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Booking notes (optional)</FormLabel>
+                  <FormControl className="max-h-50 min-h-25">
+                    <Textarea
+                      placeholder="Additional details for the service providers..."
+                      {...field}
+                      maxLength={1000}
+                    />
+                  </FormControl>
+                  <div className="text-muted-foreground text-right text-sm">
+                    {field.value ? field.value.length : 0}/{1000}
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             {/* Form submit button */}
             <Button
               type="submit"
               className="w-full"
               disabled={stageNum < 2 || isPending}
-              variant={stageNum === 2 ? 'default' : 'secondary'}
             >
               {isPending ? (
                 <LoaderCircle className="h-6! w-6! animate-spin" />
@@ -242,16 +450,20 @@ const CreateBookingForm = () => {
         {/* Next page button */}
         <Button
           type="button"
-          disabled={stageNum >= 2}
+          disabled={stageNum >= 3}
           className="w-1/2 text-lg"
           onClick={async () => {
-            const isValid = await form.trigger([
-              'serviceType',
-              'startDate',
-              'startTime',
-              'endDate',
-              'endTime',
-            ]);
+            const isValid = await form.trigger(
+              stageNum === 1
+                ? [
+                    'serviceType',
+                    'startDate',
+                    'startTime',
+                    'endDate',
+                    'endTime',
+                  ]
+                : ['dogNames', 'street', 'city', 'province']
+            );
             if (isValid) {
               setStageNum(stageNum + 1);
             }

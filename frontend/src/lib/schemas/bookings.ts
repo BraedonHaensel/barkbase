@@ -6,9 +6,19 @@ import { z } from 'zod';
 export const createBookingSchema = z.object({
   serviceType: z.enum(ServiceType),
   startDate: z.date(),
-  startTime: z.string(),
+  startTime: z.string().nonempty('Required field'),
   endDate: z.date(),
-  endTime: z.string(),
+  endTime: z.string().nonempty('Required field'),
+  dogNames: z.array(z.string()).nonempty('Must select at least 1 dog'),
+  street: z.string().nonempty('Required field'),
+  city: z.string().nonempty('Required field'),
+  province: z.string().nonempty('Required field'),
+  price: z
+    .string()
+    .regex(/^\d*$/, 'Price must be a whole number')
+    .min(2, 'Price is too low!')
+    .max(4, 'Price is too high!'),
+  note: z.string().optional(),
 });
 
 // Schema for the owner upcoming booking form

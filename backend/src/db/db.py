@@ -150,7 +150,6 @@ class DB:
 
         # Add booking (Note the ID is automatically set):
         booking = Booking(
-            id=-2,
             o_email="bob@gmail.com",
             sp_email="alice@gmail.com",
             start_datetime=datetime(2025, 10, 30, 14, 30),

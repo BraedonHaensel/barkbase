@@ -133,7 +133,7 @@ class Booking(Base):
     province: Mapped[Province] = mapped_column(Enum(Province))
     city: Mapped[str] = mapped_column(String(100))
     street: Mapped[str] = mapped_column(String(100))
-    note: Mapped[str] = mapped_column(String(100))
+    note: Mapped[str] = mapped_column(String(1000))
 
 
 class BookedDog(Base):
