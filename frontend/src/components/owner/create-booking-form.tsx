@@ -33,6 +33,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Province } from '@/enums/province';
+import { dateToIsoStringYMD } from '@/lib/utils';
 
 // Form schema to create a booking
 type CreateBookingSchema = z.infer<typeof createBookingSchema>;
@@ -103,6 +104,7 @@ const CreateBookingForm = () => {
       street: '',
       city: '',
       province: '',
+      price: '',
       note: '',
     },
   });
@@ -112,17 +114,32 @@ const CreateBookingForm = () => {
   // Create booking request
   const { mutate: postCreateBooking, isPending } = useMutation({
     mutationFn: async (input: CreateBookingSchema) => {
-      // TODO waiting for api
-      const response = await api.post('/TODO', {
-        booking_type: input.serviceType,
-      });
+      const response = await api.post(
+        '/bookings',
+        {
+          service_type: input.serviceType,
+          // Format the dates as "2025-10-30T14:30:00"
+          start_datetime: `${dateToIsoStringYMD(input.startDate)}T${input.startTime}:00`,
+          end_datetime: `${dateToIsoStringYMD(input.endDate)}T${input.endTime}:00`,
+          dog_names: input.dogNames,
+          street: input.street,
+          city: input.city,
+          province: input.province,
+          price: input.price,
+          ...(input.note ? { note: input.note } : {}),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${session?.token}`,
+          },
+        }
+      );
       return response.data;
     },
   });
 
   // Handle form submission
   function onSubmit(input: CreateBookingSchema) {
-    console.log(form.getValues());
     postCreateBooking(input, {
       onSuccess: ({ message }) => {
         console.info(message);
@@ -367,6 +384,21 @@ const CreateBookingForm = () => {
         {/* Third page of the form */}
         {stageNum === 3 && (
           <>
+            {/* Price field */}
+            <FormField
+              control={form.control}
+              name="price"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Total Price ($)</FormLabel>
+                  <FormControl>
+                    <Input placeholder="30" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             {/* Note field */}
             <FormField
               control={form.control}
