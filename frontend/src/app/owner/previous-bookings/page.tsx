@@ -1,11 +1,11 @@
 'use client';
 
-import OUpcomingBookingCard from '@/components/owner/upcoming-booking-card';
+import BookingCard from '@/components/booking-card';
 import { SessionContext } from '@/context/session-context';
 import { AccountType } from '@/enums/account-type';
 import { Province } from '@/enums/province';
 import { ServiceType } from '@/enums/service-type';
-import { OUpcomingBooking } from '@/types/booking';
+import { Booking } from '@/types/booking';
 import { redirect } from 'next/navigation';
 import { useContext, useEffect } from 'react';
 
@@ -21,7 +21,7 @@ export default function PreviousBookingsPage() {
   }, [session]);
 
   // TODO using same as upcoming bookings for current demo
-  const bk1: OUpcomingBooking = {
+  const bk1: Booking = {
     dogNames: ['Chico', 'Bear'],
     startDate: new Date(),
     startTime: '12:00',
@@ -37,7 +37,7 @@ Please keep him on a tight leash!
 `,
   };
 
-  const bookings: Array<OUpcomingBooking> = [bk1];
+  const bookings: Array<Booking> = [bk1];
 
   return (
     <div className="flex flex-col gap-4">
@@ -59,7 +59,7 @@ Please keep him on a tight leash!
         >
           {/* Render a card for each previous booking */}
           {bookings.map((booking, id) => (
-            <OUpcomingBookingCard key={id} booking={booking} />
+            <BookingCard key={id} booking={booking} />
           ))}
         </div>
       )}

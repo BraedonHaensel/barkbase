@@ -15,6 +15,7 @@ export const createBookingSchema = z.object({
   province: z.string().nonempty('Required field'),
   price: z
     .string()
+    .nonempty('Required field')
     .regex(/^\d*$/, 'Price must be a whole number')
     .min(2, 'Price is too low!')
     .max(4, 'Price is too high!'),
