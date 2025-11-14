@@ -22,9 +22,17 @@ import { useRouter } from 'next/navigation';
 import { ServiceType } from '@/enums/service-type';
 import { createBookingSchema } from '@/lib/schemas/bookings';
 import DatePicker from '../date-picker';
-import { Dog } from '@/types/dog';
 import { SessionContext } from '@/context/session-context';
-import { DogSize } from '@/enums/dog-size';
+import { MultiSelect } from '../multi-select';
+import { Textarea } from '../ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Province } from '@/enums/province';
 
 // Form schema to create a booking
 type CreateBookingSchema = z.infer<typeof createBookingSchema>;
@@ -34,11 +42,11 @@ const CreateBookingForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [stageNum, setStageNum] = useState(1);
   const router = useRouter();
-  const [dogs, setDogs] = useState<Array<Dog>>([]);
+  const [dogNames, setDogNames] = useState<Array<string>>([]);
   const { session } = useContext(SessionContext);
 
-  // Fetch all of the owner's dogs from the API
-  const getDogs = async () => {
+  // Fetch all of the owner's dog names from the API
+  const getDogNames = async () => {
     setIsLoading(true);
     api
       .get('/dogs/me', {
@@ -47,26 +55,19 @@ const CreateBookingForm = () => {
         },
       })
       .then((response) => {
-        // Parse each dog from the response
-        const newDogs: Array<Dog> = [];
+        // Parse each dog name from the response
+        const newDogNames: Array<string> = [];
         const data = response.data;
         data.forEach((dog: any) => {
-          const dogData: Dog = {
-            name: dog.name,
-            birthDate: new Date(dog.birth_date),
-            size: DogSize[dog.size.toUpperCase() as keyof typeof DogSize],
-            imageUrl: dog.image_url,
-            breeds: dog.breeds,
-          };
-          newDogs.push(dogData);
+          newDogNames.push(dog.name);
         });
-        if (newDogs.length == 0) {
+        if (newDogNames.length == 0) {
           toast.error(
             'No dogs! You need at least one dog to create a booking!'
           );
           router.push('/owner/manage-dogs');
         }
-        setDogs(newDogs);
+        setDogNames(newDogNames);
       })
       .catch((error) => {
         // Handle request errors
@@ -86,7 +87,7 @@ const CreateBookingForm = () => {
 
   useEffect(() => {
     // Get owner's dogs to select for the booking
-    getDogs();
+    getDogNames();
   }, []);
 
   // Initialize the form
@@ -98,6 +99,11 @@ const CreateBookingForm = () => {
       startTime: '12:00',
       endDate: new Date(),
       endTime: '13:00',
+      dogNames: [],
+      street: '',
+      city: '',
+      province: '',
+      note: '',
     },
   });
 
@@ -116,7 +122,7 @@ const CreateBookingForm = () => {
 
   // Handle form submission
   function onSubmit(input: CreateBookingSchema) {
-    console.log(input.startTime);
+    console.log(form.getValues());
     postCreateBooking(input, {
       onSuccess: ({ message }) => {
         console.info(message);
@@ -226,6 +232,7 @@ const CreateBookingForm = () => {
                         {...field}
                       />
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -260,6 +267,7 @@ const CreateBookingForm = () => {
                         {...field}
                       />
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -270,16 +278,122 @@ const CreateBookingForm = () => {
         {/* Second page of the form */}
         {stageNum === 2 && (
           <>
-            {/* TODO: Dog selection, address, etc. */}
+            {/* Select dogs field */}
+            <FormField
+              control={form.control}
+              name="dogNames"
+              render={({ field: { value, onChange } }) => (
+                <FormItem>
+                  <FormLabel>Dogs</FormLabel>
+                  <FormControl>
+                    <MultiSelect
+                      options={dogNames.map((name) => ({
+                        value: name,
+                        label: name,
+                      }))}
+                      onValueChange={onChange}
+                      defaultValue={value}
+                      placeholder="Select dogs..."
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            <p>More stages TODO...</p>
+            {/* Street field */}
+            <FormField
+              control={form.control}
+              name="street"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Street</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="flex gap-4">
+              {/* City field */}
+              <FormField
+                control={form.control}
+                name="city"
+                render={({ field }) => (
+                  <FormItem className="h-full w-1/2">
+                    <FormLabel>City</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Province field */}
+              <FormField
+                control={form.control}
+                name="province"
+                render={({ field }) => (
+                  <FormItem className="h-full w-1/2">
+                    <FormLabel>Province / Territory</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl className="w-full">
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {Object.values(Province).map((province) => (
+                          <SelectItem key={province} value={province}>
+                            {province}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </>
+        )}
+
+        {/* Third page of the form */}
+        {stageNum === 3 && (
+          <>
+            {/* Note field */}
+            <FormField
+              control={form.control}
+              name="note"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Booking notes (optional)</FormLabel>
+                  <FormControl className="max-h-50 min-h-25">
+                    <Textarea
+                      placeholder="Additional details for the service providers..."
+                      {...field}
+                      maxLength={1000}
+                    />
+                  </FormControl>
+                  <div className="text-muted-foreground text-right text-sm">
+                    {field.value ? field.value.length : 0}/{1000}
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             {/* Form submit button */}
             <Button
               type="submit"
               className="w-full"
               disabled={stageNum < 2 || isPending}
-              variant={stageNum === 2 ? 'default' : 'secondary'}
             >
               {isPending ? (
                 <LoaderCircle className="h-6! w-6! animate-spin" />
@@ -304,16 +418,20 @@ const CreateBookingForm = () => {
         {/* Next page button */}
         <Button
           type="button"
-          disabled={stageNum >= 2}
+          disabled={stageNum >= 3}
           className="w-1/2 text-lg"
           onClick={async () => {
-            const isValid = await form.trigger([
-              'serviceType',
-              'startDate',
-              'startTime',
-              'endDate',
-              'endTime',
-            ]);
+            const isValid = await form.trigger(
+              stageNum === 1
+                ? [
+                    'serviceType',
+                    'startDate',
+                    'startTime',
+                    'endDate',
+                    'endTime',
+                  ]
+                : ['dogNames', 'street', 'city', 'province']
+            );
             if (isValid) {
               setStageNum(stageNum + 1);
             }
