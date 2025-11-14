@@ -2,7 +2,7 @@ from routes.auth import init_auth_routes
 from routes.user import init_user_routes
 from routes.booking import init_booking_routes
 from routes.dogs import init_dog_routes
-from flask import Flask
+from flask import Flask, redirect
 from db.db import DB
 from repo.owner_repo import OwnerRepo
 from repo.sp_repo import ServiceProviderRepo
@@ -312,6 +312,13 @@ if __name__ == "__main__":
             "specs_route": "/apidocs/",
         },
     )
+
+
+    # Redirect to Swagger API documentation
+    @app.route("/")
+    def home():
+        return redirect("/apidocs")
+
 
     # initialize routes
     init_auth_routes(app, owner_repo=owner_repo, sp_repo=sp_repo)
