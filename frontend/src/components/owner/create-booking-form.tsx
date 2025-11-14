@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
 import {
@@ -22,14 +22,72 @@ import { useRouter } from 'next/navigation';
 import { ServiceType } from '@/enums/service-type';
 import { createBookingSchema } from '@/lib/schemas/bookings';
 import DatePicker from '../date-picker';
+import { Dog } from '@/types/dog';
+import { SessionContext } from '@/context/session-context';
+import { DogSize } from '@/enums/dog-size';
 
 // Form schema to create a booking
 type CreateBookingSchema = z.infer<typeof createBookingSchema>;
 
 // Form to create a booking
 const CreateBookingForm = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const [stageNum, setStageNum] = useState(1);
   const router = useRouter();
+  const [dogs, setDogs] = useState<Array<Dog>>([]);
+  const { session } = useContext(SessionContext);
+
+  // Fetch all of the owner's dogs from the API
+  const getDogs = async () => {
+    setIsLoading(true);
+    api
+      .get('/dogs/me', {
+        headers: {
+          Authorization: `Bearer ${session?.token}`,
+        },
+      })
+      .then((response) => {
+        // Parse each dog from the response
+        const newDogs: Array<Dog> = [];
+        const data = response.data;
+        data.forEach((dog: any) => {
+          const dogData: Dog = {
+            name: dog.name,
+            birthDate: new Date(dog.birth_date),
+            size: DogSize[dog.size.toUpperCase() as keyof typeof DogSize],
+            imageUrl: dog.image_url,
+            breeds: dog.breeds,
+          };
+          newDogs.push(dogData);
+        });
+        if (newDogs.length == 0) {
+          toast.error(
+            'No dogs! You need at least one dog to create a booking!'
+          );
+          router.push('/owner/manage-dogs');
+        }
+        setDogs(newDogs);
+      })
+      .catch((error) => {
+        // Handle request errors
+        const apiError = error?.response?.data?.error;
+        if (apiError) {
+          console.error(`API error: ${apiError}`);
+          toast.error(`Failed to get dogs: ${apiError}`);
+        } else {
+          console.error(error);
+          toast.error('Failed to get dogs. Please try again.');
+        }
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    // Get owner's dogs to select for the booking
+    getDogs();
+  }, []);
 
   // Initialize the form
   const form = useForm<CreateBookingSchema>({
@@ -45,8 +103,8 @@ const CreateBookingForm = () => {
 
   form.watch();
 
-  // Create account request
-  const { mutate: postCreateAccount, isPending } = useMutation({
+  // Create booking request
+  const { mutate: postCreateBooking, isPending } = useMutation({
     mutationFn: async (input: CreateBookingSchema) => {
       // TODO waiting for api
       const response = await api.post('/TODO', {
@@ -59,23 +117,27 @@ const CreateBookingForm = () => {
   // Handle form submission
   function onSubmit(input: CreateBookingSchema) {
     console.log(input.startTime);
-    postCreateAccount(input, {
+    postCreateBooking(input, {
       onSuccess: ({ message }) => {
         console.info(message);
-        toast.success('Account created! Please log in.');
-        router.push('/login');
+        toast.success('Booking created!');
+        router.push('/owner/upcoming-bookings');
       },
       onError: (error: any) => {
         const apiError = error?.response?.data?.error;
         if (apiError) {
           console.error(`API error: ${apiError}`);
-          toast.error(`Failed to create account: ${apiError}`);
+          toast.error(`Failed to create booking: ${apiError}`);
         } else {
           console.error(error);
-          toast.error('Failed to create account. Please try again.');
+          toast.error('Failed to create booking. Please try again.');
         }
       },
     });
+  }
+
+  if (isLoading) {
+    return <LoaderCircle className="mx-auto mt-3 h-10 w-10 animate-spin" />;
   }
 
   return (
