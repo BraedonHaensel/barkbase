@@ -10,7 +10,7 @@ import { redirect } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Dog } from '@/types/dog';
-import { dateToIsoStringYMD } from '@/lib/utils';
+import { dateToLocalYMD } from '@/lib/utils';
 
 // Manage dogs page
 export default function ManageDogsPage() {
@@ -76,7 +76,8 @@ export default function ManageDogsPage() {
     // Use a FormData to handle uploading the dog image file
     const formData = new FormData();
     formData.append('name', dogData.name);
-    formData.append('birth_date', dateToIsoStringYMD(dogData.birthDate));
+    // Use the local time's YYYY-MM-DD as the birth date
+    formData.append('birth_date', dateToLocalYMD(dogData.birthDate));
     formData.append('size', dogData.size);
     formData.append('image_file', imageFile);
     // Add an item for each breed
@@ -129,7 +130,8 @@ export default function ManageDogsPage() {
     // Use a FormData to handle uploading the dog image file
     const formData = new FormData();
     formData.append('name', newDogData.name);
-    formData.append('birth_date', dateToIsoStringYMD(newDogData.birthDate));
+    // Use the local time's YYYY-MM-DD as the birth date
+    formData.append('birth_date', dateToLocalYMD(newDogData.birthDate));
     formData.append('size', newDogData.size);
     if (imageFile) formData.append('image_file', imageFile);
     // Add an item for each breed
@@ -204,9 +206,11 @@ export default function ManageDogsPage() {
       });
   };
 
-  return isLoading ? (
-    <LoaderCircle className="mx-auto mt-3 h-10 w-10 animate-spin" />
-  ) : (
+  if (isLoading) {
+    return <LoaderCircle className="mx-auto mt-3 h-10 w-10 animate-spin" />;
+  }
+
+  return (
     <div className="flex flex-col gap-4">
       {/* Page title */}
       <p style={{ fontSize: '35px' }} className="text-center font-bold">

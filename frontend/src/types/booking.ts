@@ -1,8 +1,8 @@
 import { Province } from '@/enums/province';
 import { ServiceType } from '@/enums/service-type';
 
-// Dog data type
-export interface OUpcomingBooking {
+// Booking data type
+export interface Booking {
   dogNames: Array<string>;
   startDate: Date;
   startTime: string;
@@ -14,4 +14,5 @@ export interface OUpcomingBooking {
   province: Province;
   price: string;
   note: string;
+  spEmail: string;
 }

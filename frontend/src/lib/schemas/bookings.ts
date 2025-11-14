@@ -15,14 +15,15 @@ export const createBookingSchema = z.object({
   province: z.string().nonempty('Required field'),
   price: z
     .string()
+    .nonempty('Required field')
     .regex(/^\d*$/, 'Price must be a whole number')
     .min(2, 'Price is too low!')
     .max(4, 'Price is too high!'),
   note: z.string().optional(),
 });
 
-// Schema for the owner upcoming booking form
-export const oUpcomingBookingSchema = z.object({
+// Schema for the general booking view form
+export const bookingSchema = z.object({
   dogNames: z.array(z.string()),
   startDate: z.date(),
   startTime: z.string(),

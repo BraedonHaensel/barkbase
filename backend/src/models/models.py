@@ -52,6 +52,7 @@ class Dog(Base):
         ForeignKey("owner.email", ondelete="CASCADE", onupdate="CASCADE"),
         primary_key=True,
     )
+    # Birth dates are stored as YYYY-MM-DD and are not to be converted between timezones
     birth_date: Mapped["date"] = mapped_column(Date)
     size: Mapped[Size] = mapped_column(Enum(Size))
     image_filename: Mapped[str] = mapped_column(String(100))

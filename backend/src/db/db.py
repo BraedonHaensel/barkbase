@@ -150,6 +150,7 @@ class DB:
 
         # Add booking (Note the ID is automatically set):
         booking = Booking(
+            id=1,
             o_email="bob@gmail.com",
             sp_email="alice@gmail.com",
             start_datetime=datetime(2025, 10, 30, 14, 30),
@@ -162,7 +163,45 @@ class DB:
             note="My dog barks a lot.",
         )
         self.db.add(booking)
+        booking = Booking(
+            id=2,
+            o_email="bob@gmail.com",
+            sp_email="alice@gmail.com",
+            start_datetime=datetime(2025, 12, 30, 14, 30),
+            end_datetime=datetime(2025, 12, 30, 16, 30),
+            service_type=ServiceType.WALKING,
+            price=60,
+            province=Province.AB,
+            city="Calgary",
+            street="55 Sunshine Pl NE",
+            note="My dog barks a lot.",
+        )
+        self.db.add(booking)
         self.db.commit()
+
+        # Add dogs to the bookings
+        booked_dog = BookedDog(
+            booking_id=1,
+            d_name="chico",
+            o_email="bob@gmail.com",
+        )
+        self.db.add(booked_dog)
+                # Add dogs to the bookings
+        booked_dog = BookedDog(
+            booking_id=2,
+            d_name="chico",
+            o_email="bob@gmail.com",
+        )
+        self.db.add(booked_dog)
+                # Add dogs to the bookings
+        booked_dog = BookedDog(
+            booking_id=2,
+            d_name="amigo",
+            o_email="bob@gmail.com",
+        )
+        self.db.add(booked_dog)
+        self.db.commit()
+
 
     def getAllOwners(self) -> List[OwnerDTO]:
         owners = self.db.query(Owner).all()  # fetch all rows from owner table

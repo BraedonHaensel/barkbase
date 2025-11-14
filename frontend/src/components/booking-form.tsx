@@ -1,27 +1,25 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { OUpcomingBooking } from '@/types/booking';
-import { Label } from '../ui/label';
-import { Form, FormControl, FormField, FormItem, FormLabel } from '../ui/form';
-import DatePicker from '../date-picker';
-import { oUpcomingBookingSchema } from '@/lib/schemas/bookings';
+import { Booking } from '@/types/booking';
+import { Form, FormControl, FormField, FormItem, FormLabel } from './ui/form';
+import DatePicker from './date-picker';
+import { bookingSchema } from '@/lib/schemas/bookings';
 import z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { Input } from '../ui/input';
-import { Textarea } from '../ui/textarea';
+import { Input } from './ui/input';
+import { Textarea } from './ui/textarea';
 
-// Form schema for an owner upcoming booking
-type OUpcomingBookingSchema = z.infer<typeof oUpcomingBookingSchema>;
+// Form schema for a general booking view
+type BookingSchema = z.infer<typeof bookingSchema>;
 
 type Props = {
-  booking: OUpcomingBooking;
+  booking: Booking;
 };
 
-// Owner upcoming booking card
-const OUpcomingBookingForm = ({ booking }: Props) => {
+// General use form for displaying a booking
+const BookingForm = ({ booking }: Props) => {
   // Initialize the form
-  const form = useForm<OUpcomingBookingSchema>({
-    resolver: zodResolver(oUpcomingBookingSchema),
+  const form = useForm<BookingSchema>({
+    resolver: zodResolver(bookingSchema),
     defaultValues: { ...booking },
   });
 
@@ -36,7 +34,7 @@ const OUpcomingBookingForm = ({ booking }: Props) => {
           name="dogNames"
           render={({ field: { value } }) => (
             <FormItem>
-              <FormLabel>Booked dogs</FormLabel>
+              <FormLabel>Booked dogs ({value.length})</FormLabel>
               <Input value={value.join(', ')} onChange={() => {}} />
             </FormItem>
           )}
@@ -166,7 +164,11 @@ const OUpcomingBookingForm = ({ booking }: Props) => {
           render={({ field: { value } }) => (
             <FormItem>
               <FormLabel>Booking notes</FormLabel>
-              <Textarea value={value} onChange={() => {}} />
+              <Textarea
+                placeholder="No notes."
+                value={value}
+                onChange={() => {}}
+              />
             </FormItem>
           )}
         />
@@ -175,4 +177,4 @@ const OUpcomingBookingForm = ({ booking }: Props) => {
   );
 };
 
-export default OUpcomingBookingForm;
+export default BookingForm;

@@ -33,7 +33,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Province } from '@/enums/province';
-import { dateToIsoStringYMD } from '@/lib/utils';
+import { dateToLocalYMD } from '@/lib/utils';
 
 // Form schema to create a booking
 type CreateBookingSchema = z.infer<typeof createBookingSchema>;
@@ -118,8 +118,8 @@ const CreateBookingForm = () => {
         {
           service_type: input.serviceType,
           // Format the dates as "2025-10-30T14:30:00"
-          start_datetime: `${dateToIsoStringYMD(input.startDate)}T${input.startTime}:00`,
-          end_datetime: `${dateToIsoStringYMD(input.endDate)}T${input.endTime}:00`,
+          start_datetime: `${dateToLocalYMD(input.startDate)}T${input.startTime}:00`,
+          end_datetime: `${dateToLocalYMD(input.endDate)}T${input.endTime}:00`,
           dog_names: input.dogNames,
           street: input.street,
           city: input.city,
