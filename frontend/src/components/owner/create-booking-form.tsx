@@ -69,6 +69,7 @@ const CreateBookingForm = () => {
           router.push('/owner/manage-dogs');
         }
         setDogNames(newDogNames);
+        setIsLoading(false);
       })
       .catch((error) => {
         // Handle request errors
@@ -80,9 +81,7 @@ const CreateBookingForm = () => {
           console.error(error);
           toast.error('Failed to get dogs. Please try again.');
         }
-      })
-      .finally(() => {
-        setIsLoading(false);
+        router.push('/dashboard');
       });
   };
 
