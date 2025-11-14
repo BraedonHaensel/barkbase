@@ -45,7 +45,8 @@ export default function UpcomingBookingsPage() {
             return;
           }
           const bookingData: Booking = {
-            serviceType: booking.service_type,
+            serviceType:
+              ServiceType[booking.service_type as keyof typeof ServiceType],
             // TODO fix timezone date handling
             startDate: new Date(getYMDFromIsoString(booking.start_datetime)),
             startTime: getHMFromIsoString(booking.start_datetime),
@@ -105,7 +106,7 @@ export default function UpcomingBookingsPage() {
           className={
             bookings.length == 1
               ? 'mx-auto w-1/2'
-              : 'grid min-w-[400px] gap-6 md:grid-cols-2'
+              : 'grid min-w-[400px] gap-6 lg:grid-cols-2'
           }
         >
           {/* Render a card for each upcoming booking */}

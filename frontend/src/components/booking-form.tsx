@@ -1,17 +1,15 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Booking } from '@/types/booking';
-import { Label } from '../ui/label';
-import { Form, FormControl, FormField, FormItem, FormLabel } from '../ui/form';
-import DatePicker from '../date-picker';
-import { oUpcomingBookingSchema } from '@/lib/schemas/bookings';
+import { Form, FormControl, FormField, FormItem, FormLabel } from './ui/form';
+import DatePicker from './date-picker';
+import { bookingSchema } from '@/lib/schemas/bookings';
 import z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { Input } from '../ui/input';
-import { Textarea } from '../ui/textarea';
+import { Input } from './ui/input';
+import { Textarea } from './ui/textarea';
 
-// Form schema for an owner upcoming booking
-type OUpcomingBookingSchema = z.infer<typeof oUpcomingBookingSchema>;
+// Form schema for a general booking view
+type BookingSchema = z.infer<typeof bookingSchema>;
 
 type Props = {
   booking: Booking;
@@ -20,8 +18,8 @@ type Props = {
 // General use form for displaying a booking
 const BookingForm = ({ booking }: Props) => {
   // Initialize the form
-  const form = useForm<OUpcomingBookingSchema>({
-    resolver: zodResolver(oUpcomingBookingSchema),
+  const form = useForm<BookingSchema>({
+    resolver: zodResolver(bookingSchema),
     defaultValues: { ...booking },
   });
 

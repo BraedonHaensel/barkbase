@@ -22,8 +22,8 @@ export const createBookingSchema = z.object({
   note: z.string().optional(),
 });
 
-// Schema for the owner upcoming booking form
-export const oUpcomingBookingSchema = z.object({
+// Schema for the general booking view form
+export const bookingSchema = z.object({
   dogNames: z.array(z.string()),
   startDate: z.date(),
   startTime: z.string(),
