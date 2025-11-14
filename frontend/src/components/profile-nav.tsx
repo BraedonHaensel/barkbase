@@ -25,7 +25,7 @@ const ProvileNav = () => {
     <DropdownMenu open={open} onOpenChange={setOpen}>
       {/* Profile icon button */}
       <DropdownMenuTrigger
-        className="h-full w-full hover:opacity-60 focus:outline-none"
+        className="h-full w-full hover:cursor-pointer hover:opacity-60 focus:outline-none"
         disabled={!user}
       >
         <Avatar className="h-full w-full">

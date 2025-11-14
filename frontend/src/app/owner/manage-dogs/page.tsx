@@ -16,8 +16,8 @@ import { dateToIsoStringYMD } from '@/lib/utils';
 export default function ManageDogsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [dogs, setDogs] = useState<Array<Dog>>([]);
-  const { session } = useContext(SessionContext);
   const [isEditingADog, setIsEditingADog] = useState(false);
+  const { session } = useContext(SessionContext);
 
   // A session is required
   useEffect(() => {
