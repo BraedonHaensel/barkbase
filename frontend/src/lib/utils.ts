@@ -24,7 +24,7 @@ export function dateToAge(dateUtc: Date) {
   return `${days} ${days === 1 ? 'day' : 'days'}`;
 }
 
-// Get an ISO string for a date with only the YYYY-MM-DD for the current day of the user's timezone
+// Get an ISO string for a date with only the YYYY-MM-DD for the current day of the local timezone
 export function dateToLocalYMD(date: Date) {
   return date.toLocaleDateString('en-CA');
 }

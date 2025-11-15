@@ -52,7 +52,7 @@ class Dog(Base):
         ForeignKey("owner.email", ondelete="CASCADE", onupdate="CASCADE"),
         primary_key=True,
     )
-    # Birth dates are stored as YYYY-MM-DD and are not to be converted between timezones
+    # Birth dates are stored as YYYY-MM-DD for the local timezone
     birth_date: Mapped["date"] = mapped_column(Date)
     size: Mapped[Size] = mapped_column(Enum(Size))
     image_filename: Mapped[str] = mapped_column(String(100))
@@ -107,6 +107,7 @@ class Review(Base):
         primary_key=True,
     )
     service_type: Mapped[ServiceType] = mapped_column(Enum(ServiceType))
+    # Review dates are stored as YYYY-MM-DD for the local timezone
     date: Mapped["date"] = mapped_column(Date)
     star_rating: Mapped[int] = mapped_column(Integer)
     description: Mapped[str] = mapped_column(String(100))
@@ -127,6 +128,7 @@ class Booking(Base):
         ForeignKey("service_provider.email", ondelete="CASCADE", onupdate="CASCADE"),
         nullable=True,
     )
+    # start and end datetimes are ISO strings for the local timezone
     start_datetime: Mapped[datetime] = mapped_column(DateTime)
     end_datetime: Mapped[datetime] = mapped_column(DateTime)
     service_type: Mapped[ServiceType] = mapped_column(Enum(ServiceType))
