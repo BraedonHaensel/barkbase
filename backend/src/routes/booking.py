@@ -211,6 +211,10 @@ def init_booking_routes(app, db: DB, booking_repo: BookingRepo):
         except (KeyError, ValueError) as e:
             return jsonify({"error": f"Invalid data format: {str(e)}"}), 400
         
+        # Check if the start datetime is in the past
+        if start_datetime <= datetime.now():
+            return jsonify({"error": "Start date must be in the future"}), 400
+        
         # Check if the start datetime is later than the end datetime
         if start_datetime >= end_datetime:
             return jsonify({"error": "End date must be later than the start date"}), 400

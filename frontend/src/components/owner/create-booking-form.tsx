@@ -117,7 +117,7 @@ const CreateBookingForm = () => {
         '/bookings',
         {
           service_type: input.serviceType,
-          // Format the dates as "2025-10-30T14:30:00"
+          // Format the dates as "2025-10-30T14:30:00" in the local timezone
           start_datetime: `${dateToLocalYMD(input.startDate)}T${input.startTime}:00`,
           end_datetime: `${dateToLocalYMD(input.endDate)}T${input.endTime}:00`,
           dog_names: input.dogNames,

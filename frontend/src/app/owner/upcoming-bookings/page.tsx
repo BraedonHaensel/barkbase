@@ -47,10 +47,10 @@ export default function UpcomingBookingsPage() {
           const bookingData: Booking = {
             serviceType:
               ServiceType[booking.service_type as keyof typeof ServiceType],
-            // TODO fix timezone date handling
-            startDate: new Date(getYMDFromIsoString(booking.start_datetime)),
+            // Parse the start and end dates and times from the local ISO strings
+            startDate: new Date(booking.start_datetime),
             startTime: getHMFromIsoString(booking.start_datetime),
-            endDate: new Date(getYMDFromIsoString(booking.end_datetime)),
+            endDate: new Date(booking.end_datetime),
             endTime: getHMFromIsoString(booking.end_datetime),
             dogNames: booking.dog_names,
             street: booking.street,
@@ -60,8 +60,6 @@ export default function UpcomingBookingsPage() {
             note: booking.note,
             spEmail: booking.sp_email,
           };
-          console.log(getYMDFromIsoString(booking.start_datetime));
-          console.log(new Date(Date.UTC(2025, 12, 30)));
           newBookings.push(bookingData);
         });
         setBookings(newBookings);
