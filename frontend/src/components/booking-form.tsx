@@ -7,16 +7,22 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
+import { Button } from './ui/button';
+import { Edit, LoaderCircle, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 
 // Form schema for a general booking view
 type BookingSchema = z.infer<typeof bookingSchema>;
 
 type Props = {
   booking: Booking;
+  onDelete: (id: string) => Promise<void>;
 };
 
 // General use form for displaying a booking
-const BookingForm = ({ booking }: Props) => {
+const BookingForm = ({ booking, onDelete }: Props) => {
+  const [isDeleting, setIsDeleting] = useState(false);
+
   // Initialize the form
   const form = useForm<BookingSchema>({
     resolver: zodResolver(bookingSchema),
@@ -172,6 +178,35 @@ const BookingForm = ({ booking }: Props) => {
             </FormItem>
           )}
         />
+
+        <div className="mx-2 flex justify-center gap-4">
+          {/* Edit button */}
+          <Button type="button" className="w-1/2" onClick={() => {}}>
+            Edit <Edit />
+          </Button>
+
+          {/* Delete button */}
+          <Button
+            type="button"
+            className="bg-destructive/30 w-1/2"
+            variant="destructive"
+            onClick={async () => {
+              setIsDeleting(true);
+              if (window.confirm('Are you sure you want to delete?')) {
+                await onDelete(booking.id);
+              }
+              setIsDeleting(false);
+            }}
+          >
+            {isDeleting ? (
+              <LoaderCircle className="animate-spin" />
+            ) : (
+              <>
+                <p>Delete</p> <Trash2 />
+              </>
+            )}
+          </Button>
+        </div>
       </form>
     </Form>
   );

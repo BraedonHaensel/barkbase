@@ -8,6 +8,7 @@ import { redirect } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
 import api from '@/lib/api';
 import { toast } from 'sonner';
+import { EmergencyContact } from '@/types/emergency-contact';
 
 // Emergency contacts management page
 export default function EmergencyContactsPage() {
