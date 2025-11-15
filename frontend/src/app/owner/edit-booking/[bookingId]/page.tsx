@@ -1,33 +1,36 @@
 'use client';
 
-import BookingCard from '@/components/booking-card';
 import { SessionContext } from '@/context/session-context';
 import { AccountType } from '@/enums/account-type';
-import { Province } from '@/enums/province';
-import { ServiceType } from '@/enums/service-type';
-import api from '@/lib/api';
-import { getHMFromIsoString } from '@/lib/utils';
-import { Booking } from '@/types/booking';
-import { LoaderCircle } from 'lucide-react';
-import { redirect } from 'next/navigation';
+import { redirect, useParams, useRouter } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import CreateBookingForm from '@/components/owner/create-booking-form';
+import { LoaderCircle } from 'lucide-react';
+import api from '@/lib/api';
+import { Booking } from '@/types/booking';
+import { ServiceType } from '@/enums/service-type';
+import { getHMFromIsoString } from '@/lib/utils';
+import { Province } from '@/enums/province';
 import { toast } from 'sonner';
 
-// Upcoming bookings page
-export default function UpcomingBookingsPage() {
+// Page to edit an existing booking
+export default function EditBookingPage() {
   const [isLoading, setIsLoading] = useState(true);
-  const [bookings, setBookings] = useState<Array<Booking>>([]);
+  const [booking, setBooking] = useState<Booking | undefined>(undefined);
+  const { bookingId } = useParams<{ bookingId: string }>();
   const { session } = useContext(SessionContext);
+  const router = useRouter();
 
-  // A session is required
+  // An owner session is required
   useEffect(() => {
     if (!session || session.accountType !== AccountType.OWNER) {
       redirect('/login');
     }
   }, [session]);
 
-  // Fetch all of the owner's upcoming bookings from the API
-  const getUpcomingBookings = async () => {
+  // Fetch the desired booking from the API
+  const findBooking = async () => {
     setIsLoading(true);
     api
       .get('/bookings/me', {
@@ -37,11 +40,15 @@ export default function UpcomingBookingsPage() {
       })
       .then((response) => {
         // Parse each upcoming booking from the response
-        const newBookings: Array<Booking> = [];
+        let foundBooking: Booking | undefined = undefined;
         const data = response.data;
         data.forEach((booking: any) => {
           // Filter out bookings that have already ended
           if (new Date(booking.end_datetime) < new Date()) {
+            return;
+          }
+          // Search for the booking with the given bookingId
+          if (booking.id != bookingId) {
             return;
           }
           const bookingData: Booking = {
@@ -61,9 +68,14 @@ export default function UpcomingBookingsPage() {
             note: booking.note,
             spEmail: booking.sp_email,
           };
-          newBookings.push(bookingData);
+          foundBooking = bookingData;
         });
-        setBookings(newBookings);
+        if (foundBooking) {
+          setBooking(foundBooking);
+        } else {
+          toast.error('Failed to find the booking');
+          router.push('/dashboard');
+        }
       })
       .catch((error) => {
         // Handle request errors
@@ -82,63 +94,23 @@ export default function UpcomingBookingsPage() {
   };
 
   useEffect(() => {
-    getUpcomingBookings();
+    findBooking();
   }, []);
-
-  // Delete a booking
-  const deleteBooking = async (bookingId: string) => {
-    api
-      .delete(`/bookings/${bookingId}`, {
-        headers: {
-          Authorization: `Bearer ${session?.token}`,
-        },
-      })
-      .then((response) => {
-        toast.success(response.data.message);
-        // Refresh the owner's bookings
-        getUpcomingBookings();
-      })
-      .catch((error) => {
-        // Handle request errors
-        const apiError = error?.response?.data?.error;
-        if (apiError) {
-          console.error(`API error: ${apiError}`);
-          toast.error(`Failed to delete: ${apiError}`);
-        } else {
-          console.error(error);
-          toast.error(`Failed to delete. Please try again.`);
-        }
-      });
-  };
 
   if (isLoading) {
     return <LoaderCircle className="mx-auto mt-3 h-10 w-10 animate-spin" />;
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* Page title */}
-      <p style={{ fontSize: '35px' }} className="text-center font-bold">
-        Upcoming Bookings
-      </p>
-      {bookings.length == 0 ? (
-        <div className="flex justify-center">
-          <p className="text-muted-foreground">No upcoming bookings.</p>
-        </div>
-      ) : (
-        <div
-          className={
-            bookings.length == 1
-              ? 'mx-auto w-1/2'
-              : 'grid min-w-[400px] gap-6 lg:grid-cols-2'
-          }
-        >
-          {/* Render a card for each upcoming booking */}
-          {bookings.map((booking, id) => (
-            <BookingCard key={id} booking={booking} onDelete={deleteBooking} />
-          ))}
-        </div>
-      )}
+    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+      <Card className="w-[450px] px-6">
+        <CardHeader>
+          <CardTitle className="text-center text-2xl">Edit Booking</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <CreateBookingForm />
+        </CardContent>
+      </Card>
     </div>
   );
 }

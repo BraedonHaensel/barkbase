@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { LoaderCircle } from 'lucide-react';
 import { emergencyContactSchema } from '@/lib/schemas/emergency-contact';
 import { useState } from 'react';
+import { EmergencyContact } from '@/types/emergency-contact';
 
 // Schema for the emergency contact form
 type EmergencyContactSchema = z.infer<typeof emergencyContactSchema>;
