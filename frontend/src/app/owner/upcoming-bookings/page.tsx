@@ -45,6 +45,7 @@ export default function UpcomingBookingsPage() {
             return;
           }
           const bookingData: Booking = {
+            id: booking.id,
             serviceType:
               ServiceType[booking.service_type as keyof typeof ServiceType],
             // Parse the start and end dates and times from the local ISO strings
@@ -80,6 +81,32 @@ export default function UpcomingBookingsPage() {
       });
   };
 
+  // Delete a booking
+  const deleteBooking = async (bookingId: string) => {
+    api
+      .delete(`/bookings/${bookingId}`, {
+        headers: {
+          Authorization: `Bearer ${session?.token}`,
+        },
+      })
+      .then((response) => {
+        toast.success(response.data.message);
+        // Refresh the owner's bookings
+        getUpcomingBookings();
+      })
+      .catch((error) => {
+        // Handle request errors
+        const apiError = error?.response?.data?.error;
+        if (apiError) {
+          console.error(`API error: ${apiError}`);
+          toast.error(`Failed to delete: ${apiError}`);
+        } else {
+          console.error(error);
+          toast.error(`Failed to delete. Please try again.`);
+        }
+      });
+  };
+
   useEffect(() => {
     getUpcomingBookings();
   }, []);
@@ -109,7 +136,7 @@ export default function UpcomingBookingsPage() {
         >
           {/* Render a card for each upcoming booking */}
           {bookings.map((booking, id) => (
-            <BookingCard key={id} booking={booking} />
+            <BookingCard key={id} booking={booking} onDelete={deleteBooking} />
           ))}
         </div>
       )}

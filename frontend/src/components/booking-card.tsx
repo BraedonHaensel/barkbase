@@ -7,10 +7,11 @@ import BookingSPProfile from './booking-sp-nav';
 
 type Props = {
   booking: Booking;
+  onDelete: (id: string) => Promise<void>;
 };
 
 // General use card for dispaying a booking
-const BookingCard = ({ booking }: Props) => {
+const BookingCard = ({ booking, onDelete }: Props) => {
   return (
     <Card className="min-w-[450px] border-3">
       <CardHeader className="flex h-10 items-center justify-between">
@@ -50,7 +51,7 @@ const BookingCard = ({ booking }: Props) => {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <BookingForm booking={booking} />
+        <BookingForm booking={booking} onDelete={onDelete} />
       </CardContent>
     </Card>
   );

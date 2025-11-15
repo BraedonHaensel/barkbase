@@ -3,6 +3,7 @@ import { ServiceType } from '@/enums/service-type';
 
 // Booking data type
 export interface Booking {
+  id: string;
   dogNames: Array<string>;
   startDate: Date;
   startTime: string;
