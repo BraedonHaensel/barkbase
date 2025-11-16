@@ -2,8 +2,8 @@ import { Province } from '@/enums/province';
 import { ServiceType } from '@/enums/service-type';
 import { z } from 'zod';
 
-// Schema for the create booking form
-export const createBookingSchema = z.object({
+// Schema for the create or edit booking form
+export const createEditBookingSchema = z.object({
   serviceType: z.enum(ServiceType),
   startDate: z.date(),
   startTime: z.string().nonempty('Required field'),

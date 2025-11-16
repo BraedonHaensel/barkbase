@@ -5,7 +5,7 @@ import { AccountType } from '@/enums/account-type';
 import { redirect, useParams, useRouter } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import CreateBookingForm from '@/components/owner/create-booking-form';
+import CreateEditBookingForm from '@/components/owner/create-edit-booking-form';
 import { LoaderCircle } from 'lucide-react';
 import api from '@/lib/api';
 import { Booking } from '@/types/booking';
@@ -72,6 +72,7 @@ export default function EditBookingPage() {
         });
         if (foundBooking) {
           setBooking(foundBooking);
+          setIsLoading(false);
         } else {
           toast.error('Failed to find the booking');
           router.push('/dashboard');
@@ -87,9 +88,7 @@ export default function EditBookingPage() {
           console.error(error);
           toast.error('Failed to get bookings. Please try again.');
         }
-      })
-      .finally(() => {
-        setIsLoading(false);
+        router.push('/dashboard');
       });
   };
 
@@ -108,7 +107,10 @@ export default function EditBookingPage() {
           <CardTitle className="text-center text-2xl">Edit Booking</CardTitle>
         </CardHeader>
         <CardContent>
-          <CreateBookingForm />
+          <CreateEditBookingForm
+            isEditingBooking={true}
+            bookingDetails={booking}
+          />
         </CardContent>
       </Card>
     </div>

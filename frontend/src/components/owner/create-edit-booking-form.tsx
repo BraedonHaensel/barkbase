@@ -20,7 +20,7 @@ import { toast } from 'sonner';
 import api from '@/lib/api';
 import { useRouter } from 'next/navigation';
 import { ServiceType } from '@/enums/service-type';
-import { createBookingSchema } from '@/lib/schemas/bookings';
+import { createEditBookingSchema } from '@/lib/schemas/bookings';
 import DatePicker from '../date-picker';
 import { SessionContext } from '@/context/session-context';
 import { MultiSelect } from '../multi-select';
@@ -34,17 +34,42 @@ import {
 } from '@/components/ui/select';
 import { Province } from '@/enums/province';
 import { dateToLocalYMD } from '@/lib/utils';
+import { Booking } from '@/types/booking';
 
-// Form schema to create a booking
-type CreateBookingSchema = z.infer<typeof createBookingSchema>;
+// Form schema to create or edit a booking
+type CreateEditBookingSchema = z.infer<typeof createEditBookingSchema>;
 
-// Form to create a booking
-const CreateBookingForm = () => {
+type Props = {
+  isEditingBooking?: boolean;
+  bookingDetails?: Booking | undefined;
+};
+
+// Form to create or edit a booking
+const CreateEditBookingForm = ({
+  isEditingBooking = false,
+  bookingDetails = undefined,
+}: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [stageNum, setStageNum] = useState(1);
   const router = useRouter();
   const [dogNames, setDogNames] = useState<Array<string>>([]);
   const { session } = useContext(SessionContext);
+
+  // Verify that the editingBooking and bookingDetails props are used together
+  useEffect(() => {
+    if (isEditingBooking && !bookingDetails) {
+      console.error('Booking details must be supplied when in editing mode!');
+      toast.error('Failed to edit booking. Please try again.');
+      router.push('/dashboard');
+    }
+    if (!isEditingBooking && bookingDetails) {
+      console.error(
+        'Editing booking flag must be set when a booking is being edited'
+      );
+      toast.error('Failed to edit booking. Please try again.');
+      router.push('/dashboard');
+    }
+  }, [isEditingBooking, bookingDetails]);
 
   // Fetch all of the owner's dog names from the API
   const getDogNames = async () => {
@@ -91,71 +116,142 @@ const CreateBookingForm = () => {
   }, []);
 
   // Initialize the form
-  const form = useForm<CreateBookingSchema>({
-    resolver: zodResolver(createBookingSchema),
-    defaultValues: {
-      serviceType: ServiceType.WALKING,
-      startDate: new Date(),
-      startTime: '12:00',
-      endDate: new Date(),
-      endTime: '13:00',
-      dogNames: [],
-      street: '',
-      city: '',
-      province: '',
-      price: '',
-      note: '',
-    },
+  const form = useForm<CreateEditBookingSchema>({
+    resolver: zodResolver(createEditBookingSchema),
+    // Set the default values either from the provided booking to edit, or for a blank new booking
+    defaultValues:
+      isEditingBooking && bookingDetails
+        ? {
+            serviceType: bookingDetails.serviceType,
+            startDate: bookingDetails.startDate,
+            startTime: bookingDetails.startTime,
+            endDate: bookingDetails.endDate,
+            endTime: bookingDetails.endTime,
+            dogNames: bookingDetails.dogNames,
+            street: bookingDetails.street,
+            city: bookingDetails.city,
+            province: bookingDetails.province,
+            price: String(bookingDetails.price),
+            note: bookingDetails.note,
+          }
+        : {
+            serviceType: ServiceType.WALKING,
+            startDate: new Date(),
+            startTime: '12:00',
+            endDate: new Date(),
+            endTime: '13:00',
+            dogNames: [],
+            street: '',
+            city: '',
+            province: '',
+            price: '',
+            note: '',
+          },
   });
 
   form.watch();
 
-  // Create booking request
-  const { mutate: postCreateBooking, isPending } = useMutation({
-    mutationFn: async (input: CreateBookingSchema) => {
-      const response = await api.post(
-        '/bookings',
-        {
-          service_type: input.serviceType,
-          // Format the dates as "2025-10-30T14:30:00" in the local timezone
-          start_datetime: `${dateToLocalYMD(input.startDate)}T${input.startTime}:00`,
-          end_datetime: `${dateToLocalYMD(input.endDate)}T${input.endTime}:00`,
-          dog_names: input.dogNames,
-          street: input.street,
-          city: input.city,
-          province: input.province,
-          price: input.price,
-          ...(input.note ? { note: input.note } : {}),
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${session?.token}`,
+  // Update existing booking request
+  const { mutate: postUpdateBooking, isPending: isUpdatePending } = useMutation(
+    {
+      mutationFn: async (input: CreateEditBookingSchema) => {
+        const response = await api.put(
+          `/bookings/${bookingDetails?.id}`,
+          {
+            service_type: input.serviceType,
+            // Format the dates as "2025-10-30T14:30:00" in the local timezone
+            start_datetime: `${dateToLocalYMD(input.startDate)}T${input.startTime}:00`,
+            end_datetime: `${dateToLocalYMD(input.endDate)}T${input.endTime}:00`,
+            dog_names: input.dogNames,
+            street: input.street,
+            city: input.city,
+            province: input.province,
+            price: input.price,
+            note: input.note,
           },
-        }
-      );
-      return response.data;
-    },
-  });
+          {
+            headers: {
+              Authorization: `Bearer ${session?.token}`,
+            },
+          }
+        );
+        return response.data;
+      },
+    }
+  );
+
+  // Create booking request
+  const { mutate: postCreateBooking, isPending: isCreatePending } = useMutation(
+    {
+      mutationFn: async (input: CreateEditBookingSchema) => {
+        const response = await api.post(
+          '/bookings',
+          {
+            service_type: input.serviceType,
+            // Format the dates as "2025-10-30T14:30:00" in the local timezone
+            start_datetime: `${dateToLocalYMD(input.startDate)}T${input.startTime}:00`,
+            end_datetime: `${dateToLocalYMD(input.endDate)}T${input.endTime}:00`,
+            dog_names: input.dogNames,
+            street: input.street,
+            city: input.city,
+            province: input.province,
+            price: input.price,
+            ...(input.note ? { note: input.note } : {}),
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${session?.token}`,
+            },
+          }
+        );
+        return response.data;
+      },
+    }
+  );
+
+  const isPending = isUpdatePending || isCreatePending;
 
   // Handle form submission
-  function onSubmit(input: CreateBookingSchema) {
-    postCreateBooking(input, {
-      onSuccess: ({ message }) => {
-        console.info(message);
-        toast.success('Booking created!');
-        router.push('/owner/upcoming-bookings');
-      },
-      onError: (error: any) => {
-        const apiError = error?.response?.data?.error;
-        if (apiError) {
-          console.error(`API error: ${apiError}`);
-          toast.error(`Failed to create booking: ${apiError}`);
-        } else {
-          console.error(error);
-          toast.error('Failed to create booking. Please try again.');
-        }
-      },
-    });
+  async function onSubmit(input: CreateEditBookingSchema) {
+    if (isEditingBooking) {
+      // Send request to update an existing booking
+      postUpdateBooking(input, {
+        onSuccess: ({ message }) => {
+          console.info(message);
+          toast.success('Booking updated!');
+          router.push('/owner/upcoming-bookings');
+        },
+        onError: (error: any) => {
+          const apiError = error?.response?.data?.error;
+          if (apiError) {
+            console.error(`API error: ${apiError}`);
+            toast.error(`Failed to update booking: ${apiError}`);
+          } else {
+            console.error(error);
+            toast.error('Failed to update booking. Please try again.');
+          }
+        },
+      });
+    } else {
+      // Send request to create a new booking
+      postCreateBooking(input, {
+        onSuccess: ({ message }) => {
+          console.info(message);
+          toast.success('Booking created!');
+          router.push('/owner/upcoming-bookings');
+        },
+        onError: (error: any) => {
+          const apiError = error?.response?.data?.error;
+          if (apiError) {
+            console.error(`API error: ${apiError}`);
+            toast.error(`Failed to create booking: ${apiError}`);
+          } else {
+            console.error(error);
+            toast.error('Failed to create booking. Please try again.');
+          }
+        },
+      });
+    }
   }
 
   if (isLoading) {
@@ -181,13 +277,13 @@ const CreateBookingForm = () => {
                       className="w-1/2 rounded-none rounded-l-lg"
                       onClick={() => {
                         form.setValue(
-                          'serviceType' as keyof CreateBookingSchema,
+                          'serviceType' as keyof CreateEditBookingSchema,
                           ServiceType.WALKING
                         );
                       }}
                       variant={
                         form.getValues(
-                          'serviceType' as keyof CreateBookingSchema
+                          'serviceType' as keyof CreateEditBookingSchema
                         ) === ServiceType.WALKING
                           ? 'default'
                           : 'secondary'
@@ -200,13 +296,13 @@ const CreateBookingForm = () => {
                       className="w-1/2 rounded-none rounded-r-lg"
                       onClick={() => {
                         form.setValue(
-                          'serviceType' as keyof CreateBookingSchema,
+                          'serviceType' as keyof CreateEditBookingSchema,
                           ServiceType.SITTING
                         );
                       }}
                       variant={
                         form.getValues(
-                          'serviceType' as keyof CreateBookingSchema
+                          'serviceType' as keyof CreateEditBookingSchema
                         ) === ServiceType.SITTING
                           ? 'default'
                           : 'secondary'
@@ -428,6 +524,8 @@ const CreateBookingForm = () => {
             >
               {isPending ? (
                 <LoaderCircle className="h-6! w-6! animate-spin" />
+              ) : isEditingBooking ? (
+                'Save Changes'
               ) : (
                 'Create Booking'
               )}
@@ -476,4 +574,4 @@ const CreateBookingForm = () => {
   );
 };
 
-export default CreateBookingForm;
+export default CreateEditBookingForm;
