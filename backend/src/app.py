@@ -194,12 +194,12 @@ if __name__ == "__main__":
                     "start_datetime": {
                         "type": "string",
                         "format": "date-time",
-                        "example": "2025-10-30T14:30:00",
+                        "example": "2025-12-30T14:30:00",
                     },
                     "end_datetime": {
                         "type": "string",
                         "format": "date-time",
-                        "example": "2025-10-30T16:30:00",
+                        "example": "2025-12-30T16:30:00",
                     },
                     "service_type": {
                         "type": "string",
@@ -314,12 +314,10 @@ if __name__ == "__main__":
         },
     )
 
-
     # Redirect to Swagger API documentation
     @app.route("/")
     def home():
         return redirect("/apidocs")
-
 
     # initialize routes
     init_auth_routes(app, owner_repo=owner_repo, sp_repo=sp_repo)

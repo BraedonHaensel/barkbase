@@ -37,8 +37,9 @@ def convert_booking_to_dto(
 
 
 def init_booking_routes(app, db: DB, booking_repo: BookingRepo):
-    # 6) BOOKING ROUTES
-    # Get bookings made buy the user.
+    # GET bookings/me
+    # If user is an owner, GET bookings made by them
+    # Else if user is SP, GET bookings accepted by them
     @app.route("/bookings/me", methods=["GET"])
     @token_required
     def get_user_bookings():
@@ -49,11 +50,21 @@ def init_booking_routes(app, db: DB, booking_repo: BookingRepo):
           - Bookings
         security:
           - bearerAuth: []        # requires JWT Authorization
-        summary: Get all bookings for the authenticated owner
+        summary: Get all bookings for the authenticated owner/service provider.
         description: |
-          This endpoint returns all bookings created by the authenticated **owner**.
+          This endpoint returns all bookings created by the authenticated **owner**/**service provider**.
           Each booking includes its associated dogs and key details.
-
+        parameters:
+          - in: query
+            name: when
+            type: string
+            enum: ["upcoming", "past", "all"]
+            description: Filter by upcoming or past bookings
+          - in: query
+            name: status
+            type: string
+            enum: ["pending", "accepted", "all"]
+            description: For owners only — filter by booking acceptance status
         responses:
           200:
             description: Successfully retrieved user's bookings
@@ -66,26 +77,88 @@ def init_booking_routes(app, db: DB, booking_repo: BookingRepo):
         """
 
         user_info: TokenPayload = request.payload  # comes from decoded JWT
-        account_type = AccountType(user_info["account_type"].lower())
         email = user_info["email"]
-
-        bookings = booking_repo.get_by_email(email, account_type)
-        if bookings is None:
+        try:
+            account_type = AccountType(user_info["account_type"].lower())
+        except Exception as e:
             return jsonify({"error": "Invalid account type"}), 401
+
+        # Fetch bookings
+        bookings = booking_repo.get_by_email(email, account_type)
+
+        # Filter by upcoming/past/all
+        # Defaults to `all` if no param is passed in
+        filter_when = request.args.get("when", "all")
+        now = datetime.now()
+
+        if filter_when == "upcoming":
+            bookings = [b for b in bookings if b.start_datetime >= now]
+
+        elif filter_when == "past":
+            bookings = [b for b in bookings if b.start_datetime < now]
+
+        # Filter by booking status
+        filter_status = request.args.get("status", "all")
+        if account_type == AccountType.OWNER:
+            if filter_status == "pending":
+                bookings = [b for b in bookings if b.sp_email is None]
+            elif filter_status == "accepted":
+                bookings = [b for b in bookings if b.sp_email is not None]
 
         result = []
         for booking in bookings:
-            # Get all dogs linked to this booking
-            # booked_dogs = (
-            #     booking_repo.db.query(BookedDog)
-            #     .filter(BookedDog.booking_id == booking.id)
-            #     .all()
-            # )
             booked_dogs = booking_repo.get_booked_dogs(booking.id)
 
             booking_dto = convert_booking_to_dto(booking, booked_dogs)
 
             result.append(booking_dto)
+
+        return jsonify(result), 200
+
+    # GET AVAILABLE BOOKINGS (Service Provider only)
+    # Available: no SP has accepted this booking + booking has not expired yet
+    @app.route("/bookings/available", methods=["GET"])
+    @token_required
+    def get_available_bookings():
+        """
+        Get all available bookings (SP only)
+        ---
+        tags:
+          - Bookings
+        security:
+          - bearerAuth: []
+        summary: Get all available bookings for service providers
+        description: |
+          Returns all bookings that have no assigned service provider yet.
+          These bookings are open and available for acceptance.
+
+
+        description: Filter by upcoming or past bookings
+        responses:
+          200:
+            description: Successfully retrieved available bookings
+            schema:
+              type: array
+              items:
+                $ref: '#/definitions/BookingDto'
+          401:
+            description: Unauthorized (must be a service provider)
+        """
+        user_info: TokenPayload = request.payload
+        account_type = AccountType(user_info["account_type"].lower())
+
+        # Only service providers can see available bookings
+        if account_type != AccountType.SERVICE_PROVIDER:
+            return jsonify({"error": "Invalid account type"}), 401
+
+        bookings = booking_repo.get_available_bookings()
+
+        # Convert bookings → DTOs
+        result = []
+        for booking in bookings:
+            booked_dogs = booking_repo.get_booked_dogs(booking.id)
+            dto = convert_booking_to_dto(booking, booked_dogs)
+            result.append(dto)
 
         return jsonify(result), 200
 
@@ -110,50 +183,7 @@ def init_booking_routes(app, db: DB, booking_repo: BookingRepo):
             name: body
             required: true
             schema:
-              type: object
-              required:
-                - start_datetime
-                - end_datetime
-                - service_type
-                - price
-                - dog_names
-                - province
-                - city
-                - street
-              properties:
-                start_datetime:
-                  type: string
-                  description: "Start of the booking in ISO 8601 format (e.g. 2025-10-30T14:30:00Z)"
-                  example: "2025-10-30T14:30:00"
-                end_datetime:
-                  type: string
-                  description: "End of the booking in ISO 8601 format (e.g. 2025-10-30T16:30:00Z)"
-                  example: "2025-10-30T14:30:00"
-                service_type:
-                  type: string
-                  enum:
-                    - sitting
-                    - walking
-                price:
-                  type: integer
-                dog_names:
-                  type: array
-                  items: string
-                  description: "List of dogs included in the booking"
-                  example: ["chico", "amigo"]
-                province:
-                  type: string
-                  example: AB
-                city:
-                  type: string
-                  example: Calgary
-                street:
-                  type: string
-                  example: 2500 University drive
-                note:
-                  type: string
-                  description: "Optional note for the service provider (e.g., feeding instructions)"
-                  example: "Please walk Chico with a harness, not a collar."
+              $ref: '#/definitions/BookingCreateDto'
         responses:
           201:
             description: Success
@@ -210,11 +240,11 @@ def init_booking_routes(app, db: DB, booking_repo: BookingRepo):
 
         except (KeyError, ValueError) as e:
             return jsonify({"error": f"Invalid data format: {str(e)}"}), 400
-        
+
         # Check if the start datetime is in the past
         if start_datetime <= datetime.now():
             return jsonify({"error": "Start date must be in the future"}), 400
-        
+
         # Check if the start datetime is later than the end datetime
         if start_datetime >= end_datetime:
             return jsonify({"error": "End date must be later than the start date"}), 400
@@ -276,22 +306,23 @@ def init_booking_routes(app, db: DB, booking_repo: BookingRepo):
             description: Invalid data or non-existent booking
           401:
             description: Unauthorized (wrong account type or not the owner)
+          409:
+            description: Booking cannot be modified once accepted.
         """
 
         data = request.get_json()
         user_info: TokenPayload = request.payload
-        account_type = AccountType(user_info["account_type"].lower())
         email = user_info["email"]
+        try:
+            account_type = AccountType(user_info["account_type"].lower())
+        except Exception as e:
+            return jsonify({"error": "Invalid account type"}), 401
 
         # Only owners can update their bookings
         if account_type != AccountType.OWNER:
             return jsonify({"error": "Invalid account type"}), 401
 
-        # TODO: outsource to booking_repo
         # Retrieve the booking to ensure it exists
-        # booking = (
-        #     booking_repo.db.query(Booking).filter(Booking.id == booking_id).first()
-        # )
         booking = booking_repo.get_by_id(booking_id)
         if not booking:
             return jsonify({"error": f"Booking ID {booking_id} not found"}), 400
@@ -301,6 +332,13 @@ def init_booking_routes(app, db: DB, booking_repo: BookingRepo):
             return (
                 jsonify({"error": "You are not authorized to update this booking"}),
                 401,
+            )
+
+        # Forbid any changes if a service provider has been assigned.
+        if booking.sp_email is not None:
+            return (
+                jsonify({"error": "Booking cannot be modified once accepted."}),
+                409,
             )
 
         try:
@@ -316,7 +354,7 @@ def init_booking_routes(app, db: DB, booking_repo: BookingRepo):
             note = data.get("note", "")
         except (KeyError, ValueError) as e:
             return jsonify({"error": f"Invalid data format: {str(e)}"}), 400
-           
+
         # Check if the start datetime is later than the end datetime
         if start_datetime >= end_datetime:
             return jsonify({"error": "End date must be later than the start date"}), 400
@@ -341,7 +379,6 @@ def init_booking_routes(app, db: DB, booking_repo: BookingRepo):
 
         return jsonify(updated_booking), 200
 
-    # DELETE BOOKING
     # DELETE BOOKING
     @app.route("/bookings/<int:booking_id>", methods=["DELETE"])
     @token_required
@@ -404,3 +441,143 @@ def init_booking_routes(app, db: DB, booking_repo: BookingRepo):
             return jsonify({"message": "Booking deleted successfully"}), 200
         else:
             return jsonify({"error": f"Failed to delete booking: {str(e)}"}), 500
+
+    # ACCEPT BOOKING (Service Provider only)
+    @app.route("/bookings/<int:booking_id>/accept", methods=["PATCH"])
+    @token_required
+    def accept_booking(booking_id):
+        """
+        Accept a booking
+        ---
+        tags:
+          - Bookings
+        security:
+          - bearerAuth: []
+        summary: Service provider accepts a booking request
+        description: |
+          This endpoint allows an authenticated **service provider** to accept a booking.
+
+        parameters:
+          - in: path
+            name: booking_id
+            required: true
+            type: integer
+            description: ID of the booking to accept
+
+        responses:
+          200:
+            description: Booking successfully accepted
+            schema:
+              $ref: '#/definitions/BookingDto'
+          400:
+            description: Booking not found or invalid state
+          401:
+            description: Unauthorized (not a service provider)
+        """
+        user_info: TokenPayload = request.payload
+        account_type = AccountType(user_info["account_type"].lower())
+        sp_email = user_info["email"]
+
+        # Only service providers can accept
+        if account_type != AccountType.SERVICE_PROVIDER:
+            return (
+                jsonify({"error": "Invalid account type - Service Providers only."}),
+                401,
+            )
+
+        # Fetch booking
+        booking = booking_repo.get_by_id(booking_id)
+        if not booking:
+            return jsonify({"error": f"Booking ID {booking_id} not found"}), 400
+
+        # Check if the booking is already assigned
+        if booking.sp_email is not None and booking.sp_email != sp_email:
+            return (
+                jsonify(
+                    {"error": "This booking is assigned to another service provider"}
+                ),
+                401,
+            )
+
+        # Assign SP and update status
+        try:
+            updated_booking = booking_repo.accept_booking(booking, sp_email)
+        except Exception as e:
+            return jsonify({"error": f"Failed to accept booking: {str(e)}"}), 500
+
+        # Return DTO
+        booked_dogs = booking_repo.get_booked_dogs(booking.id)
+        dto = convert_booking_to_dto(updated_booking, booked_dogs)
+
+        return jsonify(dto), 200
+
+    # DROP BOOKING (Service Provider only)
+    @app.route("/bookings/<int:booking_id>/drop", methods=["PATCH"])
+    @token_required
+    def drop_booking(booking_id):
+        """
+        Unaccept a booking (only allowed up to 24 hours before)
+        ---
+        tags:
+          - Bookings
+        security:
+          - bearerAuth: []
+        summary: Service provider withdraws acceptance of a booking request
+        description: |
+          This endpoint allows an authenticated **service provider** to drop a booking.
+
+        parameters:
+          - in: path
+            name: booking_id
+            required: true
+            type: integer
+            description: ID of the booking to drop
+
+        responses:
+          200:
+            description: Booking successfully  dropped
+            schema:
+              $ref: '#/definitions/BookingDto'
+          400:
+            description: Booking not found or invalid state
+          401:
+            description: Unauthorized (not the correct service provider)
+        """
+        user_info: TokenPayload = request.payload
+        account_type = AccountType(user_info["account_type"].lower())
+        sp_email = user_info["email"]
+
+        # Only service providers can accept
+        if account_type != AccountType.SERVICE_PROVIDER:
+            return (
+                jsonify({"error": "Invalid account type - Service Providers only."}),
+                401,
+            )
+
+        # Fetch booking
+        booking = booking_repo.get_by_id(booking_id)
+        if not booking:
+            return jsonify({"error": f"Booking ID {booking_id} not found"}), 400
+
+        # Only can unaccept the booking if it belongs to this service provider
+        if booking.sp_email is None or booking.sp_email != sp_email:
+            return (
+                jsonify(
+                    {
+                        "error": "This booking either has no Service Provider, or is assigned to another Service Provider."
+                    }
+                ),
+                401,
+            )
+
+        # Remove SP
+        try:
+            updated_booking = booking_repo.drop_booking(booking, sp_email)
+        except Exception as e:
+            return jsonify({"error": f"Failed to drop booking: {str(e)}"}), 500
+
+        # Return DTO
+        booked_dogs = booking_repo.get_booked_dogs(booking.id)
+        dto = convert_booking_to_dto(updated_booking, booked_dogs)
+
+        return jsonify(dto), 200

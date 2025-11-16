@@ -16,54 +16,44 @@ def init_emergency_contact_routes(app, db: DB):
     @app.route("/emergency_contacts/<email>", methods=["GET"])
     def get_emergency_contacts():
         """
-    Gets the emergency contacts by email
-    ---
-    tags:
-      - Emergency Contacts
-    summary: Gets the emergency contacts by email
-    description: |
-      Returns the emergency contacts of the account identified
-    parameters:
-          - in: body
-            name: body
-            required: true
-            schema:
-              type: object
-              required:
-                - email
-              properties:
-                email:
-                  type: string
-                  description: "email to get contacts for"
-                  example: "bob@gmail.com"
+        Gets the emergency contacts by email
+        ---
+        tags:
+          - Emergency Contacts
+        summary: Gets the emergency contacts by email
+        description: |
+          Returns the emergency contacts of the account identified
+        parameters:
+              - in: body
+                name: body
+                required: true
+                schema:
+                  type: object
+                  required:
+                    - email
+                  properties:
+                    email:
+                      type: string
+                      description: "email to get contacts for"
+                      example: "bob@gmail.com"
 
-    responses:
-      200:
-        description: Successfully retrieved user details
-        schema:
-          type: array
-          items:
-            $ref: '#/definitions/EmergencyContactDto'
-        examples:
-          application/json:
-            EmergencyContact_example:
-              email: "john.doe@gmail.com"
-              f_name: "John"
-              l_name: "Doe"
-              phone_num: "4039997777"
-              relationship: "father"
-      400:
-        description: Missing/Invalid parameters
-      404:
-        description: User not found
-    """
+        responses:
+          200:
+            description: Successfully retrieved user details
+            schema:
+              type: array
+              items:
+                $ref: '#/definitions/EmergencyContactDto'
+          400:
+            description: Missing/Invalid parameters
+          404:
+            description: User not found
+        """
 
         data = request.get_json()
         result: List[EmergencyContactDto] = []
 
-        required = [
-            "email"
-        ]
+        required = ["email"]
         missing = [k for k in required if k not in data]
         if missing:
             return jsonify({"error": f"Missing fields: {', '.join(missing)}"}), 400
