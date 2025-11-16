@@ -1,6 +1,6 @@
 from db.db import DB
 from flask import request, jsonify
-from datetime import datetime
+from datetime import datetime, timedelta
 from models.models import *
 from middleware.auth_middleware import token_required
 from dto.dto import TokenPayload, BookingUpdateDto, BookingDto
@@ -411,6 +411,8 @@ def init_booking_routes(app, db: DB, booking_repo: BookingRepo):
             description: Booking not found
           401:
             description: Unauthorized (wrong account type or not the owner)
+          409:
+            description: Can only delete a booking at least 48 hours in advance
         """
 
         user_info: TokenPayload = request.payload
@@ -431,6 +433,21 @@ def init_booking_routes(app, db: DB, booking_repo: BookingRepo):
             return (
                 jsonify({"error": "You are not authorized to delete this booking"}),
                 401,
+            )
+
+        # Can only delete booking if it's 48 hours in advance OR if booking already ended
+        now = datetime.now()
+        time_diff = booking.start_datetime - now
+
+        # Booking is in the future AND within 48 hours → deletion forbidden
+        if booking.start_datetime > now and time_diff < timedelta(hours=48):
+            return (
+                jsonify(
+                    {
+                        "error": "Bookings can only be deleted at least 48 hours in advance."
+                    }
+                ),
+                409,
             )
 
         success = booking_repo.delete_booking(booking)
@@ -513,7 +530,7 @@ def init_booking_routes(app, db: DB, booking_repo: BookingRepo):
     @token_required
     def drop_booking(booking_id):
         """
-        Unaccept a booking (only allowed up to 24 hours before)
+        Unaccept a booking (only allowed up to 48 hours before)
         ---
         tags:
           - Bookings
@@ -539,6 +556,8 @@ def init_booking_routes(app, db: DB, booking_repo: BookingRepo):
             description: Booking not found or invalid state
           401:
             description: Unauthorized (not the correct service provider)
+          409:
+            description: Cannot drop booking within 48 hours of start time
         """
         user_info: TokenPayload = request.payload
         account_type = AccountType(user_info["account_type"].lower())
@@ -565,6 +584,21 @@ def init_booking_routes(app, db: DB, booking_repo: BookingRepo):
                     }
                 ),
                 401,
+            )
+
+        # Only can uncccept the booking if it's passed, OR if it's at least 48 hours before
+        now = datetime.now()
+        time_diff = booking.start_datetime - now
+
+        # If booking is in the future & within 24 hours → dropping forbidden
+        if booking.start_datetime > now and time_diff < timedelta(hours=48):
+            return (
+                jsonify(
+                    {
+                        "error": "Bookings may only be dropped at least 24 hours in advance."
+                    }
+                ),
+                409,
             )
 
         # Remove SP
