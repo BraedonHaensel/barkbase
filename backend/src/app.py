@@ -1,4 +1,5 @@
 from routes.auth import init_auth_routes
+from routes.emergency_contacts import init_emergency_contact_routes
 from routes.user import init_user_routes
 from routes.booking import init_booking_routes
 from routes.dogs import init_dog_routes
@@ -325,5 +326,6 @@ if __name__ == "__main__":
     init_user_routes(app, owner_repo=owner_repo, sp_repo=sp_repo)
     init_booking_routes(app, db, booking_repo=booking_repo)
     init_dog_routes(app, db)
+    init_emergency_contact_routes(app, db)
 
     app.run(port=os.getenv("API_PORT"), debug=True)
