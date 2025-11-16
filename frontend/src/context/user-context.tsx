@@ -11,6 +11,8 @@ import {
 } from 'react';
 import { SessionContext } from './session-context';
 import { toast } from 'sonner';
+import { Province } from '@/enums/province';
+import { User } from '@/types/user';
 
 // Type for the UserContext
 interface UserContextType {
@@ -56,11 +58,12 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
           firstName: data.f_name,
           lastName: data.l_name,
           phoneNum: data.phone_num,
-          address: data.address,
+          province: Province[data.province as keyof typeof Province],
+          city: data.city,
+          street: data.street,
           image_url: data.image_url,
         };
         setUser(userData);
-        setIsLoading(false);
       })
       .catch((error) => {
         // Handle request errors
@@ -73,6 +76,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
           toast.error('Failed to get user profile. Please try again.');
         }
         clearSession();
+      })
+      .finally(() => {
         setIsLoading(false);
       });
   };

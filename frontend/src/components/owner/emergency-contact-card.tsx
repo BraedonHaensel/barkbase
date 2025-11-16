@@ -1,21 +1,44 @@
 import { Card, CardContent } from '@/components/ui/card';
 import EmergencyContactForm from '@/components/owner/emergency-contact-form';
 import { useState } from 'react';
+import { toast } from 'sonner';
+import { EmergencyContact } from '@/types/emergency-contact';
 
 type Props = {
-  emergencyContact?: EmergencyContact;
+  emergencyContact: EmergencyContact;
+  isEditingAContact: boolean;
+  setIsEditingAContact: React.Dispatch<React.SetStateAction<boolean>>; // Called to notify parent when this card is being edited
+  updateContact: (
+    oldPhoneNumber: string,
+    newContactData: EmergencyContact
+  ) => Promise<void>;
+  deleteContact: (phoneNumber: string) => Promise<void>;
 };
 
 // Base card to view and manage an emergency contact
-const EmergencyContactCard = ({ emergencyContact }: Props) => {
+const EmergencyContactCard = ({
+  emergencyContact,
+  isEditingAContact,
+  setIsEditingAContact,
+  updateContact,
+  deleteContact,
+}: Props) => {
   const [isEditing, setIsEditing] = useState(false);
 
   return (
     <Card
-      className={`border-3 ${!isEditing && 'hover:cursor-pointer hover:opacity-60'}`}
+      className={`border-3 ${isEditing ? 'border-teal-400/50' : 'hover:cursor-pointer hover:opacity-60'}`}
       onClick={() => {
         if (!isEditing) {
-          setIsEditing(true);
+          // Check if another dog is already being edited
+          if (isEditingAContact) {
+            toast.warning(
+              'Only one emergency contact can be edited at a time!'
+            );
+          } else {
+            setIsEditing(true);
+            setIsEditingAContact(true);
+          }
         }
       }}
     >
@@ -23,7 +46,12 @@ const EmergencyContactCard = ({ emergencyContact }: Props) => {
         <EmergencyContactForm
           emergencyContact={emergencyContact}
           isEditing={isEditing}
-          setIsEditing={setIsEditing}
+          setIsEditing={(val) => {
+            setIsEditing(val);
+            setIsEditingAContact(val);
+          }}
+          updateContact={updateContact}
+          deleteContact={deleteContact}
         />
       </CardContent>
     </Card>

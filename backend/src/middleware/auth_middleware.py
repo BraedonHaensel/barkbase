@@ -3,7 +3,6 @@ from flask import request, jsonify
 import jwt
 import os
 from dto.dto import TokenPayload
-from models.models import Role
 
 SECRET_KEY = os.getenv("JWT_SECRET_KEY")  # load from .env
 
@@ -22,7 +21,7 @@ def token_required(f):
             data = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
             payload: TokenPayload = {
                 "email": data["email"],
-                "role": data["role"],
+                "account_type": data["account_type"],
             }
 
         except jwt.ExpiredSignatureError:

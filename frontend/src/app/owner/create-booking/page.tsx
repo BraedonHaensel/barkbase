@@ -5,7 +5,7 @@ import { AccountType } from '@/enums/account-type';
 import { redirect } from 'next/navigation';
 import { useContext, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import CreateBookingForm from '@/components/owner/create-booking-form';
+import CreateEditBookingForm from '@/components/owner/create-edit-booking-form';
 
 // Create booking page
 export default function CreateBookingPage() {
@@ -25,7 +25,7 @@ export default function CreateBookingPage() {
           <CardTitle className="text-center text-2xl">Create Booking</CardTitle>
         </CardHeader>
         <CardContent>
-          <CreateBookingForm />
+          <CreateEditBookingForm />
         </CardContent>
       </Card>
     </div>

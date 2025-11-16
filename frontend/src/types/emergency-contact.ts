@@ -1,5 +1,5 @@
 // Emergency contact data type
-interface EmergencyContact {
+export interface EmergencyContact {
   phoneNumber: string;
   relationship: string;
   firstName: string;

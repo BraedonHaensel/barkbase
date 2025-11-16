@@ -1,5 +1,6 @@
 'use client';
 
+import { Session } from '@/types/user';
 import { LoaderCircle } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import { createContext, ReactNode, useEffect, useState } from 'react';

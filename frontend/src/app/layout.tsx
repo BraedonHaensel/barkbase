@@ -38,6 +38,7 @@ export default function RootLayout({
           toastOptions={{
             classNames: {
               success: '!bg-green-300 !border-green-300',
+              warning: '!bg-amber-300 !border-amber-300',
               error: '!bg-red-300 !border-red-300',
             },
           }}

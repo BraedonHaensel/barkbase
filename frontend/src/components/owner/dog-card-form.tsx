@@ -15,10 +15,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { dogSchema } from '@/lib/schemas/dog';
-import { LoaderCircle } from 'lucide-react';
-import { useMutation } from '@tanstack/react-query';
-import { toast } from 'sonner';
-import api from '@/lib/api';
 import DatePicker from '../date-picker';
 import { dateToAge } from '@/lib/utils';
 import { DogSize } from '@/enums/dog-size';
@@ -30,204 +26,265 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Dog } from '@/types/dog';
+import { useState } from 'react';
+import { LoaderCircle } from 'lucide-react';
 
 // Schema for the dog form
 type DogSchema = z.infer<typeof dogSchema>;
 
 type Props = {
-  dog?: Dog;
+  dog: Dog;
   isEditing: boolean;
   setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
+  updateDog: (
+    oldName: string,
+    newDogData: Dog,
+    imageFile: File | undefined
+  ) => Promise<void>;
+  deleteDog: (name: string) => Promise<void>;
 };
 
 // Form to view and edit the dog of an owner
-const DogCardForm = ({ dog, isEditing, setIsEditing }: Props) => {
+const DogCardForm = ({
+  dog,
+  isEditing,
+  setIsEditing,
+  updateDog,
+  deleteDog,
+}: Props) => {
+  const [dogImagePreview, setDogImagePreview] = useState<string>(dog.imageUrl);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   // Form initialization
   const form = useForm<DogSchema>({
     resolver: zodResolver(dogSchema),
-    defaultValues: dog
-      ? {
-          name: dog.name,
-          date: dog.date,
-          size: dog.size,
-          breeds: dog.breeds,
-        }
-      : {
-          name: '',
-          date: undefined,
-          size: DogSize.MEDIUM,
-          breeds: '',
-        },
+    defaultValues: {
+      name: dog.name,
+      birthDate: dog.birthDate,
+      size: dog.size,
+      // Mark image if it's unpopulated on a new dog
+      image: dog.name ? undefined : 'newDogNoImage',
+      breeds: dog.breeds.join(', '),
+    },
   });
 
   form.watch();
 
-  // Update dog request
-  const { mutate: postUpdateDog, isPending } = useMutation({
-    mutationFn: async (input: DogSchema) => {
-      //TODO: Format breeds as array?
-      const response = await api.post('/TODO', {
-        name: input.name,
-        date: input.date,
-        size: input.size,
-        breeds: input.breeds,
-      });
-      return response.data;
-    },
-  });
+  const formInputToDog = (input: DogSchema): Dog => {
+    const dog: Dog = {
+      name: input.name,
+      birthDate: input.birthDate,
+      size: input.size,
+      imageUrl: dogImagePreview,
+      // Convert the comma-separated breeds string into a list
+      breeds: input.breeds.split(',').map((s) => s.trim()),
+    };
+    return dog;
+  };
+
+  const formContainsChanges = () => {
+    return (
+      JSON.stringify(dog) !== JSON.stringify(formInputToDog(form.getValues()))
+    );
+  };
 
   // Handle form submission
-  function onSubmit(input: DogSchema) {
-    console.log(`Submitting:`, JSON.stringify(input));
-    postUpdateDog(input, {
-      onSuccess: ({ message }) => {
-        console.info(message);
-        toast.success('Saved changes.');
-        // TODO: reload page? Call parent update function?
-      },
-      onError: (error: any) => {
-        const apiError = error?.response?.data?.error;
-        if (apiError) {
-          console.error(`API error: ${apiError}`);
-          toast.error(`Failed to save changes: ${apiError}`);
-        } else {
-          console.error(error);
-          toast.error('Failed to save changes. Please try again.');
-        }
-      },
-    });
+  async function onSubmit(input: DogSchema) {
+    // Skip if new dog has no image
+    if (input.image === 'newDogNoImage') return;
+    setIsSaving(true);
+    await updateDog(dog.name, formInputToDog(input), input.image);
+    setIsSaving(false);
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-        {/* Handle dog image uploads */}
-        <div className="flex h-20 w-20 items-center gap-10">
-          [TODO Upload]
-          <img src="https://hips.hearstapps.com/hmg-prod/images/dog-puppy-on-garden-royalty-free-image-1586966191.jpg?crop=0.752xw:1.00xh;0.175xw,0&resize=1200:*" />
-        </div>
-
-        {/* Name field */}
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Name</FormLabel>
-              <Input {...field} />
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Date of birth field */}
-        <FormField
-          control={form.control}
-          name="date"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Date of Birth</FormLabel>
-              <FormControl>
-                <div className="flex items-center gap-3">
-                  <DatePicker blockFuture {...field} />
-                  {field.value && (
-                    <p className="text-muted-foreground">
-                      ({dateToAge(field.value)} old)
-                    </p>
-                  )}
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Size field */}
-        <FormField
-          control={form.control}
-          name="size"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Size</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <fieldset
+          disabled={!isEditing || isSaving || isDeleting}
+          className="space-y-5"
+        >
+          {/* Profile image field */}
+          {/* CITATION: Field developed with reference to:
+           * File uploads made easy with react and flask. (n.d.). Dunder Method Paper Company.
+           * Retrieved November 10, 2025, from https://dundermethodpaperco.hashnode.dev/file-uploads-made-easy-with-react-and-flask
+           */}
+          <FormField
+            control={form.control}
+            name="image"
+            render={({ field: { onChange, value, ...rest } }) => (
+              <FormItem>
+                <FormLabel>Dog image</FormLabel>
                 <FormControl>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
+                  <div className="flex flex-col gap-3">
+                    {(isEditing || !dogImagePreview) && (
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            setDogImagePreview(URL.createObjectURL(file));
+                            onChange(file);
+                          }
+                        }}
+                        {...rest}
+                      />
+                    )}
+
+                    {dogImagePreview && (
+                      <img
+                        src={dogImagePreview}
+                        alt="Profile image preview"
+                        className="mx-auto aspect-square w-2/3 object-cover"
+                      />
+                    )}
+                  </div>
                 </FormControl>
-                <SelectContent>
-                  {/* Citation: Size weights are taken from:
-                   * Rover.com: Book Dog Boarding, Dog Walking and More. (n.d.). Rover.com. Retrieved November 8, 2025, https://www.rover.com/ca/
-                   */}
-                  <SelectItem value={DogSize.SMALL}>
-                    Small (0-15 lbs)
-                  </SelectItem>
-                  <SelectItem value={DogSize.MEDIUM}>
-                    Medium (16-40 lbs)
-                  </SelectItem>
-                  <SelectItem value={DogSize.LARGE}>Large (41+ lbs)</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Name field */}
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Name</FormLabel>
+                <Input {...field} />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Date of birth field */}
+          <FormField
+            control={form.control}
+            name="birthDate"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Date of Birth</FormLabel>
+                <FormControl>
+                  <div className="flex items-center gap-3">
+                    <DatePicker blockFuture {...field} />
+                    {field.value && (
+                      <p className="text-muted-foreground">
+                        ({dateToAge(field.value)} old)
+                      </p>
+                    )}
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Size field */}
+          <FormField
+            control={form.control}
+            name="size"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Size</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {/* Citation: Size weights are taken from:
+                     * Rover.com: Book Dog Boarding, Dog Walking and More. (n.d.). Rover.com. Retrieved November 8, 2025, https://www.rover.com/ca/
+                     */}
+                    <SelectItem value={DogSize.SMALL}>
+                      Small (0-15 lbs)
+                    </SelectItem>
+                    <SelectItem value={DogSize.MEDIUM}>
+                      Medium (16-40 lbs)
+                    </SelectItem>
+                    <SelectItem value={DogSize.LARGE}>
+                      Large (41+ lbs)
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Breeds field */}
+          <FormField
+            control={form.control}
+            name="breeds"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Breeds</FormLabel>
+                <Input {...field} />
+                <FormDescription>
+                  Separate multiple breeds with commas
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {isEditing && (
+            <div className="flex flex-col gap-3">
+              {/* Discard changes button */}
+              <Button
+                type="button"
+                className="w-full"
+                onClick={() => {
+                  form.reset();
+                  setDogImagePreview(dog.imageUrl);
+                  setIsEditing(false);
+                }}
+                variant="secondary"
+              >
+                Discard Changes
+              </Button>
+
+              {/* Save changes button */}
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={!formContainsChanges()}
+              >
+                {isSaving ? (
+                  <LoaderCircle className="animate-spin" />
+                ) : (
+                  'Save Changes'
+                )}
+              </Button>
+
+              {/* Delete button */}
+              <Button
+                type="button"
+                className="bg-destructive/30 mt-4 w-full"
+                variant="destructive"
+                onClick={async () => {
+                  setIsDeleting(true);
+                  if (window.confirm(`Are you sure you want to delete?`)) {
+                    await deleteDog(dog.name);
+                  }
+                  setIsDeleting(false);
+                }}
+              >
+                {isDeleting ? (
+                  <LoaderCircle className="animate-spin" />
+                ) : (
+                  'Delete'
+                )}
+              </Button>
+            </div>
           )}
-        />
-
-        {/* Breeds field */}
-        <FormField
-          control={form.control}
-          name="breeds"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Breeds</FormLabel>
-              <Input {...field} />
-              <FormDescription>
-                Separate multiple breeds with commas
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {isEditing && (
-          <div className="flex flex-col gap-3">
-            {/* Discard changes button */}
-            <Button
-              type="button"
-              className="w-full"
-              onClick={() => {
-                form.reset();
-                setIsEditing(false);
-              }}
-              variant="secondary"
-            >
-              Discard Changes
-            </Button>
-
-            {/* Save changes button */}
-            <Button type="submit" className="w-full" disabled={isPending}>
-              {isPending ? (
-                <LoaderCircle className="h-6! w-6! animate-spin" />
-              ) : (
-                'Save Changes'
-              )}
-            </Button>
-
-            {/* Delete button */}
-            <Button
-              type="button"
-              className="bg-destructive/30 mt-4 w-full"
-              variant="destructive"
-              onClick={() => {
-                if (window.confirm(`Are you sure you want to delete?`)) {
-                  console.log('Deleting...');
-                }
-              }}
-            >
-              Delete
-            </Button>
-          </div>
-        )}
+        </fieldset>
       </form>
     </Form>
   );
