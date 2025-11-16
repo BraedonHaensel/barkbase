@@ -131,9 +131,6 @@ def init_booking_routes(app, db: DB, booking_repo: BookingRepo):
         description: |
           Returns all bookings that have no assigned service provider yet.
           These bookings are open and available for acceptance.
-
-
-        description: Filter by upcoming or past bookings
         responses:
           200:
             description: Successfully retrieved available bookings

@@ -14,7 +14,7 @@ from dto.dto import EmergencyContactDto
 
 def init_emergency_contact_routes(app, db: DB):
     @app.route("/emergency_contacts/<email>", methods=["GET"])
-    def get_emergency_contacts():
+    def get_emergency_contacts(email):
         """
         Gets emergency contacts
         ---
@@ -24,54 +24,37 @@ def init_emergency_contact_routes(app, db: DB):
         description: |
           Returns the emergency contacts of the account identified
         parameters:
-              - in: body
-                name: body
-                required: true
-                schema:
-                  type: object
-                  required:
-                    - email
-                  properties:
-                    email:
-                      type: string
-                      description: "email to get contacts for"
-                      example: "bob@gmail.com"
+          - in: path
+            name: email
+            required: true
+            type: string
+            description: Email to retrieve emergency contacts for
+            example: "bob@gmail.com"
 
-            responses:
-              200:
-                description: Successfully retrieved user details
-                schema:
-                  type: array
-                  items:
-                    $ref: '#/definitions/EmergencyContactDto'
-              400:
-                description: Missing/Invalid parameters
-              404:
-                description: User not found
+        responses:
+          200:
+            description: Successfully retrieved user details
+            schema:
+              type: array
+              items:
+                $ref: '#/definitions/EmergencyContactDto'
+          400:
+            description: Missing/Invalid parameters
+          404:
+            description: User not found
         """
 
-        data = request.get_json()
         result: List[EmergencyContactDto] = []
-
-        required = ["email"]
-        missing = [k for k in required if k not in data]
-        if missing:
-            return jsonify({"error": f"Missing fields: {', '.join(missing)}"}), 400
-
-        try:
-            email = data["email"]
-        except Exception as e:
-            return jsonify({"error": f"Invalid data: {str(e)}"}), 400
 
         retrieved = db.getEmergencyContact(email)
 
         for i in retrieved:
             dto: EmergencyContactDto = {
-                "email": i.email,
-                "f_name": i.f_name,
-                "l_name": i.l_name,
-                "relationship": i.relationship,
-                "phone_num": i.phone_num,
+                "email": i["email"],
+                "f_name": i["f_name"],
+                "l_name": i["l_name"],
+                "relationship": i["relationship"],
+                "phone_num": i["phone_num"],
             }
             result.append(dto)
         return jsonify(result), 200
@@ -90,39 +73,39 @@ def init_emergency_contact_routes(app, db: DB):
         description: |
           Adds an emergency contact, can overwrite existing contacts
         parameters:
-              - in: body
-                name: body
-                required: true
-                schema:
-                  type: object
-                  required:
-                    - f_name
-                    - l_name
-                    - phone_num
-                    - relationship
-                  optional:
-                    - email
-                  properties:
-                    email:
-                      type: string
-                      description: "email of the contact"
-                      example: "bob@gmail.com"
-                    f_name:
-                      type: string
-                      description: "first name of the contact"
-                      example: "bob"
-                    l_name:
-                      type: string
-                      description: "last name of the contact"
-                      example: "brown"
-                    phone_num:
-                      type: string
-                      description: "phone number of the contact"
-                      example: "1234567890"
-                    relationship:
-                      type: string
-                      description: "relationship of the contact to the user"
-                      example: "uncle"
+          - in: body
+            name: body
+            required: true
+            schema:
+              type: object
+              required:
+                - f_name
+                - l_name
+                - phone_num
+                - relationship
+              optional:
+                - email
+              properties:
+                email:
+                  type: string
+                  description: "email of the contact"
+                  example: "bob@gmail.com"
+                f_name:
+                  type: string
+                  description: "first name of the contact"
+                  example: "bob"
+                l_name:
+                  type: string
+                  description: "last name of the contact"
+                  example: "brown"
+                phone_num:
+                  type: string
+                  description: "phone number of the contact"
+                  example: "1234567890"
+                relationship:
+                  type: string
+                  description: "relationship of the contact to the user"
+                  example: "uncle"
 
         responses:
           201:
@@ -182,18 +165,18 @@ def init_emergency_contact_routes(app, db: DB):
         description: |
           Deletes an emergency contact from the email of the token
         parameters:
-              - in: body
-                name: body
-                required: true
-                schema:
-                  type: object
-                  required:
-                    - phone_num
-                  properties:
-                    phone_num:
-                      type: string
-                      description: "phone number of the contact"
-                      example: "1234567890"
+          - in: body
+            name: body
+            required: true
+            schema:
+              type: object
+              required:
+                - phone_num
+              properties:
+                phone_num:
+                  type: string
+                  description: "phone number of the contact"
+                  example: "1234567890"
         responses:
           200:
             description: Successfully deleted contact
