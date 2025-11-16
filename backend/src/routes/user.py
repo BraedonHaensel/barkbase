@@ -1,8 +1,10 @@
+from typing import List
+
 from middleware.auth_middleware import token_required
 from repo.owner_repo import OwnerRepo
 from repo.sp_repo import ServiceProviderRepo
 from flask import request, jsonify
-from dto.dto import OwnerDTO, ServiceProviderDTO, TokenPayload
+from dto.dto import OwnerDTO, ServiceProviderDTO, TokenPayload, EmergencyContactDto
 from utils.images import get_user_image_url
 from enums.enums import AccountType
 
@@ -122,4 +124,9 @@ def init_user_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
             return jsonify(dto), 200
         
         else:
-            return jsonify({"error": "Invalid accoun type"}), 400
+            return jsonify({"error": "Invalid account type"}), 400
+
+
+
+
+
