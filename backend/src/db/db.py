@@ -282,6 +282,32 @@ class DB:
 
         return res
 
+    def addEmergencyContact(self, request: EmergencyContactDto):
+
+        phone_num = request["phone_num"]
+        o_email = request["owner_email"]
+
+        if self.db.query(EmergencyContact).filter(and_(
+                EmergencyContact.o_email == o_email, EmergencyContact.phone_num == phone_num)).first():
+            self.removeEmergencyContact(o_email, phone_num)
+
+        self.db.add(EmergencyContact(
+            o_email=o_email, phone_num=phone_num, f_name=request["f_name"],
+            l_name=request["l_name"], relationship=request["relationship"]
+        ))
+
+    def removeEmergencyContact(self, o_email:str, phone_num:str):
+
+        contact = self.db.query(EmergencyContact).filter(and_(
+            EmergencyContact.o_email == o_email, EmergencyContact.phone_num == phone_num)).first()
+
+        if not contact:
+            raise KeyError("no such emergency contact")
+
+        self.db.delete(contact)
+        self.db.commit()
+
+
     # DOGS
     def getAllDogs(self) -> List[Dog]:
         dogs = self.db.query(Dog).all()
