@@ -10,6 +10,7 @@ import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
 import { Edit, LoaderCircle, Trash2 } from 'lucide-react';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 // Form schema for a general booking view
 type BookingSchema = z.infer<typeof bookingSchema>;
@@ -22,6 +23,7 @@ type Props = {
 // General use form for displaying a booking
 const BookingForm = ({ booking, onDelete }: Props) => {
   const [isDeleting, setIsDeleting] = useState(false);
+  const router = useRouter();
 
   // Initialize the form
   const form = useForm<BookingSchema>({
@@ -181,7 +183,13 @@ const BookingForm = ({ booking, onDelete }: Props) => {
 
         <div className="mx-2 flex justify-center gap-4">
           {/* Edit button */}
-          <Button type="button" className="w-1/2" onClick={() => {}}>
+          <Button
+            type="button"
+            className="w-1/2"
+            onClick={() => {
+              router.push(`/owner/edit-booking/${booking.id}`);
+            }}
+          >
             Edit <Edit />
           </Button>
 

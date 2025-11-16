@@ -2,6 +2,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import EmergencyContactForm from '@/components/owner/emergency-contact-form';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { EmergencyContact } from '@/types/emergency-contact';
 
 type Props = {
   emergencyContact: EmergencyContact;

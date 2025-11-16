@@ -6,7 +6,7 @@ import { AccountType } from '@/enums/account-type';
 import { Province } from '@/enums/province';
 import { ServiceType } from '@/enums/service-type';
 import api from '@/lib/api';
-import { getHMFromIsoString, getYMDFromIsoString } from '@/lib/utils';
+import { getHMFromIsoString } from '@/lib/utils';
 import { Booking } from '@/types/booking';
 import { LoaderCircle } from 'lucide-react';
 import { redirect } from 'next/navigation';
@@ -81,6 +81,10 @@ export default function UpcomingBookingsPage() {
       });
   };
 
+  useEffect(() => {
+    getUpcomingBookings();
+  }, []);
+
   // Delete a booking
   const deleteBooking = async (bookingId: string) => {
     api
@@ -107,11 +111,6 @@ export default function UpcomingBookingsPage() {
       });
   };
 
-  useEffect(() => {
-    getUpcomingBookings();
-  }, []);
-
-  // const bookings: Array<Booking> = [bk1];
   if (isLoading) {
     return <LoaderCircle className="mx-auto mt-3 h-10 w-10 animate-spin" />;
   }
