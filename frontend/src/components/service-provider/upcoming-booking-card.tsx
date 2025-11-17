@@ -4,19 +4,19 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Booking } from '@/types/booking';
 import BookingForm from '@/components/booking-form';
 import { ServiceType } from '@/enums/service-type';
-import { CheckLine, Footprints, House, LoaderCircle } from 'lucide-react';
+import { Footprints, House, LoaderCircle } from 'lucide-react';
 import BookingSPProfile from '@/components/booking-sp-nav';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 
 type Props = {
   booking: Booking;
-  onAccept: (id: string) => Promise<void>;
+  onDecline: (id: string) => Promise<void>;
 };
 
-// Card for dispalying an available booking for a service provider to accept
-const AvailableBookingCard = ({ booking, onAccept }: Props) => {
-  const [isAccepting, setIsAccepting] = useState(false);
+// Card for dispalying a service provider's upcoming booking
+const UpcomingBookingCard = ({ booking, onDecline }: Props) => {
+  const [isDeclining, setIsDeclining] = useState(false);
 
   return (
     <Card className="min-w-[450px] border-3">
@@ -34,7 +34,7 @@ const AvailableBookingCard = ({ booking, onAccept }: Props) => {
         </CardTitle>
         <CardTitle className="flex h-full text-xl">
           <div className="flex items-center gap-2">
-            {/* TODO Just owner name in dropdown? Or put text beside? */}
+            {/* TODO owner details */}
             <BookingSPProfile
               spDetails={{
                 firstName: 'John',
@@ -54,22 +54,23 @@ const AvailableBookingCard = ({ booking, onAccept }: Props) => {
           {/* Delete button */}
           <Button
             type="button"
-            className="w-full"
+            className="bg-destructive/30 w-full"
+            variant="destructive"
             onClick={async () => {
-              setIsAccepting(true);
+              setIsDeclining(true);
               if (
-                window.confirm('Are you sure you want to accept this booking?')
+                window.confirm('Are you sure you want to decline this booking?')
               ) {
-                await onAccept(booking.id);
+                await onDecline(booking.id);
               }
-              setIsAccepting(false);
+              setIsDeclining(false);
             }}
           >
-            {isAccepting ? (
+            {isDeclining ? (
               <LoaderCircle className="animate-spin" />
             ) : (
               <>
-                <p>Accept Booking</p> <CheckLine strokeWidth={3} />
+                <p>Decline Booking</p>
               </>
             )}
           </Button>
@@ -79,4 +80,4 @@ const AvailableBookingCard = ({ booking, onAccept }: Props) => {
   );
 };
 
-export default AvailableBookingCard;
+export default UpcomingBookingCard;

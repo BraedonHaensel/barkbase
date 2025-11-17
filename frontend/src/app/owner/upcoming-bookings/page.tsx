@@ -45,6 +45,7 @@ export default function UpcomingBookingsPage() {
         data.forEach((booking: any) => {
           const bookingData: Booking = {
             id: booking.id,
+            oEmail: booking.o_email,
             serviceType:
               ServiceType[booking.service_type as keyof typeof ServiceType],
             // Parse the start and end dates and times from the local ISO strings
