@@ -73,18 +73,22 @@ export default function EmergencyContactsPage() {
 
   // Create a new emergency contact
   const createContact = async (contactData: EmergencyContact) => {
-    // TODO form data or request body?
-    const formData = new FormData();
-    formData.append('phone_number', contactData.phoneNumber);
-    formData.append('relationship', contactData.relationship);
-    formData.append('f_name', contactData.firstName);
-    formData.append('l_name', contactData.lastName);
     api
-      .post('/TODO', formData, {
-        headers: {
-          Authorization: `Bearer ${session?.token}`,
+      .post(
+        '/emergency_contacts',
+        {
+          phone_num: contactData.phoneNumber,
+          relationship: contactData.relationship,
+          f_name: contactData.firstName,
+          l_name: contactData.lastName,
+          ...(contactData.email ? { email: contactData.email } : {}),
         },
-      })
+        {
+          headers: {
+            Authorization: `Bearer ${session?.token}`,
+          },
+        }
+      )
       .then((response) => {
         toast.success(response.data.message);
         // Refresh the owner's contacts
@@ -116,23 +120,28 @@ export default function EmergencyContactsPage() {
       return;
     }
 
+    // TODO Support editing contacts?
     // Updating an existing emergency contact
-    // TODO formData?
-    const formData = new FormData();
-    formData.append('phone_number', newContactData.phoneNumber);
-    formData.append('relationship', newContactData.relationship);
-    formData.append('f_name', newContactData.firstName);
-    formData.append('l_name', newContactData.lastName);
     // Add old_phone_number field if the contact's phone number changed
-    if (oldPhoneNumber !== newContactData.phoneNumber) {
-      formData.append('old_phone_number', oldPhoneNumber);
-    }
+    // if (oldPhoneNumber !== newContactData.phoneNumber) {
+    //   formData.append('old_phone_number', oldPhoneNumber);
+    // }
     api
-      .put('/TODO', formData, {
-        headers: {
-          Authorization: `Bearer ${session?.token}`,
+      .put(
+        '/TODO',
+        {
+          phone_num: newContactData.phoneNumber,
+          relationship: newContactData.relationship,
+          f_name: newContactData.firstName,
+          l_name: newContactData.lastName,
+          email: newContactData.email,
         },
-      })
+        {
+          headers: {
+            Authorization: `Bearer ${session?.token}`,
+          },
+        }
+      )
       .then((response) => {
         toast.success(response.data.message);
         // Refresh the owner's emergency contacts
@@ -163,7 +172,6 @@ export default function EmergencyContactsPage() {
       setIsEditingAContact(false);
       return;
     }
-    console.log(phoneNumber);
     api
       .delete('/emergency_contacts', {
         headers: {
