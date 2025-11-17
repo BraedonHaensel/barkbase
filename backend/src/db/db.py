@@ -289,12 +289,13 @@ class DB:
 
         if self.db.query(EmergencyContact).filter(and_(
                 EmergencyContact.o_email == o_email, EmergencyContact.phone_num == phone_num)).first():
-            self.removeEmergencyContact(o_email, phone_num)
+            raise ValueError(f"Duplicate phone number: {phone_num}")
 
         self.db.add(EmergencyContact(
             o_email=o_email, phone_num=phone_num, f_name=request["f_name"],
-            l_name=request["l_name"], relationship=request["relationship"]
+            l_name=request["l_name"], relationship=request["relationship"], email=request["email"]
         ))
+        self.db.commit()
 
     def removeEmergencyContact(self, o_email:str, phone_num:str):
 

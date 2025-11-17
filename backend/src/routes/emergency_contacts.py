@@ -1,13 +1,10 @@
 from typing import List
 from db.db import DB
 from flask import request, jsonify
-from datetime import date
 from models.models import *
 from middleware.auth_middleware import token_required
-from dto.dto import TokenPayload, DogDTO, UpdateDogDTO
-from models.models import Dog
+from dto.dto import TokenPayload
 from enums.enums import AccountType
-from utils.images import get_dog_image_url, validate_image_file, save_dog_image
 
 from dto.dto import EmergencyContactDto
 
@@ -144,8 +141,13 @@ def init_emergency_contact_routes(app, db: DB):
             }
             db.addEmergencyContact(dto)
 
+        except ValueError as e:
+            if "duplicate" in str(e):
+                return jsonify({"error": str(e)}), 409
+            else:
+                return jsonify({"error": str(e)}), 400
         except KeyError as e:
-            return jsonify({"error": "duplicate emergency contact"}), 404
+            return jsonify({"error": f"Invalid key: {str(e)}"}), 400
         except Exception as e:
             return jsonify({"error": f"Invalid data: {str(e)}"}), 400
 
