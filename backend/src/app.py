@@ -13,8 +13,7 @@ from flask_cors import CORS
 import os
 
 if __name__ == "__main__":
-    # TODO: populate DB
-    # load_dotenv()
+    # Initialize the database
     db = DB()
     db.resetAllTables()
     db.populateDb()

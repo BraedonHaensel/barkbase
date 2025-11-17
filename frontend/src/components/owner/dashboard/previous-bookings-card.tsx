@@ -19,10 +19,6 @@ const PreviousBookingsCard = () => {
         <p className="text-muted-foreground">
           View and write reviews for previous bookings!
         </p>
-        <span className="text-muted-foreground">
-          <br />
-          TODO: Show a previous booking preview
-        </span>
       </CardContent>
     </Card>
   );
