@@ -42,11 +42,6 @@ const UpcomingBookingCard = ({ booking, onDelete }: Props) => {
         </CardTitle>
         <CardTitle className="flex h-full text-xl">
           {booking.spEmail ? (
-            <div className="flex h-full items-center gap-2">
-              <p>PENDING</p>
-              <Timer />
-            </div>
-          ) : (
             <div className="flex items-center gap-2">
               <p>ACCEPTED</p>
               {/* TODO get sp details */}
@@ -60,6 +55,11 @@ const UpcomingBookingCard = ({ booking, onDelete }: Props) => {
                   rating: 4,
                 }}
               />
+            </div>
+          ) : (
+            <div className="flex h-full items-center gap-2">
+              <p>PENDING</p>
+              <Timer />
             </div>
           )}
         </CardTitle>

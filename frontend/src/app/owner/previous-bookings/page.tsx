@@ -1,49 +1,100 @@
 'use client';
 
+import PreviousBookingCard from '@/components/owner/previous-booking-card';
 import UpcomingBookingCard from '@/components/owner/upcoming-booking-card';
 import { SessionContext } from '@/context/session-context';
 import { AccountType } from '@/enums/account-type';
 import { Province } from '@/enums/province';
 import { ServiceType } from '@/enums/service-type';
+import api from '@/lib/api';
+import { getHMFromIsoString } from '@/lib/utils';
 import { Booking } from '@/types/booking';
+import { LoaderCircle } from 'lucide-react';
 import { redirect } from 'next/navigation';
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
-// Upcoming bookings page
+// Previous bookings page
 export default function PreviousBookingsPage() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [bookings, setBookings] = useState<Array<Booking>>([]);
   const { session } = useContext(SessionContext);
 
-  // A session is required
+  // An owner session is required
   useEffect(() => {
     if (!session || session.accountType !== AccountType.OWNER) {
       redirect('/login');
     }
   }, [session]);
 
-  // TODO using same as upcoming bookings for current demo
-  const bk1: Booking = {
-    dogNames: ['Chico', 'Bear'],
-    startDate: new Date(),
-    startTime: '12:00',
-    endDate: new Date(),
-    endTime: '13:00',
-    serviceType: ServiceType.WALKING,
-    street: '234 Mt Norquay Pl SE',
-    city: 'Calgary',
-    province: Province.AB,
-    price: '240',
-    note: `Chico is a barker and likes to chase after squirrels.
-Please keep him on a tight leash!
-`,
+  // Fetch all of the owner's past bookings from the API
+  const getPastBookings = async () => {
+    setIsLoading(true);
+    api
+      .get('/bookings/me', {
+        params: {
+          when: 'past',
+        },
+        headers: {
+          Authorization: `Bearer ${session?.token}`,
+        },
+      })
+      .then((response) => {
+        // Parse each upcoming booking from the response
+        const newBookings: Array<Booking> = [];
+        const data = response.data;
+        data.forEach((booking: any) => {
+          const bookingData: Booking = {
+            id: booking.id,
+            oEmail: booking.o_email,
+            serviceType:
+              ServiceType[booking.service_type as keyof typeof ServiceType],
+            // Parse the start and end dates and times from the local ISO strings
+            startDate: new Date(booking.start_datetime),
+            startTime: getHMFromIsoString(booking.start_datetime),
+            endDate: new Date(booking.end_datetime),
+            endTime: getHMFromIsoString(booking.end_datetime),
+            dogNames: booking.dog_names,
+            street: booking.street,
+            city: booking.city,
+            province: Province[booking.province as keyof typeof Province],
+            price: booking.price,
+            note: booking.note,
+            spEmail: booking.sp_email,
+          };
+          newBookings.push(bookingData);
+        });
+        setBookings(newBookings);
+      })
+      .catch((error) => {
+        // Handle request errors
+        const apiError = error?.response?.data?.error;
+        if (apiError) {
+          console.error(`API error: ${apiError}`);
+          toast.error(`Failed to get bookings: ${apiError}`);
+        } else {
+          console.error(error);
+          toast.error('Failed to get bookings. Please try again.');
+        }
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
-  const bookings: Array<Booking> = [bk1];
+  useEffect(() => {
+    getPastBookings();
+  }, []);
+
+  if (isLoading) {
+    return <LoaderCircle className="mx-auto mt-3 h-10 w-10 animate-spin" />;
+  }
 
   return (
     <div className="flex flex-col gap-4">
       {/* Page title */}
       <p style={{ fontSize: '35px' }} className="text-center font-bold">
-        Upcoming Bookings
+        Previous Bookings
       </p>
       {bookings.length == 0 ? (
         <div className="flex justify-center">
@@ -54,12 +105,12 @@ Please keep him on a tight leash!
           className={
             bookings.length == 1
               ? 'mx-auto w-1/2'
-              : 'grid min-w-[400px] gap-6 md:grid-cols-2'
+              : 'grid min-w-[400px] gap-6 lg:grid-cols-2'
           }
         >
-          {/* Render a card for each previous booking */}
+          {/* Render a card for each upcoming booking */}
           {bookings.map((booking, id) => (
-            <UpcomingBookingCard key={id} booking={booking} />
+            <PreviousBookingCard key={id} booking={booking} />
           ))}
         </div>
       )}

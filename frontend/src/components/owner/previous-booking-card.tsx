@@ -4,20 +4,17 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Booking } from '@/types/booking';
 import BookingForm from '@/components/booking-form';
 import { ServiceType } from '@/enums/service-type';
-import { Footprints, House, LoaderCircle } from 'lucide-react';
+import { Footprints, House, PencilLine } from 'lucide-react';
 import BookingSPProfile from '@/components/booking-sp-nav';
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { redirect } from 'next/navigation';
 
 type Props = {
   booking: Booking;
-  onDecline: (id: string) => Promise<void>;
 };
 
-// Card for dispalying a service provider's upcoming booking
-const UpcomingBookingCard = ({ booking, onDecline }: Props) => {
-  const [isDeclining, setIsDeclining] = useState(false);
-
+// Card for dispalying an owner's previous booking
+const PreviousBookingCard = ({ booking }: Props) => {
   return (
     <Card className="min-w-[450px] border-3">
       <CardHeader className="flex h-10 items-center justify-between">
@@ -34,7 +31,7 @@ const UpcomingBookingCard = ({ booking, onDecline }: Props) => {
         </CardTitle>
         <CardTitle className="flex h-full text-xl">
           <div className="flex items-center gap-2">
-            {/* TODO owner details */}
+            {/* TODO get sp details */}
             <BookingSPProfile
               spDetails={{
                 firstName: 'John',
@@ -51,28 +48,15 @@ const UpcomingBookingCard = ({ booking, onDecline }: Props) => {
       <CardContent>
         <BookingForm booking={booking} />
         <div className="mt-4 flex justify-center">
-          {/* Decline button */}
+          {/* Review button */}
           <Button
             type="button"
-            className="bg-destructive/30 w-full"
-            variant="destructive"
-            onClick={async () => {
-              setIsDeclining(true);
-              if (
-                window.confirm('Are you sure you want to decline this booking?')
-              ) {
-                await onDecline(booking.id);
-              }
-              setIsDeclining(false);
+            className="w-full"
+            onClick={() => {
+              redirect(`/owner/review-booking/${booking.id}`);
             }}
           >
-            {isDeclining ? (
-              <LoaderCircle className="animate-spin" />
-            ) : (
-              <>
-                <p>Decline Booking</p>
-              </>
-            )}
+            <p>Write a Review</p> <PencilLine />
           </Button>
         </div>
       </CardContent>
@@ -80,4 +64,4 @@ const UpcomingBookingCard = ({ booking, onDecline }: Props) => {
   );
 };
 
-export default UpcomingBookingCard;
+export default PreviousBookingCard;

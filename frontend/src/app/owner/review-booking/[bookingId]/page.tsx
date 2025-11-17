@@ -14,7 +14,7 @@ import { getHMFromIsoString } from '@/lib/utils';
 import { Province } from '@/enums/province';
 import { toast } from 'sonner';
 
-// Page to edit an existing booking
+// Page to review a completed booking
 export default function EditBookingPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [booking, setBooking] = useState<Booking | undefined>(undefined);
@@ -35,7 +35,7 @@ export default function EditBookingPage() {
     api
       .get('/bookings/me', {
         params: {
-          when: 'upcoming',
+          when: 'past',
         },
         headers: {
           Authorization: `Bearer ${session?.token}`,
@@ -104,13 +104,10 @@ export default function EditBookingPage() {
     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
       <Card className="w-[450px] px-6">
         <CardHeader>
-          <CardTitle className="text-center text-2xl">Edit Booking</CardTitle>
+          <CardTitle className="text-center text-2xl">Write a Review</CardTitle>
         </CardHeader>
         <CardContent>
-          <CreateEditBookingForm
-            isEditingBooking={true}
-            bookingDetails={booking}
-          />
+          <p>TODO form to review booking: {JSON.stringify(booking)}</p>
         </CardContent>
       </Card>
     </div>
