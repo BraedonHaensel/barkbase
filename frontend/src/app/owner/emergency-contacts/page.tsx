@@ -9,6 +9,7 @@ import { useContext, useEffect, useState } from 'react';
 import api from '@/lib/api';
 import { toast } from 'sonner';
 import { EmergencyContact } from '@/types/emergency-contact';
+import { UserContext } from '@/context/user-context';
 
 // Emergency contacts management page
 export default function EmergencyContactsPage() {
@@ -16,6 +17,7 @@ export default function EmergencyContactsPage() {
   const [contacts, setContacts] = useState<Array<EmergencyContact>>([]);
   const [isEditingAContact, setIsEditingAContact] = useState(false);
   const { session } = useContext(SessionContext);
+  const { user } = useContext(UserContext);
 
   // A session is required
   useEffect(() => {
@@ -28,7 +30,7 @@ export default function EmergencyContactsPage() {
   const getContacts = async () => {
     setIsLoading(true);
     api
-      .get('/TODO', {
+      .get(`/emergency_contacts/${user?.email}`, {
         headers: {
           Authorization: `Bearer ${session?.token}`,
         },
@@ -39,7 +41,8 @@ export default function EmergencyContactsPage() {
         const data = response.data;
         data.forEach((contact: any) => {
           const contactData: EmergencyContact = {
-            phoneNumber: contact.phone_number,
+            phoneNumber: contact.phone_num,
+            ...(contact.email ? { email: contact.email } : {}),
             relationship: contact.relationship,
             firstName: contact.f_name,
             lastName: contact.l_name,
@@ -65,26 +68,7 @@ export default function EmergencyContactsPage() {
   };
 
   useEffect(() => {
-    // TODO API, update .get path
-    // getContacts();
-
-    // TODO temporary emergency contacts, delete all this
-    const emergencyContact1: EmergencyContact = {
-      phoneNumber: '4039997777',
-      relationship: 'Mother',
-      firstName: 'Fred',
-      lastName: 'Smith',
-      email: 'friend@gmail.com',
-    };
-    const emergencyContact2: EmergencyContact = {
-      phoneNumber: '4039997777',
-      relationship: 'Friend',
-      firstName: 'Jane',
-      lastName: 'Doe',
-    };
-    const emergencyContacts = [emergencyContact1, emergencyContact2];
-    setContacts(emergencyContacts);
-    setIsLoading(false); // TODO Delete this too when the API is hooked up
+    getContacts();
   }, []);
 
   // Create a new emergency contact
@@ -169,8 +153,8 @@ export default function EmergencyContactsPage() {
   };
 
   // Delete an emergency contact
-  const deleteContact = async (phone_number: string) => {
-    if (phone_number === '') {
+  const deleteContact = async (phoneNumber: string) => {
+    if (phoneNumber === '') {
       // This is the newest emergency contact. Delete it directly
       setContacts((prevContacts) => {
         return prevContacts.slice(0, -1);
@@ -179,13 +163,14 @@ export default function EmergencyContactsPage() {
       setIsEditingAContact(false);
       return;
     }
+    console.log(phoneNumber);
     api
-      .delete('/TODO', {
+      .delete('/emergency_contacts', {
         headers: {
           Authorization: `Bearer ${session?.token}`,
         },
         data: {
-          name,
+          phone_num: phoneNumber,
         },
       })
       .then((response) => {
