@@ -1,7 +1,6 @@
 'use client';
 
 import PreviousBookingCard from '@/components/owner/previous-booking-card';
-import UpcomingBookingCard from '@/components/owner/upcoming-booking-card';
 import { SessionContext } from '@/context/session-context';
 import { AccountType } from '@/enums/account-type';
 import { Province } from '@/enums/province';
@@ -98,7 +97,7 @@ export default function PreviousBookingsPage() {
       </p>
       {bookings.length == 0 ? (
         <div className="flex justify-center">
-          <p className="text-muted-foreground">No upcoming bookings.</p>
+          <p className="text-muted-foreground">No previous bookings.</p>
         </div>
       ) : (
         <div
@@ -108,7 +107,7 @@ export default function PreviousBookingsPage() {
               : 'grid min-w-[400px] gap-6 lg:grid-cols-2'
           }
         >
-          {/* Render a card for each upcoming booking */}
+          {/* Render a card for each prevous booking */}
           {bookings.map((booking, id) => (
             <PreviousBookingCard key={id} booking={booking} />
           ))}
