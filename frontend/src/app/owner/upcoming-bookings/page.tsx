@@ -31,6 +31,9 @@ export default function UpcomingBookingsPage() {
     setIsLoading(true);
     api
       .get('/bookings/me', {
+        params: {
+          when: 'upcoming',
+        },
         headers: {
           Authorization: `Bearer ${session?.token}`,
         },
@@ -40,10 +43,6 @@ export default function UpcomingBookingsPage() {
         const newBookings: Array<Booking> = [];
         const data = response.data;
         data.forEach((booking: any) => {
-          // Filter out bookings that have already ended
-          if (new Date(booking.end_datetime) < new Date()) {
-            return;
-          }
           const bookingData: Booking = {
             id: booking.id,
             serviceType:
