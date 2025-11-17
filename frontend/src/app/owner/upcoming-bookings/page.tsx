@@ -19,7 +19,7 @@ export default function UpcomingBookingsPage() {
   const [bookings, setBookings] = useState<Array<Booking>>([]);
   const { session } = useContext(SessionContext);
 
-  // A session is required
+  // An owner session is required
   useEffect(() => {
     if (!session || session.accountType !== AccountType.OWNER) {
       redirect('/login');
