@@ -72,7 +72,7 @@ class DB:
             city="Calgary",
             street="123 Mt Norquay Pl SE",
             phone_num="4039987283",
-            image_filename="3549e957-3b4d-43f7-b790-f230597a1711.jpg",
+            image_filename="56b7a08a-1d08-42a4-960c-0601711523b6.jpg",
         )
         self.db.add(owner)
         self.db.commit()
@@ -131,7 +131,7 @@ class DB:
             city="Calgary",
             street="22 Nose Hill Way NW",
             phone_num="4038881234",
-            image_filename="56b7a08a-1d08-42a4-960c-0601711523b6.jpg",
+            image_filename="3549e957-3b4d-43f7-b790-f230597a1711.jpg",
         )
         self.db.add(service_provider)
         self.db.commit()

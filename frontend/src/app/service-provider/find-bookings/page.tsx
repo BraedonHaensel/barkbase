@@ -1,6 +1,6 @@
 'use client';
 
-import BookingCard from '@/components/booking-card';
+import AvailableBookingCard from '@/components/service-provider/available-booking-card';
 import { SessionContext } from '@/context/session-context';
 import { AccountType } from '@/enums/account-type';
 import { Province } from '@/enums/province';
@@ -84,6 +84,33 @@ export default function FindBookingsPage() {
     getAvailableBookings();
   }, []);
 
+  // Accept a booking
+  const acceptBooking = async (bookingId: string) => {
+    api
+      .patch(`/bookings/${bookingId}/accept`, null, {
+        headers: {
+          Authorization: `Bearer ${session?.token}`,
+        },
+      })
+      .then((response) => {
+        console.info(response.data);
+        toast.success('Booking accepted!');
+        // Refresh the available bookings
+        getAvailableBookings();
+      })
+      .catch((error) => {
+        // Handle request errors
+        const apiError = error?.response?.data?.error;
+        if (apiError) {
+          console.error(`API error: ${apiError}`);
+          toast.error(`Failed to accept: ${apiError}`);
+        } else {
+          console.error(error);
+          toast.error(`Failed to accept. Please try again.`);
+        }
+      });
+  };
+
   if (isLoading) {
     return <LoaderCircle className="mx-auto mt-3 h-10 w-10 animate-spin" />;
   }
@@ -108,12 +135,10 @@ export default function FindBookingsPage() {
         >
           {/* Render a card for each upcoming booking */}
           {bookings.map((booking, id) => (
-            <BookingCard
+            <AvailableBookingCard
               key={id}
               booking={booking}
-              onDelete={async () => {
-                /* TODO */
-              }}
+              onAccept={acceptBooking}
             />
           ))}
         </div>

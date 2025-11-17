@@ -1,6 +1,6 @@
 'use client';
 
-import BookingCard from '@/components/booking-card';
+import UpcomingBookingCard from '@/components/owner/upcoming-booking-card';
 import { SessionContext } from '@/context/session-context';
 import { AccountType } from '@/enums/account-type';
 import { Province } from '@/enums/province';
@@ -59,7 +59,7 @@ Please keep him on a tight leash!
         >
           {/* Render a card for each previous booking */}
           {bookings.map((booking, id) => (
-            <BookingCard key={id} booking={booking} />
+            <UpcomingBookingCard key={id} booking={booking} />
           ))}
         </div>
       )}

@@ -1,17 +1,31 @@
+'use client';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Booking } from '@/types/booking';
-import BookingForm from './booking-form';
+import BookingForm from '@/components/booking-form';
 import { ServiceType } from '@/enums/service-type';
-import { Footprints, House, Timer } from 'lucide-react';
-import BookingSPProfile from './booking-sp-nav';
+import {
+  Edit,
+  Footprints,
+  House,
+  LoaderCircle,
+  Timer,
+  Trash2,
+} from 'lucide-react';
+import BookingSPProfile from '@/components/booking-sp-nav';
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { redirect } from 'next/navigation';
 
 type Props = {
   booking: Booking;
   onDelete: (id: string) => Promise<void>;
 };
 
-// General use card for dispaying a booking
-const BookingCard = ({ booking, onDelete }: Props) => {
+// Card for dispalying an owner's upcoming booking
+const UpcomingBookingCard = ({ booking, onDelete }: Props) => {
+  const [isDeleting, setIsDeleting] = useState(false);
+
   return (
     <Card className="min-w-[450px] border-3">
       <CardHeader className="flex h-10 items-center justify-between">
@@ -51,10 +65,44 @@ const BookingCard = ({ booking, onDelete }: Props) => {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <BookingForm booking={booking} onDelete={onDelete} />
+        <BookingForm booking={booking} />
+        <div className="mx-2 mt-4 flex justify-center gap-4">
+          {/* Edit button */}
+          <Button
+            type="button"
+            className="w-1/2"
+            onClick={() => {
+              redirect(`/owner/edit-booking/${booking.id}`);
+            }}
+          >
+            Edit <Edit />
+          </Button>
+
+          {/* Delete button */}
+          <Button
+            type="button"
+            className="bg-destructive/30 w-1/2"
+            variant="destructive"
+            onClick={async () => {
+              setIsDeleting(true);
+              if (window.confirm('Are you sure you want to delete?')) {
+                await onDelete(booking.id);
+              }
+              setIsDeleting(false);
+            }}
+          >
+            {isDeleting ? (
+              <LoaderCircle className="animate-spin" />
+            ) : (
+              <>
+                <p>Delete</p> <Trash2 />
+              </>
+            )}
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );
 };
 
-export default BookingCard;
+export default UpcomingBookingCard;
