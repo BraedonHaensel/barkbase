@@ -34,6 +34,9 @@ export default function EditBookingPage() {
     setIsLoading(true);
     api
       .get('/bookings/me', {
+        params: {
+          when: 'upcoming',
+        },
         headers: {
           Authorization: `Bearer ${session?.token}`,
         },
@@ -43,16 +46,13 @@ export default function EditBookingPage() {
         let foundBooking: Booking | undefined = undefined;
         const data = response.data;
         data.forEach((booking: any) => {
-          // Filter out bookings that have already ended
-          if (new Date(booking.end_datetime) < new Date()) {
-            return;
-          }
           // Search for the booking with the given bookingId
           if (booking.id != bookingId) {
             return;
           }
           const bookingData: Booking = {
             id: booking.id,
+            oEmail: booking.o_email,
             serviceType:
               ServiceType[booking.service_type as keyof typeof ServiceType],
             // Parse the start and end dates and times from the local ISO strings

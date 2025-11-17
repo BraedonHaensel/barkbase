@@ -1,23 +1,26 @@
 'use client';
 
-import PreviousBookingCard from '@/components/owner/previous-booking-card';
 import { SessionContext } from '@/context/session-context';
 import { AccountType } from '@/enums/account-type';
-import { Province } from '@/enums/province';
-import { ServiceType } from '@/enums/service-type';
-import api from '@/lib/api';
-import { getHMFromIsoString } from '@/lib/utils';
-import { Booking } from '@/types/booking';
-import { LoaderCircle } from 'lucide-react';
-import { redirect } from 'next/navigation';
+import { redirect, useParams, useRouter } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import CreateEditBookingForm from '@/components/owner/create-edit-booking-form';
+import { LoaderCircle } from 'lucide-react';
+import api from '@/lib/api';
+import { Booking } from '@/types/booking';
+import { ServiceType } from '@/enums/service-type';
+import { getHMFromIsoString } from '@/lib/utils';
+import { Province } from '@/enums/province';
 import { toast } from 'sonner';
 
-// Previous bookings page
-export default function PreviousBookingsPage() {
+// Page to review a completed booking
+export default function EditBookingPage() {
   const [isLoading, setIsLoading] = useState(true);
-  const [bookings, setBookings] = useState<Array<Booking>>([]);
+  const [booking, setBooking] = useState<Booking | undefined>(undefined);
+  const { bookingId } = useParams<{ bookingId: string }>();
   const { session } = useContext(SessionContext);
+  const router = useRouter();
 
   // An owner session is required
   useEffect(() => {
@@ -26,8 +29,8 @@ export default function PreviousBookingsPage() {
     }
   }, [session]);
 
-  // Fetch all of the owner's past bookings from the API
-  const getPastBookings = async () => {
+  // Fetch the desired booking from the API
+  const findBooking = async () => {
     setIsLoading(true);
     api
       .get('/bookings/me', {
@@ -40,9 +43,13 @@ export default function PreviousBookingsPage() {
       })
       .then((response) => {
         // Parse each upcoming booking from the response
-        const newBookings: Array<Booking> = [];
+        let foundBooking: Booking | undefined = undefined;
         const data = response.data;
         data.forEach((booking: any) => {
+          // Search for the booking with the given bookingId
+          if (booking.id != bookingId) {
+            return;
+          }
           const bookingData: Booking = {
             id: booking.id,
             oEmail: booking.o_email,
@@ -61,9 +68,15 @@ export default function PreviousBookingsPage() {
             note: booking.note,
             spEmail: booking.sp_email,
           };
-          newBookings.push(bookingData);
+          foundBooking = bookingData;
         });
-        setBookings(newBookings);
+        if (foundBooking) {
+          setBooking(foundBooking);
+          setIsLoading(false);
+        } else {
+          toast.error('Failed to find the booking');
+          router.push('/dashboard');
+        }
       })
       .catch((error) => {
         // Handle request errors
@@ -75,14 +88,12 @@ export default function PreviousBookingsPage() {
           console.error(error);
           toast.error('Failed to get bookings. Please try again.');
         }
-      })
-      .finally(() => {
-        setIsLoading(false);
+        router.push('/dashboard');
       });
   };
 
   useEffect(() => {
-    getPastBookings();
+    findBooking();
   }, []);
 
   if (isLoading) {
@@ -90,29 +101,15 @@ export default function PreviousBookingsPage() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* Page title */}
-      <p style={{ fontSize: '35px' }} className="text-center font-bold">
-        Previous Bookings
-      </p>
-      {bookings.length == 0 ? (
-        <div className="flex justify-center">
-          <p className="text-muted-foreground">No previous bookings.</p>
-        </div>
-      ) : (
-        <div
-          className={
-            bookings.length == 1
-              ? 'mx-auto w-1/2'
-              : 'grid min-w-[400px] gap-6 lg:grid-cols-2'
-          }
-        >
-          {/* Render a card for each prevous booking */}
-          {bookings.map((booking, id) => (
-            <PreviousBookingCard key={id} booking={booking} />
-          ))}
-        </div>
-      )}
+    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+      <Card className="w-[450px] px-6">
+        <CardHeader>
+          <CardTitle className="text-center text-2xl">Write a Review</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>TODO form to review booking: {JSON.stringify(booking)}</p>
+        </CardContent>
+      </Card>
     </div>
   );
 }

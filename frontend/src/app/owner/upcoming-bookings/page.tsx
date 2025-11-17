@@ -1,6 +1,6 @@
 'use client';
 
-import BookingCard from '@/components/booking-card';
+import UpcomingBookingCard from '@/components/owner/upcoming-booking-card';
 import { SessionContext } from '@/context/session-context';
 import { AccountType } from '@/enums/account-type';
 import { Province } from '@/enums/province';
@@ -19,7 +19,7 @@ export default function UpcomingBookingsPage() {
   const [bookings, setBookings] = useState<Array<Booking>>([]);
   const { session } = useContext(SessionContext);
 
-  // A session is required
+  // An owner session is required
   useEffect(() => {
     if (!session || session.accountType !== AccountType.OWNER) {
       redirect('/login');
@@ -31,6 +31,9 @@ export default function UpcomingBookingsPage() {
     setIsLoading(true);
     api
       .get('/bookings/me', {
+        params: {
+          when: 'upcoming',
+        },
         headers: {
           Authorization: `Bearer ${session?.token}`,
         },
@@ -40,12 +43,9 @@ export default function UpcomingBookingsPage() {
         const newBookings: Array<Booking> = [];
         const data = response.data;
         data.forEach((booking: any) => {
-          // Filter out bookings that have already ended
-          if (new Date(booking.end_datetime) < new Date()) {
-            return;
-          }
           const bookingData: Booking = {
             id: booking.id,
+            oEmail: booking.o_email,
             serviceType:
               ServiceType[booking.service_type as keyof typeof ServiceType],
             // Parse the start and end dates and times from the local ISO strings
@@ -135,7 +135,11 @@ export default function UpcomingBookingsPage() {
         >
           {/* Render a card for each upcoming booking */}
           {bookings.map((booking, id) => (
-            <BookingCard key={id} booking={booking} onDelete={deleteBooking} />
+            <UpcomingBookingCard
+              key={id}
+              booking={booking}
+              onDelete={deleteBooking}
+            />
           ))}
         </div>
       )}
