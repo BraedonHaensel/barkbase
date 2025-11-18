@@ -49,7 +49,6 @@ const EmergencyContactForm = ({
     defaultValues: {
       phoneNumber: emergencyContact.phoneNumber,
       relationship: emergencyContact.relationship,
-      // TODO: optional email
       email: emergencyContact.email ? emergencyContact.email : '',
       firstName: emergencyContact.firstName,
       lastName: emergencyContact.lastName,
@@ -66,6 +65,7 @@ const EmergencyContactForm = ({
       relationship: input.relationship,
       firstName: input.firstName,
       lastName: input.lastName,
+      ...(input.email ? { email: input.email } : {}),
     };
     return contact;
   };
@@ -79,7 +79,6 @@ const EmergencyContactForm = ({
 
   // Handle form submission
   async function onSubmit(input: EmergencyContactSchema) {
-    // Skip if new dog has no image
     setIsSaving(true);
     await updateContact(
       emergencyContact.phoneNumber,

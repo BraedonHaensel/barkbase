@@ -19,10 +19,6 @@ const UpcomingBookingsCard = () => {
         <p className="text-muted-foreground">
           View the details of upcoming bookings!
         </p>
-        <span className="text-muted-foreground">
-          <br />
-          TODO: Show a booking preview
-        </span>
       </CardContent>
     </Card>
   );

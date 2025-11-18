@@ -16,92 +16,92 @@ def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
     @app.route("/auth/test")
     def test():
         return jsonify(owner_repo.get_all())
-    
+
     # Signup
     @app.route("/auth/signup", methods=["POST"])
     def signup():
         """
-    Register a new user (Owner or Service Provider)
-    ---
-    tags:
-      - Authentication
-    summary: Register a new user (Owner or Service Provider)
-    consumes:
-      - multipart/form-data
-    parameters:
-      - in: formData
-        name: account_type
-        type: string
-        required: true
-        enum: [owner, service_provider]
-        default: owner
-        example: owner
-      - in: formData
-        name: email
-        type: string
-        required: true
-        default: bob@gmail.com
-        example: bob@gmail.com
-      - in: formData
-        name: password
-        type: string
-        required: true
-        default: password
-        example: password
-      - in: formData
-        name: f_name
-        type: string
-        required: true
-        default: Bob
-        example: Bob
-      - in: formData
-        name: l_name
-        type: string
-        required: true
-        default: Doe
-        example: Doe
-      - in: formData
-        name: province
-        type: string
-        required: true
-        default: AB
-        example: AB
-      - in: formData
-        name: city
-        type: string
-        required: true
-        default: Calgary
-        example: Calgary
-      - in: formData
-        name: street
-        type: string
-        required: true
-        default: 55 Sunshine Pl NE
-        example: 55 Sunshine Pl NE
-      - in: formData
-        name: phone_num
-        type: string
-        required: true
-        default: "4039997777"
-        example: "4039997777"
-      - in: formData
-        name: image_file
-        type: file
-        required: true
-        description: Profile image file
-    responses:
-      201:
-        description: Account created successfully
-        schema:
-          type: object
-          properties:
-            message:
-              type: string
-              example: Owner account created successfully.
-      400:
-        description: Missing or invalid fields
-      409:
-        description: User already exists
+        Register a new user (Owner or Service Provider)
+        ---
+        tags:
+          - Authentication
+        summary: Register a new user (Owner or Service Provider)
+        consumes:
+          - multipart/form-data
+        parameters:
+          - in: formData
+            name: account_type
+            type: string
+            required: true
+            enum: [owner, service_provider]
+            default: owner
+            example: owner
+          - in: formData
+            name: email
+            type: string
+            required: true
+            default: bob@gmail.com
+            example: bob@gmail.com
+          - in: formData
+            name: password
+            type: string
+            required: true
+            default: password
+            example: password
+          - in: formData
+            name: f_name
+            type: string
+            required: true
+            default: Bob
+            example: Bob
+          - in: formData
+            name: l_name
+            type: string
+            required: true
+            default: Doe
+            example: Doe
+          - in: formData
+            name: province
+            type: string
+            required: true
+            default: AB
+            example: AB
+          - in: formData
+            name: city
+            type: string
+            required: true
+            default: Calgary
+            example: Calgary
+          - in: formData
+            name: street
+            type: string
+            required: true
+            default: 55 Sunshine Pl NE
+            example: 55 Sunshine Pl NE
+          - in: formData
+            name: phone_num
+            type: string
+            required: true
+            default: "4039997777"
+            example: "4039997777"
+          - in: formData
+            name: image_file
+            type: file
+            required: true
+            description: Profile image file
+        responses:
+          201:
+            description: Account created successfully
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Owner account created successfully.
+          400:
+            description: Missing or invalid fields
+          409:
+            description: User already exists
         """
 
         data = request.form
@@ -118,7 +118,17 @@ def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
         image_file = request.files.get("image_file")
 
         # 1) validate input
-        required_fields = ["email", "password", "f_name", "l_name", "province", "city", "street", "phone_num", "account_type"]
+        required_fields = [
+            "email",
+            "password",
+            "f_name",
+            "l_name",
+            "province",
+            "city",
+            "street",
+            "phone_num",
+            "account_type",
+        ]
         missing = [f for f in required_fields if not data.get(f)]
         if missing:
             return jsonify({"error": f"Missing fields: {', '.join(missing)}"}), 400
@@ -143,7 +153,7 @@ def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
             return jsonify({"error": "Unsupported image file type"}), 400
         image_filename = save_user_image(app, image_file)
 
-        # 6) Create new user 
+        # 6) Create new user
         try:
             if account_type == AccountType.OWNER:
                 owner_repo.create(
@@ -170,7 +180,14 @@ def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
                     image_filename=image_filename,
                 )
 
-            return jsonify({"message": f"{account_type.capitalize()} account created successfully."}), 201
+            return (
+                jsonify(
+                    {
+                        "message": f"{account_type.capitalize()} account created successfully."
+                    }
+                ),
+                201,
+            )
 
         except Exception as e:
             print("Error during signup:", e)
@@ -179,58 +196,63 @@ def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
     @app.route("/auth/login", methods=["POST"])
     def login():
         """
-    Authenticate user and issue JWT
-    ---
-    tags:
-      - Authentication
-    summary: 2. Authenticate user and issue JWT
-    parameters:
-      - in: body
-        name: body
-        required: true
-        schema:
-          type: object
-          required:
-            - account_type
-            - email
-            - password
-          properties:
-            account_type:
-              type: string
-              enum:
-                - owner
-                - service_provider
-            email:
-              type: string
-              example: bob@gmail.com
-            password:
-              type: string
-              example: password
-    responses:
-      200:
-        description: Successful login
-        schema:
-          type: object
-          properties:
-            token:
-              type: string
-              description: JWT access token
-            account_type:
-              type: string
-              example: owner
-      400:
-        description: Missing or invalid parameters
-      401:
-        description: Invalid credentials
+        Authenticate user and issue JWT
+        ---
+        tags:
+          - Authentication
+        summary: 2. Authenticate user and issue JWT
+        parameters:
+          - in: body
+            name: body
+            required: true
+            schema:
+              type: object
+              required:
+                - account_type
+                - email
+                - password
+              properties:
+                account_type:
+                  type: string
+                  enum:
+                    - owner
+                    - service_provider
+                email:
+                  type: string
+                  example: bob@gmail.com
+                password:
+                  type: string
+                  example: password
+        responses:
+          200:
+            description: Successful login
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                  description: JWT access token
+                account_type:
+                  type: string
+                  example: owner
+          400:
+            description: Missing or invalid parameters
+          401:
+            description: Invalid credentials
         """
 
         data = request.get_json()
         email = data.get("email")
         password = data.get("password")
-        account_type = AccountType(data.get("account_type").lower())
+        try:
+            account_type = AccountType(data.get("account_type").lower())
+        except Exception as e:
+            return jsonify({"error": "Invalid account type"}), 400
 
         required_fields = ["email", "password", "account_type"]
-        missing = [f for f in required_fields if not data.get(f)] # list of missing fields
+        missing = [
+            f for f in required_fields if not data.get(f)
+        ]  # list of missing fields
         if missing:
             return jsonify({"error": f"Missing fields: {', '.join(missing)}"}), 400
 
@@ -244,13 +266,13 @@ def init_auth_routes(app, owner_repo: OwnerRepo, sp_repo: ServiceProviderRepo):
 
         if not user or not check_password_hash(user.password, password):
             return jsonify({"error": "Invalid credentials"}), 401
-        
+
         # Encode account type inside JWT, send to client
         SECRET_KEY = os.getenv("JWT_SECRET_KEY")
         payload = {
-        "email": email,
-        "account_type": account_type,
-        "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=24)
+            "email": email,
+            "account_type": account_type,
+            "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=24),
         }
         token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
 

@@ -3,10 +3,26 @@ from repo.base_repo import BaseRepo
 from enums.enums import AccountType
 from models.models import Booking, BookedDog
 from dto.dto import BookingUpdateDto
+from datetime import datetime
 
 
 class BookingRepo(BaseRepo):
+    def get_available_bookings(self) -> Optional[List[Booking]]:
+        """Fetch available bookings (ie. bookings with no SP, and which hasn't expired yet.)"""
+
+        now = datetime.now()  # or datetime.utcnow() depending on your DB usage
+
+        bookings = (
+            self.db.query(Booking)
+            .filter(Booking.sp_email.is_(None), Booking.start_datetime >= now)
+            .order_by(Booking.start_datetime.asc())
+            .all()
+        )
+
+        return bookings
+
     def get_by_email(self, email, acc_type: AccountType) -> Optional[List[Booking]]:
+        """Fetch a booking by the user's email and role."""
         if acc_type == AccountType.OWNER:
             bookings = self.db.query(Booking).filter(Booking.o_email == email).all()
         elif acc_type == AccountType.SERVICE_PROVIDER:
@@ -23,9 +39,8 @@ class BookingRepo(BaseRepo):
     def get_booked_dogs(self, booking_id: int) -> Optional[List[BookedDog]]:
         return self.db.query(BookedDog).filter(BookedDog.booking_id == booking_id).all()
 
-    # Updates an existing booking.
     def update(self, booking: Booking, request: BookingUpdateDto) -> Booking:
-        """Apply updates to an existing booking."""
+        """Updates an existing booking."""
         booking.start_datetime = request["start_datetime"]
         booking.end_datetime = request["end_datetime"]
         booking.service_type = request["service_type"]
@@ -47,12 +62,11 @@ class BookingRepo(BaseRepo):
         self.db.refresh(booking)
         return booking
 
-    """
-    Deletes a booking from DB.
-    Returns true if successful, else false.
-    """
-
     def delete_booking(self, booking: Booking) -> bool:
+        """
+        Deletes a booking from DB.
+        Returns true if successful, else false.
+        """
         try:
             self.db.delete(booking)
             self.db.commit()
@@ -60,3 +74,28 @@ class BookingRepo(BaseRepo):
         except Exception:
             self.db.rollback()
             return False
+
+    def accept_booking(self, booking: Booking, sp_email: str) -> Booking:
+        """
+        Accepts the booking, and returns the updated booking.
+        """
+        booking.sp_email = sp_email
+        self.db.commit()
+        self.db.refresh(
+            booking
+        )  # Refresh all attributes on this booking object, so updated fields are shown
+
+        return booking
+
+    def drop_booking(self, booking: Booking, sp_email: str) -> Booking:
+        """
+        Unassigns the SP from the booking, and returns the updated booking.
+        """
+
+        booking.sp_email = None
+        self.db.commit()
+        self.db.refresh(
+            booking
+        )  # Refresh all attributes on this booking object, so updated fields are shown
+
+        return booking

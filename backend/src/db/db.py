@@ -71,7 +71,7 @@ class DB:
             city="Calgary",
             street="123 Mt Norquay Pl SE",
             phone_num="4039987283",
-            image_filename="3549e957-3b4d-43f7-b790-f230597a1711.jpg",
+            image_filename="56b7a08a-1d08-42a4-960c-0601711523b6.jpg",
         )
         self.db.add(owner)
         self.db.commit()
@@ -130,7 +130,7 @@ class DB:
             city="Calgary",
             street="22 Nose Hill Way NW",
             phone_num="4038881234",
-            image_filename="56b7a08a-1d08-42a4-960c-0601711523b6.jpg",
+            image_filename="3549e957-3b4d-43f7-b790-f230597a1711.jpg",
         )
         self.db.add(service_provider)
         self.db.commit()
@@ -147,7 +147,8 @@ class DB:
         self.db.add(review)
         self.db.commit()
 
-        # Add booking (Note the ID is automatically set):
+        # Add bookings (Note the ID is normally set automatically):
+        # Past booking example
         booking = Booking(
             id=1,
             o_email="bob@gmail.com",
@@ -162,6 +163,7 @@ class DB:
             note="My dog barks a lot.",
         )
         self.db.add(booking)
+        # Upcoming accepted example
         booking = Booking(
             id=2,
             o_email="bob@gmail.com",
@@ -176,6 +178,20 @@ class DB:
             note="My dog barks a lot.",
         )
         self.db.add(booking)
+        # Upcoming not accepted example
+        booking = Booking(
+            id=3,
+            o_email="bob@gmail.com",
+            start_datetime=datetime(2025, 12, 15, 9, 0),
+            end_datetime=datetime(2025, 12, 15, 10, 30),
+            service_type=ServiceType.WALKING,
+            price=45,
+            province=Province.AB,
+            city="Calgary",
+            street="225 Mountain Park Way",
+            note="Be aware that my dog likes to chase after bikes.",
+        )
+        self.db.add(booking)
         self.db.commit()
 
         # Add dogs to the bookings
@@ -185,16 +201,20 @@ class DB:
             o_email="bob@gmail.com",
         )
         self.db.add(booked_dog)
-                # Add dogs to the bookings
         booked_dog = BookedDog(
             booking_id=2,
             d_name="chico",
             o_email="bob@gmail.com",
         )
         self.db.add(booked_dog)
-                # Add dogs to the bookings
         booked_dog = BookedDog(
             booking_id=2,
+            d_name="amigo",
+            o_email="bob@gmail.com",
+        )
+        # Add dogs to the bookings
+        booked_dog = BookedDog(
+            booking_id=3,
             d_name="amigo",
             o_email="bob@gmail.com",
         )
@@ -299,12 +319,13 @@ class DB:
 
         if self.db.query(EmergencyContact).filter(and_(
                 EmergencyContact.o_email == o_email, EmergencyContact.phone_num == phone_num)).first():
-            self.removeEmergencyContact(o_email, phone_num)
+            raise ValueError(f"Duplicate phone number: {phone_num}")
 
         self.db.add(EmergencyContact(
             o_email=o_email, phone_num=phone_num, f_name=request["f_name"],
-            l_name=request["l_name"], relationship=request["relationship"]
+            l_name=request["l_name"], relationship=request["relationship"], email=request["email"]
         ))
+        self.db.commit()
 
     def removeEmergencyContact(self, o_email:str, phone_num:str):
 
