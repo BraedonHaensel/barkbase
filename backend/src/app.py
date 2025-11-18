@@ -323,7 +323,7 @@ if __name__ == "__main__":
 
     # initialize routes
     init_auth_routes(app, owner_repo=owner_repo, sp_repo=sp_repo)
-    init_user_routes(app, owner_repo=owner_repo, sp_repo=sp_repo)
+    init_user_routes(app, db, owner_repo=owner_repo, sp_repo=sp_repo)
     init_booking_routes(app, db, booking_repo=booking_repo)
     init_dog_routes(app, db)
     init_emergency_contact_routes(app, db)

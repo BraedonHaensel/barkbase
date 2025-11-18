@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, and_
+from sqlalchemy import create_engine, and_, update
 from sqlalchemy.orm import sessionmaker
 from models.models import (
     Base,
@@ -21,8 +21,7 @@ from dto.dto import (
     UpdateDogDTO,
 )
 from typing import Optional, List
-from enums.enums import Province, ServiceType
-
+from enums.enums import Province, ServiceType, AccountType
 
 from dotenv import load_dotenv
 import os
@@ -260,6 +259,17 @@ class DB:
             "street": sp.street,
             "phone_num": sp.phone_num,
         }
+
+    def updateUser(self, email: str, account_type: AccountType, f_name: str, l_name: str,
+                   province: str, city: str, street: str, phone_num: str, image_filename: str):
+
+        if account_type == AccountType.OWNER:
+            self.db.execute(update(Owner).where(Owner.email == email).values(
+                f_name=f_name, l_name=l_name, province=province, city=city, street=street, phone_num=phone_num, image_filename=image_filename))
+        elif account_type == AccountType.SERVICE_PROVIDER:
+            self.db.execute(update(ServiceProvider).where(ServiceProvider.email == email).values(
+                f_name=f_name, l_name=l_name, province=province, city=city, street=street, phone_num=phone_num, image_filename=image_filename))
+        self.db.commit()
 
     # Filter by o_email
     def getEmergencyContact(self, o_email: str) -> List[EmergencyContactDto]:
