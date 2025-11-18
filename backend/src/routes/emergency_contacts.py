@@ -46,8 +46,9 @@ def init_emergency_contact_routes(app, db: DB):
         retrieved = db.getEmergencyContact(email)
 
         for i in retrieved:
-            dto: EmergencyContactDto = {
+            dto = {
                 "email": i["email"],
+                "owner_email": email,
                 "f_name": i["f_name"],
                 "l_name": i["l_name"],
                 "relationship": i["relationship"],

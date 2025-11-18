@@ -318,8 +318,8 @@ class DB:
         o_email = request["owner_email"]
 
         if self.db.query(EmergencyContact).filter(and_(
-                EmergencyContact.o_email == o_email, EmergencyContact.phone_num == phone_num)).first():
-            raise ValueError(f"Duplicate phone number: {phone_num}")
+                EmergencyContact.o_email == o_email, EmergencyContact.phone_num == phone_num)).first() != None:
+            self.removeEmergencyContact(o_email, phone_num)
 
         self.db.add(EmergencyContact(
             o_email=o_email, phone_num=phone_num, f_name=request["f_name"],
