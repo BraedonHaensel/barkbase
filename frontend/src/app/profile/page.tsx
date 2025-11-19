@@ -1,22 +1,22 @@
 'use client';
 
 import MainProfileForm from '@/components/main-profile-form';
-import { Separator } from '@/components/ui/separator';
-import { UserContext } from '@/context/user-context';
+import PasswordChangeForm from '@/components/password-change-form';
+import { SessionContext } from '@/context/session-context';
 import { redirect } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
 
 // User profile page
 export default function ProfilePage() {
-  const { user } = useContext(UserContext);
+  const { session } = useContext(SessionContext);
   const [isEditingASection, setIsEditingASection] = useState(false);
 
   // A session is required
   useEffect(() => {
-    if (!user) {
+    if (!session) {
       redirect('/dashboard');
     }
-  }, [user]);
+  }, [session]);
 
   return (
     <div className="mx-auto flex max-w-[700px] flex-col gap-4">
@@ -28,8 +28,14 @@ export default function ProfilePage() {
         isEditingASection={isEditingASection}
         setIsEditingASection={setIsEditingASection}
       />
-      <Separator className="my-6" />
-      <p>Password change section TODO</p>
+      {/* Change password title */}
+      <p style={{ fontSize: '35px' }} className="mt-8 text-center font-bold">
+        Change Password
+      </p>
+      <PasswordChangeForm
+        isEditingASection={isEditingASection}
+        setIsEditingASection={setIsEditingASection}
+      />
     </div>
   );
 }
