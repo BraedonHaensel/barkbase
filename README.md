@@ -64,8 +64,26 @@ Use [draw.io](https://www.drawio.com/) to view our relational schema: [BarkBase 
 
     3. Run the frontend. You should see a message such as "Local: http://localhost:3000"
 
-        ```bash
-        npm run dev
-        ```
+        - For a production environment:
+
+            - Build the Next.js app for production
+
+                ```bash
+                npm run build
+                ```
+
+            - Start the application in production mode
+
+                ```bash
+                npm run start
+                ```
+
+        - For a development environment:
+
+            - Start the application in development mode
+
+                ```bash
+                npm run dev
+                ```
 
     4. Open the displayed URL in your web browser. For example: http://localhost:3000
