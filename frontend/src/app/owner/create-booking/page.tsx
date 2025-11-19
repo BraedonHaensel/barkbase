@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation';
 import { useContext, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import CreateEditBookingForm from '@/components/owner/create-edit-booking-form';
+import CenteredPageContainer from '@/components/centered-page-container';
 
 // Create booking page
 export default function CreateBookingPage() {
@@ -19,7 +20,7 @@ export default function CreateBookingPage() {
   }, [session]);
 
   return (
-    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+    <CenteredPageContainer>
       <Card className="w-[450px] px-6">
         <CardHeader>
           <CardTitle className="text-center text-2xl">Create Booking</CardTitle>
@@ -28,6 +29,6 @@ export default function CreateBookingPage() {
           <CreateEditBookingForm />
         </CardContent>
       </Card>
-    </div>
+    </CenteredPageContainer>
   );
 }

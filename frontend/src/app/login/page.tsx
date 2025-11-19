@@ -1,5 +1,6 @@
 'use client';
 
+import CenteredPageContainer from '@/components/centered-page-container';
 import LoginForm from '@/components/login-form';
 import {
   Card,
@@ -23,7 +24,7 @@ export default function LoginPage() {
   }, [session]);
 
   return (
-    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+    <CenteredPageContainer>
       <Card className="w-[450px] px-6">
         <CardHeader>
           <CardTitle className="text-center text-2xl">
@@ -38,6 +39,6 @@ export default function LoginPage() {
           <LoginForm />
         </CardContent>
       </Card>
-    </div>
+    </CenteredPageContainer>
   );
 }

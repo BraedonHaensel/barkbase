@@ -5,7 +5,6 @@ import { AccountType } from '@/enums/account-type';
 import { redirect, useParams, useRouter } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import CreateEditBookingForm from '@/components/owner/create-edit-booking-form';
 import { LoaderCircle } from 'lucide-react';
 import api from '@/lib/api';
 import { Booking } from '@/types/booking';
@@ -14,6 +13,7 @@ import { getHMFromIsoString } from '@/lib/utils';
 import { Province } from '@/enums/province';
 import { toast } from 'sonner';
 import { BookingDto } from '@/dto/dto';
+import CenteredPageContainer from '@/components/centered-page-container';
 
 // Page to review a completed booking
 export default function EditBookingPage() {
@@ -102,7 +102,7 @@ export default function EditBookingPage() {
   }
 
   return (
-    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+    <CenteredPageContainer>
       <Card className="w-[450px] px-6">
         <CardHeader>
           <CardTitle className="text-center text-2xl">Write a Review</CardTitle>
@@ -111,6 +111,6 @@ export default function EditBookingPage() {
           <p>TODO form to review booking: {JSON.stringify(booking)}</p>
         </CardContent>
       </Card>
-    </div>
+    </CenteredPageContainer>
   );
 }

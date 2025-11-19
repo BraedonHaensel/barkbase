@@ -14,6 +14,7 @@ import { getHMFromIsoString } from '@/lib/utils';
 import { Province } from '@/enums/province';
 import { toast } from 'sonner';
 import { BookingDto } from '@/dto/dto';
+import CenteredPageContainer from '@/components/centered-page-container';
 
 // Page to edit an existing booking
 export default function EditBookingPage() {
@@ -102,7 +103,7 @@ export default function EditBookingPage() {
   }
 
   return (
-    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+    <CenteredPageContainer>
       <Card className="w-[450px] px-6">
         <CardHeader>
           <CardTitle className="text-center text-2xl">Edit Booking</CardTitle>
@@ -114,6 +115,6 @@ export default function EditBookingPage() {
           />
         </CardContent>
       </Card>
-    </div>
+    </CenteredPageContainer>
   );
 }

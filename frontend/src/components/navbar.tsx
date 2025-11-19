@@ -4,7 +4,7 @@ import ProvileNav from '@/components/profile-nav';
 // Top of page navbar
 const Navbar = () => {
   return (
-    <div className="flex h-full items-center justify-between gap-3">
+    <div className="flex h-full items-center justify-between gap-3 py-1">
       <div>
         <HomeButton />
       </div>

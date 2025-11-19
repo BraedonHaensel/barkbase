@@ -50,15 +50,15 @@ export default function RootLayout({
           >
             {/* Navbar at top of page */}
             <header>
-              <div className="border-black-200 h-15 w-full border-b bg-teal-100 py-2">
+              <div className="border-black-200 h-[70px] w-full border-b bg-teal-100 py-2">
                 <div className="mx-auto h-full max-w-7xl px-8">
                   <Navbar />
                 </div>
               </div>
             </header>
             {/* Main page body */}
-            <main className="h-full">
-              <div className="mx-auto h-full max-w-7xl p-8">{children}</div>
+            <main>
+              <div className="mx-auto max-w-7xl p-8">{children}</div>
             </main>
           </div>
         </Providers>
