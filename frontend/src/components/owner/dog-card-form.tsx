@@ -105,7 +105,7 @@ const DogCardForm = ({
           disabled={!isEditing || isSaving || isDeleting}
           className="space-y-5"
         >
-          {/* Profile image field */}
+          {/* Dog image field */}
           {/* CITATION: Field developed with reference to:
            * File uploads made easy with react and flask. (n.d.). Dunder Method Paper Company.
            * Retrieved November 10, 2025, from https://dundermethodpaperco.hashnode.dev/file-uploads-made-easy-with-react-and-flask

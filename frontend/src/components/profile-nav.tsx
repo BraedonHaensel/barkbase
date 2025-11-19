@@ -30,7 +30,7 @@ const ProvileNav = () => {
       >
         <Avatar className="h-full w-full">
           <AvatarImage
-            src={!!user?.image_url ? user.image_url : undefined}
+            src={!!user?.imageUrl ? user.imageUrl : undefined}
             alt="Profile image"
             className="object-cover"
           />

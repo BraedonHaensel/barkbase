@@ -61,7 +61,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
           province: Province[data.province as keyof typeof Province],
           city: data.city,
           street: data.street,
-          image_url: data.image_url,
+          imageUrl: data.image_url,
         };
         setUser(userData);
       })
