@@ -136,7 +136,7 @@ def init_user_routes(app, db: DB, owner_repo: OwnerRepo, sp_repo: ServiceProvide
       - Users
     security:
       - bearerAuth: []        # JWT Authorization
-    summary: Register a new user (Owner or Service Provider)
+    summary: Updates a user
     consumes:
       - multipart/form-data
     parameters:
@@ -240,10 +240,41 @@ def init_user_routes(app, db: DB, owner_repo: OwnerRepo, sp_repo: ServiceProvide
             print("Error during update:", e)
             return jsonify({"error": "Internal server error"}), 500
 
-    # CHANGE PASSWORD
     @app.route("/users/change_password", methods=["PATCH"])
     @token_required
     def change_password():
+        """
+        Changes a user's password
+        ---
+        tags:
+          - Users
+        security:
+          - bearerAuth: []        # JWT Authorization
+        summary: Change a user's password
+        parameters:
+          - in: body
+            name: body
+            required: true
+            schema:
+              type: object
+              required:
+                - old_password
+                - new_password
+              properties:
+                old_password:
+                  type: string
+                  example: password
+                new_password:
+                  type: string
+                  example: pa$$w0rd123!
+        responses:
+          200:
+            description: Password successfully changed
+          400:
+            description: Missing or invalid parameters
+          404:
+            description: User not found
+        """
         data = request.get_json()
 
         user_info: TokenPayload = request.payload
