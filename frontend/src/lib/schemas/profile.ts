@@ -12,3 +12,15 @@ export const mainProfileSchema = z.object({
   city: z.string().nonempty('Required field'),
   province: z.enum(Province),
 });
+
+// Schema for the password change form
+export const passwordChangeSchema = z
+  .object({
+    oldPassword: z.string().min(5, 'Password must be at least 5 characters'),
+    newPassword: z.string().min(5, 'Password must be at least 5 characters'),
+    confirmNewPassword: z.string(),
+  }) // Password and confirm password fields must match
+  .refine((data) => data.newPassword === data.confirmNewPassword, {
+    message: "Passwords don't match",
+    path: ['confirmNewPassword'],
+  });
