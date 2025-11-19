@@ -46,11 +46,11 @@ export default function RootLayout({
         {/* Context providers */}
         <Providers>
           <div
-            className={`${geistSans.variable} ${geistMono.variable} flex min-h-screen min-w-[320px] flex-col antialiased`}
+            className={`${geistSans.variable} ${geistMono.variable} flex w-max min-w-[320px] flex-col antialiased`}
           >
             {/* Navbar at top of page */}
             <header>
-              <div className="border-black-200 h-[70px] w-full border-b bg-teal-100 py-2">
+              <div className="h-[70px] min-w-screen bg-teal-100 py-2">
                 <div className="mx-auto h-full max-w-7xl px-8">
                   <Navbar />
                 </div>
