@@ -185,7 +185,7 @@ def init_user_routes(app, db: DB, owner_repo: OwnerRepo, sp_repo: ServiceProvide
       - in: formData
         name: image_file
         type: file
-        required: true
+        required: false
         description: Profile image file
     responses:
       200:
@@ -210,7 +210,7 @@ def init_user_routes(app, db: DB, owner_repo: OwnerRepo, sp_repo: ServiceProvide
             # Parse the request data
             f_name = data.get("f_name")
             l_name = data.get("l_name")
-            province = Province(data.get("province").upper)
+            province = Province(data.get("province").upper())
             city = data.get("city")
             street = data.get("street")
             phone_num = data.get("phone_num")
@@ -218,9 +218,14 @@ def init_user_routes(app, db: DB, owner_repo: OwnerRepo, sp_repo: ServiceProvide
         except (KeyError, ValueError) as e:
             return jsonify({"error": f"Invalid data format: {str(e)}"}), 400
 
-        if not validate_image_file(image_file):
-            return jsonify({"error": "Unsupported image file type"}), 400
-        image_filename = save_user_image(app, image_file)
+        # Validate and save the optional user profile image change
+        if image_file:
+            if not validate_image_file(image_file):
+                return jsonify({"error": "Unsupported image file type"}), 400
+            image_filename = save_user_image(app, image_file)
+        else:
+            image_filename = None
+            
 
         try:
             db.updateUser(

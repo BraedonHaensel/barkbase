@@ -285,10 +285,19 @@ class DB:
 
         if account_type == AccountType.OWNER:
             self.db.execute(update(Owner).where(Owner.email == email).values(
-                f_name=f_name, l_name=l_name, province=province, city=city, street=street, phone_num=phone_num, image_filename=image_filename))
+                f_name=f_name, l_name=l_name, province=province, city=city, street=street, phone_num=phone_num))
+            # Update image if it was provided
+            if image_filename:
+                self.db.execute(update(Owner).where(Owner.email == email).values(image_filename=image_filename))
+
         elif account_type == AccountType.SERVICE_PROVIDER:
             self.db.execute(update(ServiceProvider).where(ServiceProvider.email == email).values(
-                f_name=f_name, l_name=l_name, province=province, city=city, street=street, phone_num=phone_num, image_filename=image_filename))
+                f_name=f_name, l_name=l_name, province=province, city=city, street=street, phone_num=phone_num))
+            # Update image if it was provided
+            if image_filename:
+                self.db.execute(update(ServiceProvider).where(ServiceProvider.email == email).values(
+                    image_filename=image_filename))
+
         self.db.commit()
 
     # Filter by o_email

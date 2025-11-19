@@ -15,5 +15,5 @@ export interface User {
   province: Province;
   city: string;
   street: string;
-  image_url: string;
+  imageUrl: string;
 }
