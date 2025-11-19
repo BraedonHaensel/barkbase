@@ -22,7 +22,7 @@ export default function ProfilePage() {
     <div className="mx-auto flex max-w-[700px] flex-col gap-4">
       {/* Page title */}
       <p style={{ fontSize: '35px' }} className="text-center font-bold">
-        User Profile
+        Profile
       </p>
       <MainProfileForm
         isEditingASection={isEditingASection}

@@ -156,19 +156,19 @@ const MainProfileForm = ({
             }
           }}
         >
-          {/* Profile image field */}
-          {/* CITATION: Field developed with reference to:
-           * File uploads made easy with react and flask. (n.d.). Dunder Method Paper Company.
-           * Retrieved November 10, 2025, from https://dundermethodpaperco.hashnode.dev/file-uploads-made-easy-with-react-and-flask
-           */}
-          <FormField
-            control={form.control}
-            name="image"
-            render={({ field: { onChange, value, ...rest } }) => (
-              <FormItem>
-                <FormLabel>Profile image</FormLabel>
-                <FormControl>
-                  <div className="flex flex-col gap-3">
+          <div className="flex w-full items-center gap-4">
+            {/* Profile image field */}
+            {/* CITATION: Field developed with reference to:
+             * File uploads made easy with react and flask. (n.d.). Dunder Method Paper Company.
+             * Retrieved November 10, 2025, from https://dundermethodpaperco.hashnode.dev/file-uploads-made-easy-with-react-and-flask
+             */}
+            <FormField
+              control={form.control}
+              name="image"
+              render={({ field: { onChange, value, ...rest } }) => (
+                <FormItem className="h-full w-1/2">
+                  <FormLabel>Image</FormLabel>
+                  <FormControl>
                     <Input
                       type="file"
                       accept="image/*"
@@ -181,20 +181,19 @@ const MainProfileForm = ({
                       }}
                       {...rest}
                     />
-
-                    {profileImagePreview && (
-                      <img
-                        src={profileImagePreview}
-                        alt="Profile image preview"
-                        className="mx-auto aspect-square max-h-50 object-cover"
-                      />
-                    )}
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {profileImagePreview && (
+              <img
+                src={profileImagePreview}
+                alt="Profile image preview"
+                className="mx-auto aspect-square w-25 object-cover"
+              />
             )}
-          />
+          </div>
 
           <div className="flex w-full gap-4">
             {/* Email field */}
@@ -202,7 +201,7 @@ const MainProfileForm = ({
               control={form.control}
               name="email"
               render={({ field: { value } }) => (
-                <FormItem className="w-1/2">
+                <FormItem className="h-full w-1/2">
                   <FormLabel>Email</FormLabel>
                   <FormControl>
                     <div
@@ -230,7 +229,7 @@ const MainProfileForm = ({
               control={form.control}
               name="phoneNumber"
               render={({ field }) => (
-                <FormItem className="w-1/2">
+                <FormItem className="h-full w-1/2">
                   <FormLabel>Phone number</FormLabel>
                   <FormControl>
                     <Input placeholder="1234567890" {...field} />
