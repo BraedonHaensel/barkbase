@@ -263,10 +263,6 @@ def init_user_routes(app, db: DB, owner_repo: OwnerRepo, sp_repo: ServiceProvide
         except (KeyError, ValueError) as e:
             return jsonify({"error": f"Invalid data format: {str(e)}"}), 400
 
-        # Verify that the old and new passwords are not the same
-        if old_password == new_password:
-            return jsonify({"error": "Invalid new password"}), 400
-
         # Get the user from the database
         if account_type == AccountType.OWNER:
             user = owner_repo.get_by_email(email)
@@ -281,6 +277,10 @@ def init_user_routes(app, db: DB, owner_repo: OwnerRepo, sp_repo: ServiceProvide
         # Verify that the old password matches
         if not check_password_hash(user.password, old_password):
             return jsonify({"error": "Old password does not match"}), 400
+        
+        # Verify that the old and new passwords are not the same
+        if old_password == new_password:
+            return jsonify({"error": "Invalid new password"}), 400
         
         # Hash the new password
         hashed_pw = generate_password_hash(new_password, method="pbkdf2:sha256")

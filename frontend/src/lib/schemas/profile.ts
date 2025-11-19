@@ -16,8 +16,8 @@ export const mainProfileSchema = z.object({
 // Schema for the password change form
 export const passwordChangeSchema = z
   .object({
-    oldPassword: z.string().min(5, 'Password must be at least 5 characters'),
-    newPassword: z.string().min(5, 'Password must be at least 5 characters'),
+    oldPassword: z.string().min(8, 'Password must be at least 8 characters'),
+    newPassword: z.string().min(8, 'Password must be at least 8 characters'),
     confirmNewPassword: z.string(),
   }) // Password and confirm password fields must match
   .refine((data) => data.newPassword === data.confirmNewPassword, {

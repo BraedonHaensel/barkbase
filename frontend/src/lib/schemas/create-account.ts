@@ -12,7 +12,7 @@ export const createAccountSchema = z
     province: z.enum(Province),
     city: z.string().nonempty('Required field'),
     street: z.string().nonempty('Required field'),
-    password: z.string().min(5, 'Password must be at least 5 characters'),
+    password: z.string().min(8, 'Password must be at least 8 characters'),
     confirmPassword: z.string(),
     accountType: z.enum(AccountType),
     image: z.file(),
