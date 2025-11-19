@@ -13,6 +13,7 @@ import { SessionContext } from './session-context';
 import { toast } from 'sonner';
 import { Province } from '@/enums/province';
 import { User } from '@/types/user';
+import { OwnerDto, ServiceProviderDto } from '@/dto/dto';
 
 // Type for the UserContext
 interface UserContextType {
@@ -52,7 +53,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
       })
       .then((response) => {
         // Parse user information fields from the response
-        const data = response.data;
+        const data: OwnerDto | ServiceProviderDto = response.data;
         const userData: User = {
           email: data.email,
           firstName: data.f_name,

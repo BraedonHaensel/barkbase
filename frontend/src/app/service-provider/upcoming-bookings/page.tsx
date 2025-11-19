@@ -2,6 +2,7 @@
 
 import UpcomingBookingCard from '@/components/service-provider/upcoming-booking-card';
 import { SessionContext } from '@/context/session-context';
+import { BookingDto } from '@/dto/dto';
 import { AccountType } from '@/enums/account-type';
 import { Province } from '@/enums/province';
 import { ServiceType } from '@/enums/service-type';
@@ -41,8 +42,8 @@ export default function UpcomingBookingsPage() {
       .then((response) => {
         // Parse each upcoming booking from the response
         const newBookings: Array<Booking> = [];
-        const data = response.data;
-        data.forEach((booking: any) => {
+        const data: Array<BookingDto> = response.data;
+        data.forEach((booking) => {
           const bookingData: Booking = {
             id: booking.id,
             oEmail: booking.o_email,
@@ -57,7 +58,7 @@ export default function UpcomingBookingsPage() {
             street: booking.street,
             city: booking.city,
             province: Province[booking.province as keyof typeof Province],
-            price: booking.price,
+            price: String(booking.price),
             note: booking.note,
             spEmail: booking.sp_email,
           };

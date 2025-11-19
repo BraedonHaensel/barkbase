@@ -11,6 +11,7 @@ import { useContext, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Dog } from '@/types/dog';
 import { dateToLocalYMD } from '@/lib/utils';
+import { DogDto } from '@/dto/dto';
 
 // Manage dogs page
 export default function ManageDogsPage() {
@@ -38,8 +39,8 @@ export default function ManageDogsPage() {
       .then((response) => {
         // Parse each dog from the response
         const newDogs: Array<Dog> = [];
-        const data = response.data;
-        data.forEach((dog: any) => {
+        const data: Array<DogDto> = response.data;
+        data.forEach((dog) => {
           const dogData: Dog = {
             name: dog.name,
             birthDate: new Date(dog.birth_date),

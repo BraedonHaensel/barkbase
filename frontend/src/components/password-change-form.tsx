@@ -20,7 +20,6 @@ import { toast } from 'sonner';
 import api from '@/lib/api';
 import { UserContext } from '@/context/user-context';
 import { passwordChangeSchema } from '@/lib/schemas/profile';
-import { User } from '@/types/user';
 import { SessionContext } from '@/context/session-context';
 
 // Schema for the main profile form

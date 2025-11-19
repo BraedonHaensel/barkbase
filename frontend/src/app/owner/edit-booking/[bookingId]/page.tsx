@@ -13,6 +13,7 @@ import { ServiceType } from '@/enums/service-type';
 import { getHMFromIsoString } from '@/lib/utils';
 import { Province } from '@/enums/province';
 import { toast } from 'sonner';
+import { BookingDto } from '@/dto/dto';
 
 // Page to edit an existing booking
 export default function EditBookingPage() {
@@ -44,8 +45,8 @@ export default function EditBookingPage() {
       .then((response) => {
         // Parse each upcoming booking from the response
         let foundBooking: Booking | undefined = undefined;
-        const data = response.data;
-        data.forEach((booking: any) => {
+        const data: Array<BookingDto> = response.data;
+        data.forEach((booking) => {
           // Search for the booking with the given bookingId
           if (booking.id != bookingId) {
             return;
@@ -64,7 +65,7 @@ export default function EditBookingPage() {
             street: booking.street,
             city: booking.city,
             province: Province[booking.province as keyof typeof Province],
-            price: booking.price,
+            price: String(booking.price),
             note: booking.note,
             spEmail: booking.sp_email,
           };

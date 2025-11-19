@@ -10,6 +10,7 @@ import api from '@/lib/api';
 import { toast } from 'sonner';
 import { EmergencyContact } from '@/types/emergency-contact';
 import { UserContext } from '@/context/user-context';
+import { EmergencyContactDto } from '@/dto/dto';
 
 // Emergency contacts management page
 export default function EmergencyContactsPage() {
@@ -38,8 +39,8 @@ export default function EmergencyContactsPage() {
       .then((response) => {
         // Parse each emergency contact from the response
         const newContacts: Array<EmergencyContact> = [];
-        const data = response.data;
-        data.forEach((contact: any) => {
+        const data: Array<EmergencyContactDto> = response.data;
+        data.forEach((contact) => {
           const contactData: EmergencyContact = {
             phoneNumber: contact.phone_num,
             ...(contact.email ? { email: contact.email } : {}),

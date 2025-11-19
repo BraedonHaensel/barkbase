@@ -35,6 +35,8 @@ import {
 import { Province } from '@/enums/province';
 import { dateToLocalYMD } from '@/lib/utils';
 import { Booking } from '@/types/booking';
+import { UserContext } from '@/context/user-context';
+import { DogDto } from '@/dto/dto';
 
 // Form schema to create or edit a booking
 type CreateEditBookingSchema = z.infer<typeof createEditBookingSchema>;
@@ -54,6 +56,7 @@ const CreateEditBookingForm = ({
   const router = useRouter();
   const [dogNames, setDogNames] = useState<Array<string>>([]);
   const { session } = useContext(SessionContext);
+  const { user } = useContext(UserContext);
 
   // Verify that the editingBooking and bookingDetails props are used together
   useEffect(() => {
@@ -83,8 +86,8 @@ const CreateEditBookingForm = ({
       .then((response) => {
         // Parse each dog name from the response
         const newDogNames: Array<string> = [];
-        const data = response.data;
-        data.forEach((dog: any) => {
+        const data: Array<DogDto> = response.data;
+        data.forEach((dog) => {
           newDogNames.push(dog.name);
         });
         if (newDogNames.length == 0) {
@@ -141,9 +144,9 @@ const CreateEditBookingForm = ({
             endDate: new Date(),
             endTime: '13:00',
             dogNames: [],
-            street: '',
-            city: '',
-            province: '',
+            street: user?.street,
+            city: user?.city,
+            province: user?.province,
             price: '',
             note: '',
           },
