@@ -65,7 +65,7 @@ const PasswordChangeForm = ({
   const { mutate: patchUpdateProfile, isPending } = useMutation({
     mutationFn: async (input: PasswordChangeSchema) => {
       const response = await api.patch(
-        '/users/password_change',
+        '/users/change_password',
         {
           old_password: input.oldPassword,
           new_password: input.newPassword,
@@ -86,6 +86,9 @@ const PasswordChangeForm = ({
       onSuccess: ({ message }) => {
         console.info(message);
         toast.success('Password changed!');
+        form.reset();
+        setIsEditing(false);
+        setIsEditingASection(false);
       },
       onError: (error: any) => {
         const apiError = error?.response?.data?.error;
@@ -126,7 +129,7 @@ const PasswordChangeForm = ({
               <FormItem className="h-full w-1/2">
                 <FormLabel>Old password</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input type="password" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -142,7 +145,7 @@ const PasswordChangeForm = ({
                 <FormItem className="h-full w-1/2">
                   <FormLabel>New password</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input type="password" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -157,7 +160,7 @@ const PasswordChangeForm = ({
                 <FormItem className="h-full w-1/2">
                   <FormLabel>Confirm new password</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input type="password" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

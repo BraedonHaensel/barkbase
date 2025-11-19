@@ -124,6 +124,8 @@ const MainProfileForm = ({
         console.info(message);
         toast.success('Profile updated!');
         refreshUser();
+        setIsEditing(false);
+        setIsEditingASection(false);
       },
       onError: (error: any) => {
         const apiError = error?.response?.data?.error;

@@ -300,6 +300,16 @@ class DB:
 
         self.db.commit()
 
+    # Change a user's password
+    def updateUserPassword(self, email: str, account_type: AccountType, hashed_pw: str):
+        if account_type == AccountType.OWNER:
+            self.db.execute(update(Owner).where(Owner.email == email).values(
+                password=hashed_pw))
+        elif account_type == AccountType.SERVICE_PROVIDER:
+            self.db.execute(update(ServiceProvider).where(ServiceProvider.email == email).values(
+                password=hashed_pw))
+        self.db.commit()
+
     # Filter by o_email
     def getEmergencyContact(self, o_email: str) -> List[EmergencyContactDto]:
         contacts = self.db.query(EmergencyContact).filter(

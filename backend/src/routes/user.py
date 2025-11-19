@@ -1,13 +1,11 @@
-from datetime import date
-from typing import List
-
 from db.db import DB
 from middleware.auth_middleware import token_required
 from repo.owner_repo import OwnerRepo
 from repo.sp_repo import ServiceProviderRepo
 from flask import request, jsonify
-from dto.dto import OwnerDTO, ServiceProviderDTO, TokenPayload, EmergencyContactDto
+from dto.dto import OwnerDTO, ServiceProviderDTO, TokenPayload
 from utils.images import get_user_image_url, validate_image_file, save_user_image
+from werkzeug.security import generate_password_hash, check_password_hash
 from enums.enums import AccountType, Province
 
 
@@ -128,10 +126,6 @@ def init_user_routes(app, db: DB, owner_repo: OwnerRepo, sp_repo: ServiceProvide
         else:
             return jsonify({"error": "Invalid account type"}), 400
 
-
-
-
-
     @app.route("/users", methods=["PATCH"])
     @token_required
     def update_user():
@@ -246,4 +240,59 @@ def init_user_routes(app, db: DB, owner_repo: OwnerRepo, sp_repo: ServiceProvide
             print("Error during update:", e)
             return jsonify({"error": "Internal server error"}), 500
 
+    # CHANGE PASSWORD
+    @app.route("/users/change_password", methods=["PATCH"])
+    @token_required
+    def change_password():
+        data = request.get_json()
 
+        user_info: TokenPayload = request.payload
+        account_type = AccountType(user_info["account_type"].lower())
+        email = user_info["email"]
+
+        # Validate required fields
+        required = ["old_password", "new_password"]
+        missing = [k for k in required if k not in data]
+        if missing:
+            return jsonify({"error": f"Missing fields: {', '.join(missing)}"}), 400
+        
+        try:
+            # Parse the request data
+            old_password = data["old_password"]
+            new_password = data["new_password"]
+        except (KeyError, ValueError) as e:
+            return jsonify({"error": f"Invalid data format: {str(e)}"}), 400
+
+        # Verify that the old and new passwords are not the same
+        if old_password == new_password:
+            return jsonify({"error": "Invalid new password"}), 400
+
+        # Get the user from the database
+        if account_type == AccountType.OWNER:
+            user = owner_repo.get_by_email(email)
+        elif account_type == AccountType.SERVICE_PROVIDER:
+            user = sp_repo.get_by_email(email)
+        else:
+            return jsonify({"error": "Invalid account type"}), 400
+        
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+
+        # Verify that the old password matches
+        if not check_password_hash(user.password, old_password):
+            return jsonify({"error": "Old password does not match"}), 400
+        
+        # Hash the new password
+        hashed_pw = generate_password_hash(new_password, method="pbkdf2:sha256")
+
+        try:
+            db.updateUserPassword(
+                email=email,
+                account_type=account_type,
+                hashed_pw=hashed_pw
+            )
+
+            return jsonify({"message": "Password successfully changed"}), 200
+
+        except Exception as e:
+            return jsonify({"error": f"Failed to change password"}), 500
