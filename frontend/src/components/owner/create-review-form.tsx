@@ -94,7 +94,7 @@ const CreateReviewForm = ({ booking }: Props) => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-        {/* Province field */}
+        {/* Star rating selector */}
         <FormField
           control={form.control}
           name="rating"
@@ -102,7 +102,6 @@ const CreateReviewForm = ({ booking }: Props) => {
             <FormItem>
               <FormLabel>Rating</FormLabel>
               <FormControl className="w-full">
-                {/* Star rating */}
                 <div className="flex justify-center">
                   {[1, 2, 3, 4, 5].map((num) => (
                     <Star

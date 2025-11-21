@@ -7,7 +7,14 @@ import { ServiceType } from '@/enums/service-type';
 import { Footprints, House, PencilLine } from 'lucide-react';
 import BookingSPProfile from '@/components/booking-sp-nav';
 import { Button } from '@/components/ui/button';
-import { redirect } from 'next/navigation';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '../ui/dialog';
+import CreateReviewForm from './create-review-form';
 
 type Props = {
   booking: Booking;
@@ -47,18 +54,24 @@ const PreviousBookingCard = ({ booking }: Props) => {
       </CardHeader>
       <CardContent>
         <BookingForm booking={booking} />
-        <div className="mt-4 flex justify-center">
-          {/* Review button */}
-          <Button
-            type="button"
-            className="w-full"
-            onClick={() => {
-              redirect(`/owner/review-booking/${booking.id}`);
-            }}
-          >
-            <p>Write a Review</p> <PencilLine />
-          </Button>
-        </div>
+        <Dialog>
+          <form>
+            <DialogTrigger asChild>
+              {/* Review button */}
+              <Button className="mt-4 w-full">
+                <p>Write a Review</p> <PencilLine />
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle className="text-center text-2xl">
+                  Write a Review
+                </DialogTitle>
+              </DialogHeader>
+              <CreateReviewForm booking={booking} />
+            </DialogContent>
+          </form>
+        </Dialog>
       </CardContent>
     </Card>
   );
