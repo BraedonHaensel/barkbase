@@ -87,3 +87,10 @@ Use [draw.io](https://www.drawio.com/) to view our relational schema: [BarkBase 
                 ```
 
     4. Open the displayed URL in your web browser. For example: http://localhost:3000
+
+## Default Users
+
+| Email           | Password | Account Type     |
+| --------------- | -------- | ---------------- |
+| bob@gmail.com   | password | Owner            |
+| alice@gmail.com | password | Service Provider |
