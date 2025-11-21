@@ -21,20 +21,19 @@ const UpcomingBookingCard = ({ booking, onDecline }: Props) => {
   return (
     <Card className="min-w-[450px] border-3">
       <CardHeader className="flex h-10 items-center justify-between">
-        <CardTitle className="min-w-fit text-xl font-bold">
+        <CardTitle className="grid w-full grid-cols-2 text-xl font-bold">
           {booking.serviceType === ServiceType.WALKING ? (
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2 whitespace-nowrap">
               <Footprints /> <span>DOG WALK</span>
             </div>
           ) : (
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2 whitespace-nowrap">
               <House /> <span>DOG SITTING</span>
             </div>
           )}
-        </CardTitle>
-        <CardTitle className="flex h-full text-xl">
-          <div className="flex items-center gap-2">
-            {/* TODO owner details */}
+          <div className="flex h-10 items-center justify-end gap-4">
+            {/* TODO get sp details */}
+            <p className="truncate">John D.</p>
             <BookingSPProfile
               spDetails={{
                 firstName: 'John',
