@@ -496,8 +496,6 @@ def init_dog_routes(app, db: DB):
           
           # Update the dog
           db.updateDog(email, old_name, update_request)
-
-          print("Now failed?")
           
           # Get the updated dog to return
           updated_dog = db.getDog(email, name)
@@ -514,8 +512,6 @@ def init_dog_routes(app, db: DB):
           }), 200
           
       except KeyError as e:
-          print("Error!")
-          print(e)
           if "already exists" in str(e):
               return jsonify({"error": str(e)}), 409
           return jsonify({"error": f"Dog not found: {old_name}"}), 400

@@ -454,7 +454,7 @@ def init_booking_routes(app, db: DB, booking_repo: BookingRepo):
         if success:
             return jsonify({"message": "Booking deleted successfully"}), 200
         else:
-            return jsonify({"error": f"Failed to delete booking: {str(e)}"}), 500
+            return jsonify({"error": f"Failed to delete booking"}), 500
 
     # ACCEPT BOOKING (Service Provider only)
     @app.route("/bookings/<int:booking_id>/accept", methods=["PATCH"])

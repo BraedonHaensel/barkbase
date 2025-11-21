@@ -37,6 +37,15 @@ class EmergencyContactDto(TypedDict):
     l_name: str
 
 
+class UpdateEmergencyContactDto(TypedDict):
+    phone_num: str
+    owner_email: str
+    relationship: str
+    email: str
+    f_name: str
+    l_name: str
+
+
 class DogDTO(TypedDict):
     name: str
     o_email: str

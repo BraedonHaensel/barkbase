@@ -19,6 +19,7 @@ from dto.dto import (
     BookingCreateDto,
     CreateDogDTO,
     UpdateDogDTO,
+    UpdateEmergencyContactDto
 )
 from typing import Optional, List
 from enums.enums import Province, ServiceType, AccountType
@@ -311,7 +312,7 @@ class DB:
         self.db.commit()
 
     # Filter by o_email
-    def getEmergencyContact(self, o_email: str) -> List[EmergencyContactDto]:
+    def getEmergencyContacts(self, o_email: str) -> List[EmergencyContactDto]:
         contacts = self.db.query(EmergencyContact).filter(
             EmergencyContact.o_email == o_email
         )
@@ -330,15 +331,18 @@ class DB:
             )
 
         return res
+    
+    def getEmergencyContact(self, o_email: str, phone_num: str) -> EmergencyContact:
+        return self.db.query(EmergencyContact).filter_by(
+            o_email=o_email, phone_num=phone_num).first()
 
     def addEmergencyContact(self, request: EmergencyContactDto):
 
         phone_num = request["phone_num"]
         o_email = request["owner_email"]
 
-        if self.db.query(EmergencyContact).filter(and_(
-                EmergencyContact.o_email == o_email, EmergencyContact.phone_num == phone_num)).first() != None:
-            self.removeEmergencyContact(o_email, phone_num)
+        if self.getEmergencyContact(o_email, phone_num) is not None:
+            raise KeyError(f"Phone number already in use: {phone_num}")
 
         self.db.add(EmergencyContact(
             o_email=o_email, phone_num=phone_num, f_name=request["f_name"],
@@ -348,13 +352,41 @@ class DB:
 
     def removeEmergencyContact(self, o_email:str, phone_num:str):
 
-        contact = self.db.query(EmergencyContact).filter(and_(
-            EmergencyContact.o_email == o_email, EmergencyContact.phone_num == phone_num)).first()
+        contact = self.getEmergencyContact(o_email, phone_num)
 
         if not contact:
             raise KeyError("no such emergency contact")
 
         self.db.delete(contact)
+        self.db.commit()
+    
+    def updateEmergencyContact(self, old_phone_num: str, request: UpdateEmergencyContactDto):
+        try:
+            new_phone_num = request["phone_num"]
+            f_name = request["f_name"]
+            l_name = request["l_name"]
+            relationship = request["relationship"]
+            email = request["email"]
+            o_email = request["owner_email"]
+        except KeyError as e:
+            raise ValueError(f"Missing field: {e}")
+        
+        contact = self.getEmergencyContact(o_email, old_phone_num)
+        if not contact:
+            raise KeyError(f"Emergency contact not for phone number: {old_phone_num}")
+        
+        # Check phone number conflict if changing
+        if new_phone_num != old_phone_num:
+            if self.getEmergencyContact(o_email, new_phone_num):
+                raise KeyError(f"Emergency contact with phone number {new_phone_num} already exists")
+            contact.phone_num = new_phone_num  # triggers onupdate cascade
+
+        # Update other fields
+        contact.f_name = f_name
+        contact.l_name = l_name
+        contact.relationship = relationship
+        contact.email = email
+
         self.db.commit()
 
 
