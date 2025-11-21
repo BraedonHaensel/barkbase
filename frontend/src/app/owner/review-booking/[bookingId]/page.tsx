@@ -14,6 +14,7 @@ import { Province } from '@/enums/province';
 import { toast } from 'sonner';
 import { BookingDto } from '@/dto/dto';
 import CenteredPageContainer from '@/components/centered-page-container';
+import CreateReviewForm from '@/components/owner/create-review-form';
 
 // Page to review a completed booking
 export default function EditBookingPage() {
@@ -97,7 +98,7 @@ export default function EditBookingPage() {
     findBooking();
   }, []);
 
-  if (isLoading) {
+  if (isLoading || !booking) {
     return <LoaderCircle className="mx-auto mt-3 h-10 w-10 animate-spin" />;
   }
 
@@ -108,7 +109,7 @@ export default function EditBookingPage() {
           <CardTitle className="text-center text-2xl">Write a Review</CardTitle>
         </CardHeader>
         <CardContent>
-          <p>TODO form to review booking: {JSON.stringify(booking)}</p>
+          <CreateReviewForm booking={booking} />
         </CardContent>
       </Card>
     </CenteredPageContainer>

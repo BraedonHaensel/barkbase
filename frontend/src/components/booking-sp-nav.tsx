@@ -52,15 +52,13 @@ const BookingSPProfile = ({ spDetails }: Props) => {
         </div>
         {/* Star rating */}
         <div className="flex justify-center">
-          {Array.from({ length: 5 }, (_, num) => {
-            return (
-              <Star
-                key={num}
-                size={18}
-                fill={num + 1 <= spDetails.rating ? 'yellow' : '#111'}
-              />
-            );
-          })}
+          {[1, 2, 3, 4, 5].map((num) => (
+            <Star
+              key={num}
+              size={18}
+              fill={num <= spDetails.rating ? 'yellow' : '#111'}
+            />
+          ))}
         </div>
       </DropdownMenuContent>
     </DropdownMenu>
