@@ -121,21 +121,20 @@ export default function EmergencyContactsPage() {
       return;
     }
 
-    // TODO Support editing contacts?
     // Updating an existing emergency contact
-    // Add old_phone_number field if the contact's phone number changed
-    // if (oldPhoneNumber !== newContactData.phoneNumber) {
-    //   formData.append('old_phone_number', oldPhoneNumber);
-    // }
     api
       .put(
-        '/TODO',
+        '/emergency_contacts',
         {
           phone_num: newContactData.phoneNumber,
+          // Add old_phone_number if it was changed
+          ...(oldPhoneNumber !== newContactData.phoneNumber
+            ? { old_phone_num: oldPhoneNumber }
+            : {}),
           relationship: newContactData.relationship,
           f_name: newContactData.firstName,
           l_name: newContactData.lastName,
-          email: newContactData.email,
+          ...(newContactData.email ? { email: newContactData.email } : {}),
         },
         {
           headers: {
