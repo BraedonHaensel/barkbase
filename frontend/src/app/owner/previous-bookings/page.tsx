@@ -96,7 +96,7 @@ export default function PreviousBookingsPage() {
       <p style={{ fontSize: '35px' }} className="text-center font-bold">
         Previous Bookings
       </p>
-      {bookings.length == 0 ? (
+      {bookings.length === 0 ? (
         <div className="flex justify-center">
           <p className="text-muted-foreground">No previous bookings.</p>
         </div>
