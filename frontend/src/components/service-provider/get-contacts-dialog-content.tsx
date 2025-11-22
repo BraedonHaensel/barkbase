@@ -71,7 +71,7 @@ const GetContactsDialogContent = ({ ownerEmail }: Props) => {
   }, []);
 
   return (
-    <DialogContent>
+    <DialogContent className="max-h-[calc(100vh-60px)] overflow-auto">
       <DialogHeader>
         <DialogTitle className="text-center text-2xl font-bold">
           Emergency Contacts
