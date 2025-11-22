@@ -272,7 +272,7 @@ def init_emergency_contact_routes(app, db: DB):
                 old_phone_num:
                   type: string
                   description: "The current phone number of the contact before the change (only required if renaming)"
-                  example: "4441119999
+                  example: "4441119999"
         responses:
           200:
             description: Contact successfully updated
