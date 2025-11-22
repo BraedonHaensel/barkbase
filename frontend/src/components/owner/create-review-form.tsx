@@ -24,14 +24,14 @@ import { Booking } from '@/types/booking';
 import { createReviewSchema } from '@/lib/schemas/review';
 import { dateToLocalYMD } from '@/lib/utils';
 
-// Form schema to create or edit a booking
+// Form schema to create a review
 type CreateReviewSchema = z.infer<typeof createReviewSchema>;
 
 type Props = {
   booking: Booking;
 };
 
-// Form to create or edit a booking
+// Form to create a review for a booking
 const CreateReviewForm = ({ booking }: Props) => {
   const router = useRouter();
   const { session } = useContext(SessionContext);

@@ -54,3 +54,13 @@ export interface ServiceProviderDto {
   phone_num: string;
   image_url: string;
 }
+
+export interface ReviewDto {
+  id: string;
+  o_email: string;
+  sp_email: string;
+  service_type: string;
+  date: Date;
+  star_rating: number;
+  description?: string;
+}
