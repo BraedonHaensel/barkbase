@@ -399,6 +399,7 @@ const CreateEditBookingForm = ({
                       onValueChange={onChange}
                       defaultValue={value}
                       placeholder="Select dogs..."
+                      maxWidth="100vw"
                     />
                   </FormControl>
                   <FormMessage />
