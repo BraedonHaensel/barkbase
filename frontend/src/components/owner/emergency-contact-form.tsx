@@ -158,7 +158,9 @@ const EmergencyContactForm = ({
                 <FormControl>
                   <Input
                     readOnly={isReadonly}
-                    placeholder={isNewContact ? 'email@example.com' : 'N/A'}
+                    placeholder={
+                      isReadonly && !isNewContact ? 'N/A' : 'email@example.com'
+                    }
                     {...field}
                   />
                 </FormControl>
