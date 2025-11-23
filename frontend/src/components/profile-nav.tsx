@@ -41,7 +41,7 @@ const ProvileNav = () => {
       </DropdownMenuTrigger>
 
       {/* Dropdown contents */}
-      {user && (
+      {user && session && (
         <DropdownMenuContent className="max-w-[min(400px,100vw)]" align="end">
           {/* User name and email */}
           <div className="p-2">
@@ -62,11 +62,13 @@ const ProvileNav = () => {
               redirect('/profile');
             }}
           >
-            Profile
+            {session.accountType === AccountType.OWNER
+              ? 'Owner Profile'
+              : 'Service Provider Profile'}
           </DropdownMenuItem>
 
           {/* Emergency contacts page redirect (owners only) */}
-          {session && session.accountType === AccountType.OWNER && (
+          {session.accountType === AccountType.OWNER && (
             <DropdownMenuItem
               onClick={() => {
                 setOpen(false);
