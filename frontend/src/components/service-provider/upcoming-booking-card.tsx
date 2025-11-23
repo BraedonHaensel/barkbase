@@ -4,10 +4,18 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Booking } from '@/types/booking';
 import BookingForm from '@/components/booking-form';
 import { ServiceType } from '@/enums/service-type';
-import { Footprints, House, LoaderCircle } from 'lucide-react';
+import { Footprints, House, LoaderCircle, ShieldUser } from 'lucide-react';
 import BookingSPProfile from '@/components/booking-sp-nav';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '../ui/dialog';
+import GetContactsDialogContent from './get-contacts-dialog-content';
 
 type Props = {
   booking: Booking;
@@ -17,6 +25,7 @@ type Props = {
 // Card for dispalying a service provider's upcoming booking
 const UpcomingBookingCard = ({ booking, onDecline }: Props) => {
   const [isDeclining, setIsDeclining] = useState(false);
+  const [isViewingContacts, setIsViewingContacts] = useState(false);
 
   return (
     <Card className="min-w-[450px] border-3">
@@ -47,33 +56,46 @@ const UpcomingBookingCard = ({ booking, onDecline }: Props) => {
           </div>
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-4">
         <BookingForm booking={booking} />
-        <div className="mt-4 flex justify-center">
-          {/* Decline button */}
-          <Button
-            type="button"
-            className="bg-destructive/30 w-full"
-            variant="destructive"
-            onClick={async () => {
-              setIsDeclining(true);
-              if (
-                window.confirm('Are you sure you want to decline this booking?')
-              ) {
-                await onDecline(booking.id);
-              }
-              setIsDeclining(false);
-            }}
-          >
-            {isDeclining ? (
-              <LoaderCircle className="animate-spin" />
-            ) : (
-              <>
-                <p>Decline Booking</p>
-              </>
+
+        {/* Decline button */}
+        <Button
+          type="button"
+          className="bg-destructive/30 w-full"
+          variant="destructive"
+          onClick={async () => {
+            setIsDeclining(true);
+            if (
+              window.confirm('Are you sure you want to decline this booking?')
+            ) {
+              await onDecline(booking.id);
+            }
+            setIsDeclining(false);
+          }}
+        >
+          {isDeclining ? (
+            <LoaderCircle className="animate-spin" />
+          ) : (
+            <>
+              <p>Decline Booking</p>
+            </>
+          )}
+        </Button>
+
+        {/* Get emergency contacts button */}
+        <Dialog open={isViewingContacts} onOpenChange={setIsViewingContacts}>
+          <form>
+            <DialogTrigger asChild>
+              <Button className="w-full">
+                <p>Get Emergency Contacts</p> <ShieldUser />
+              </Button>
+            </DialogTrigger>
+            {isViewingContacts && (
+              <GetContactsDialogContent ownerEmail={booking.oEmail} />
             )}
-          </Button>
-        </div>
+          </form>
+        </Dialog>
       </CardContent>
     </Card>
   );

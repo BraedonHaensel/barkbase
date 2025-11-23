@@ -142,231 +142,236 @@ const MainProfileForm = ({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <fieldset
-          disabled={!isEditing}
-          className={`space-y-5 ${isEditing ? 'border-teal-400/50' : 'hover:cursor-pointer hover:opacity-60'}`}
-          onClick={() => {
-            if (!isEditing) {
-              // Check if another section is already being edited
-              if (isEditingASection) {
-                toast.warning('Only one section can be edited at a time!');
-              } else {
-                setIsEditing(true);
-                setIsEditingASection(true);
-              }
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className={`space-y-5 ${isEditing ? 'border-teal-400/50' : 'hover:cursor-pointer hover:opacity-60'}`}
+        onClick={() => {
+          if (!isEditing) {
+            // Check if another section is already being edited
+            if (isEditingASection) {
+              toast.warning('Only one section can be edited at a time!');
+            } else {
+              setIsEditing(true);
+              setIsEditingASection(true);
             }
-          }}
-        >
-          <div className="flex w-full items-center gap-4">
-            {/* Profile image field */}
-            {/* CITATION: Field developed with reference to:
-             * File uploads made easy with react and flask. (n.d.). Dunder Method Paper Company.
-             * Retrieved November 10, 2025, from https://dundermethodpaperco.hashnode.dev/file-uploads-made-easy-with-react-and-flask
-             */}
-            <FormField
-              control={form.control}
-              name="image"
-              render={({ field: { onChange, value, ...rest } }) => (
-                <FormItem className="h-full w-1/2">
-                  <FormLabel>Image</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          setProfileImagePreview(URL.createObjectURL(file));
-                          onChange(file);
-                        }
-                      }}
-                      {...rest}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            {profileImagePreview && (
-              <img
-                src={profileImagePreview}
-                alt="Profile image preview"
-                className="mx-auto aspect-square w-25 object-cover"
-              />
-            )}
-          </div>
-
-          <div className="flex w-full gap-4">
-            {/* Email field */}
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field: { value } }) => (
-                <FormItem className="h-full w-1/2">
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <div
-                      onClick={() => {
-                        console.log('click');
-                        toast.warning("Email can't be changed!");
-                      }}
-                    >
-                      <Input
-                        disabled
-                        className={
-                          isEditing ? 'bg-gray-100 disabled:opacity-100' : ''
-                        }
-                        value={value}
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Phone number field */}
-            <FormField
-              control={form.control}
-              name="phoneNumber"
-              render={({ field }) => (
-                <FormItem className="h-full w-1/2">
-                  <FormLabel>Phone number</FormLabel>
-                  <FormControl>
-                    <Input placeholder="1234567890" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <div className="flex gap-4">
-            {/* First name field */}
-            <FormField
-              control={form.control}
-              name="firstName"
-              render={({ field }) => (
-                <FormItem className="h-full w-1/2">
-                  <FormLabel>First name</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Last name field */}
-            <FormField
-              control={form.control}
-              name="lastName"
-              render={({ field }) => (
-                <FormItem className="h-full w-1/2">
-                  <FormLabel>Last name</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          {/* Street field */}
+          }
+        }}
+      >
+        <div className="flex w-full items-center gap-4">
+          {/* Profile image field */}
+          {/* CITATION: Field developed with reference to:
+           * File uploads made easy with react and flask. (n.d.). Dunder Method Paper Company.
+           * Retrieved November 10, 2025, from https://dundermethodpaperco.hashnode.dev/file-uploads-made-easy-with-react-and-flask
+           */}
           <FormField
             control={form.control}
-            name="street"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Street</FormLabel>
+            name="image"
+            render={({ field: { onChange, value, ...rest } }) => (
+              <FormItem className="h-full w-1/2">
+                <FormLabel>Image</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input
+                    disabled={!isEditing}
+                    className="disabled:opacity-100"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        setProfileImagePreview(URL.createObjectURL(file));
+                        onChange(file);
+                      }
+                    }}
+                    {...rest}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          {profileImagePreview && (
+            <img
+              src={profileImagePreview}
+              alt="Profile image preview"
+              className="mx-auto aspect-square w-25 object-cover"
+            />
+          )}
+        </div>
+
+        <div className="flex w-full gap-4">
+          {/* Email field */}
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field: { value } }) => (
+              <FormItem className="h-full w-1/2">
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <div
+                    onClick={() => {
+                      console.log('click');
+                      toast.warning("Email can't be changed!");
+                    }}
+                  >
+                    <Input
+                      readOnly
+                      className={
+                        isEditing ? 'bg-gray-100 disabled:opacity-100' : ''
+                      }
+                      value={value}
+                    />
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          <div className="flex gap-4">
-            {/* City field */}
-            <FormField
-              control={form.control}
-              name="city"
-              render={({ field }) => (
-                <FormItem className="h-full w-1/2">
-                  <FormLabel>City</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          {/* Phone number field */}
+          <FormField
+            control={form.control}
+            name="phoneNumber"
+            render={({ field }) => (
+              <FormItem className="h-full w-1/2">
+                <FormLabel>Phone number</FormLabel>
+                <FormControl>
+                  <Input
+                    readOnly={!isEditing}
+                    placeholder="1234567890"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
-            {/* Province field */}
-            <FormField
-              control={form.control}
-              name="province"
-              render={({ field }) => (
-                <FormItem className="h-full w-1/2">
-                  <FormLabel>Province / Territory</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl className="w-full">
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {Object.values(Province).map((province) => (
-                        <SelectItem key={province} value={province}>
-                          {province}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+        <div className="flex gap-4">
+          {/* First name field */}
+          <FormField
+            control={form.control}
+            name="firstName"
+            render={({ field }) => (
+              <FormItem className="h-full w-1/2">
+                <FormLabel>First name</FormLabel>
+                <FormControl>
+                  <Input readOnly={!isEditing} {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-          {isEditing && (
-            <div className="flex gap-4">
-              {/* Discard changes button */}
-              <Button
-                type="button"
-                className="w-1/2"
-                onClick={() => {
-                  form.reset();
-                  setProfileImagePreview(user.imageUrl);
-                  setIsEditing(false);
-                  setIsEditingASection(false);
-                }}
-                variant="secondary"
-              >
-                Discard Changes
-              </Button>
+          {/* Last name field */}
+          <FormField
+            control={form.control}
+            name="lastName"
+            render={({ field }) => (
+              <FormItem className="h-full w-1/2">
+                <FormLabel>Last name</FormLabel>
+                <FormControl>
+                  <Input readOnly={!isEditing} {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
-              {/* Save changes button */}
-              <Button
-                type="submit"
-                className="w-1/2"
-                disabled={!formContainsChanges()}
-              >
-                {isPending ? (
-                  <LoaderCircle className="animate-spin" />
-                ) : (
-                  'Save Changes'
-                )}
-              </Button>
-            </div>
+        {/* Street field */}
+        <FormField
+          control={form.control}
+          name="street"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Street</FormLabel>
+              <FormControl>
+                <Input readOnly={!isEditing} {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
           )}
-        </fieldset>
+        />
+
+        <div className="flex gap-4">
+          {/* City field */}
+          <FormField
+            control={form.control}
+            name="city"
+            render={({ field }) => (
+              <FormItem className="h-full w-1/2">
+                <FormLabel>City</FormLabel>
+                <FormControl>
+                  <Input readOnly={!isEditing} {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Province field */}
+          <FormField
+            control={form.control}
+            name="province"
+            render={({ field }) => (
+              <FormItem className="h-full w-1/2">
+                <FormLabel>Province / Territory</FormLabel>
+                <Select
+                  disabled={!isEditing}
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl className="w-full">
+                    <SelectTrigger className="disabled:cursor-default disabled:opacity-100">
+                      <SelectValue />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {Object.values(Province).map((province) => (
+                      <SelectItem key={province} value={province}>
+                        {province}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        {isEditing && (
+          <div className="flex gap-4">
+            {/* Discard changes button */}
+            <Button
+              type="button"
+              className="w-1/2"
+              onClick={() => {
+                form.reset();
+                setProfileImagePreview(user.imageUrl);
+                setIsEditing(false);
+                setIsEditingASection(false);
+              }}
+              variant="secondary"
+            >
+              Discard Changes
+            </Button>
+
+            {/* Save changes button */}
+            <Button
+              type="submit"
+              className="w-1/2"
+              disabled={!formContainsChanges()}
+            >
+              {isPending ? (
+                <LoaderCircle className="animate-spin" />
+              ) : (
+                'Save Changes'
+              )}
+            </Button>
+          </div>
+        )}
       </form>
     </Form>
   );

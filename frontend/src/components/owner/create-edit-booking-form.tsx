@@ -340,12 +340,7 @@ const CreateEditBookingForm = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input
-                        type="time"
-                        id="time-picker"
-                        step="60"
-                        {...field}
-                      />
+                      <Input type="time" step="60" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -375,12 +370,7 @@ const CreateEditBookingForm = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input
-                        type="time"
-                        id="time-picker"
-                        step="60"
-                        {...field}
-                      />
+                      <Input type="time" step="60" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -409,6 +399,7 @@ const CreateEditBookingForm = ({
                       onValueChange={onChange}
                       defaultValue={value}
                       placeholder="Select dogs..."
+                      maxWidth="100vw"
                     />
                   </FormControl>
                   <FormMessage />

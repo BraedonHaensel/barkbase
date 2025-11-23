@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -53,10 +54,11 @@ const PreviousBookingCard = ({ booking }: Props) => {
       </CardHeader>
       <CardContent>
         <BookingForm booking={booking} />
+
+        {/* Review button */}
         <Dialog>
           <form>
             <DialogTrigger asChild>
-              {/* Review button */}
               <Button className="mt-4 w-full">
                 <p>Write a Review</p> <PencilLine />
               </Button>
@@ -66,6 +68,9 @@ const PreviousBookingCard = ({ booking }: Props) => {
                 <DialogTitle className="text-center text-2xl font-bold">
                   Write a Review
                 </DialogTitle>
+                <DialogDescription className="sr-only">
+                  Use this form to write a review.
+                </DialogDescription>
               </DialogHeader>
               <CreateReviewForm booking={booking} />
             </DialogContent>
