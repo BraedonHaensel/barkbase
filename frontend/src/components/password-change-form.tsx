@@ -104,101 +104,99 @@ const PasswordChangeForm = ({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <fieldset
-          disabled={!isEditing}
-          className={`space-y-5 ${isEditing ? 'border-teal-400/50' : 'hover:cursor-pointer hover:opacity-60'}`}
-          onClick={() => {
-            if (!isEditing) {
-              // Check if another section is already being edited
-              if (isEditingASection) {
-                toast.warning('Only one section can be edited at a time!');
-              } else {
-                setIsEditing(true);
-                setIsEditingASection(true);
-              }
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className={`space-y-5 ${isEditing ? 'border-teal-400/50' : 'hover:cursor-pointer hover:opacity-60'}`}
+        onClick={() => {
+          if (!isEditing) {
+            // Check if another section is already being edited
+            if (isEditingASection) {
+              toast.warning('Only one section can be edited at a time!');
+            } else {
+              setIsEditing(true);
+              setIsEditingASection(true);
             }
-          }}
-        >
-          {/* Old password field */}
+          }
+        }}
+      >
+        {/* Old password field */}
+        <FormField
+          control={form.control}
+          name="oldPassword"
+          render={({ field }) => (
+            <FormItem className="h-full w-1/2">
+              <FormLabel>Old password</FormLabel>
+              <FormControl>
+                <Input disabled={!isEditing} type="password" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="flex gap-4">
+          {/* First name field */}
           <FormField
             control={form.control}
-            name="oldPassword"
+            name="newPassword"
             render={({ field }) => (
               <FormItem className="h-full w-1/2">
-                <FormLabel>Old password</FormLabel>
+                <FormLabel>New password</FormLabel>
                 <FormControl>
-                  <Input type="password" {...field} />
+                  <Input disabled={!isEditing} type="password" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
+          {/* Last name field */}
+          <FormField
+            control={form.control}
+            name="confirmNewPassword"
+            render={({ field }) => (
+              <FormItem className="h-full w-1/2">
+                <FormLabel>Confirm new password</FormLabel>
+                <FormControl>
+                  <Input disabled={!isEditing} type="password" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        {isEditing && (
           <div className="flex gap-4">
-            {/* First name field */}
-            <FormField
-              control={form.control}
-              name="newPassword"
-              render={({ field }) => (
-                <FormItem className="h-full w-1/2">
-                  <FormLabel>New password</FormLabel>
-                  <FormControl>
-                    <Input type="password" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {/* Discard changes button */}
+            <Button
+              type="button"
+              className="w-1/2"
+              onClick={() => {
+                form.reset();
+                setProfileImagePreview(user.imageUrl);
+                setIsEditing(false);
+                setIsEditingASection(false);
+              }}
+              variant="secondary"
+            >
+              Cancel
+            </Button>
 
-            {/* Last name field */}
-            <FormField
-              control={form.control}
-              name="confirmNewPassword"
-              render={({ field }) => (
-                <FormItem className="h-full w-1/2">
-                  <FormLabel>Confirm new password</FormLabel>
-                  <FormControl>
-                    <Input type="password" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+            {/* Confirm change button */}
+            <Button
+              type="submit"
+              className="bg-destructive/30 w-1/2"
+              variant="destructive"
+            >
+              {isPending ? (
+                <LoaderCircle className="animate-spin" />
+              ) : (
+                'Confirm Change'
               )}
-            />
+            </Button>
           </div>
-
-          {isEditing && (
-            <div className="flex gap-4">
-              {/* Discard changes button */}
-              <Button
-                type="button"
-                className="w-1/2"
-                onClick={() => {
-                  form.reset();
-                  setProfileImagePreview(user.imageUrl);
-                  setIsEditing(false);
-                  setIsEditingASection(false);
-                }}
-                variant="secondary"
-              >
-                Cancel
-              </Button>
-
-              {/* Confirm change button */}
-              <Button
-                type="submit"
-                className="bg-destructive/30 w-1/2"
-                variant="destructive"
-              >
-                {isPending ? (
-                  <LoaderCircle className="animate-spin" />
-                ) : (
-                  'Confirm Change'
-                )}
-              </Button>
-            </div>
-          )}
-        </fieldset>
+        )}
       </form>
     </Form>
   );
