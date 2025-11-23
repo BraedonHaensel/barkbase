@@ -3,6 +3,7 @@
 import MainProfileForm from '@/components/main-profile-form';
 import PasswordChangeForm from '@/components/password-change-form';
 import { SessionContext } from '@/context/session-context';
+import { AccountType } from '@/enums/account-type';
 import { redirect } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
 
@@ -22,7 +23,9 @@ export default function ProfilePage() {
     <div className="mx-auto flex max-w-[700px] flex-col gap-4">
       {/* Page title */}
       <p style={{ fontSize: '35px' }} className="text-center font-bold">
-        Profile
+        {session?.accountType === AccountType.OWNER
+          ? 'Owner Profile'
+          : 'Service Provider Profile'}
       </p>
       <MainProfileForm
         isEditingASection={isEditingASection}
