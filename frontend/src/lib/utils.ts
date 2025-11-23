@@ -29,11 +29,6 @@ export function dateToLocalYMD(date: Date) {
   return date.toLocaleDateString('en-CA');
 }
 
-// Get the YYYY-MM-DD component from an ISO string
-export function getYMDFromIsoString(date: string) {
-  return new Date(date).toLocaleDateString();
-}
-
 // Get the HH:MM component from an ISO string
 export function getHMFromIsoString(date: string) {
   return date.split('T')[1].substring(0, 5);

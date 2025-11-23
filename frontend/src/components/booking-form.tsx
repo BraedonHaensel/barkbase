@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
+import { dateToLocalYMD } from '@/lib/utils';
 
 // Form schema for a general booking view
 type BookingSchema = z.infer<typeof bookingSchema>;
@@ -35,7 +36,7 @@ const BookingForm = ({ booking }: Props) => {
           render={({ field: { value } }) => (
             <FormItem>
               <FormLabel>Booked dogs ({value.length})</FormLabel>
-              <Input value={value.join(', ')} onChange={() => {}} />
+              <Input readOnly value={value.join(', ')} />
             </FormItem>
           )}
         />
@@ -46,10 +47,10 @@ const BookingForm = ({ booking }: Props) => {
           <FormField
             control={form.control}
             name="startDate"
-            render={({ field: { value } }) => (
+            render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <DatePicker value={value} onChange={() => {}} />
+                  <Input readOnly value={dateToLocalYMD(field.value)} />
                 </FormControl>
               </FormItem>
             )}
@@ -58,16 +59,10 @@ const BookingForm = ({ booking }: Props) => {
           <FormField
             control={form.control}
             name="startTime"
-            render={({ field: { value } }) => (
+            render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <Input
-                    type="time"
-                    id="time-picker"
-                    step="60"
-                    value={value}
-                    onChange={() => {}}
-                  />
+                  <Input readOnly type="time" step="60" value={field.value} />
                 </FormControl>
               </FormItem>
             )}
@@ -80,10 +75,10 @@ const BookingForm = ({ booking }: Props) => {
           <FormField
             control={form.control}
             name="endDate"
-            render={({ field: { value } }) => (
+            render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <DatePicker value={value} onChange={() => {}} />
+                  <Input readOnly value={dateToLocalYMD(field.value)} />
                 </FormControl>
               </FormItem>
             )}
@@ -92,16 +87,10 @@ const BookingForm = ({ booking }: Props) => {
           <FormField
             control={form.control}
             name="endTime"
-            render={({ field: { value } }) => (
+            render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <Input
-                    type="time"
-                    id="time-picker"
-                    step="60"
-                    value={value}
-                    onChange={() => {}}
-                  />
+                  <Input readOnly type="time" step="60" value={field.value} />
                 </FormControl>
               </FormItem>
             )}
@@ -112,10 +101,10 @@ const BookingForm = ({ booking }: Props) => {
         <FormField
           control={form.control}
           name="street"
-          render={({ field: { value } }) => (
+          render={({ field }) => (
             <FormItem>
               <FormLabel>Street</FormLabel>
-              <Input value={value} onChange={() => {}} />
+              <Input readOnly value={field.value} />
             </FormItem>
           )}
         />
@@ -125,10 +114,10 @@ const BookingForm = ({ booking }: Props) => {
           <FormField
             control={form.control}
             name="city"
-            render={({ field: { value } }) => (
+            render={({ field }) => (
               <FormItem className="w-1/2">
                 <FormLabel>City</FormLabel>
-                <Input value={value} onChange={() => {}} />
+                <Input readOnly value={field.value} />
               </FormItem>
             )}
           />
@@ -136,10 +125,10 @@ const BookingForm = ({ booking }: Props) => {
           <FormField
             control={form.control}
             name="province"
-            render={({ field: { value } }) => (
+            render={({ field }) => (
               <FormItem className="w-1/2">
                 <FormLabel>Province / Territory</FormLabel>
-                <Input value={value} onChange={() => {}} />
+                <Input readOnly value={field.value} />
               </FormItem>
             )}
           />
@@ -149,10 +138,10 @@ const BookingForm = ({ booking }: Props) => {
         <FormField
           control={form.control}
           name="price"
-          render={({ field: { value } }) => (
+          render={({ field }) => (
             <FormItem>
               <FormLabel>Price</FormLabel>
-              <Input value={`${value} $`} onChange={() => {}} />
+              <Input readOnly value={`${field.value} $`} />
             </FormItem>
           )}
         />
@@ -161,14 +150,10 @@ const BookingForm = ({ booking }: Props) => {
         <FormField
           control={form.control}
           name="note"
-          render={({ field: { value } }) => (
+          render={({ field }) => (
             <FormItem>
               <FormLabel>Booking notes</FormLabel>
-              <Textarea
-                placeholder="No notes."
-                value={value}
-                onChange={() => {}}
-              />
+              <Textarea readOnly placeholder="N/A" value={field.value} />
             </FormItem>
           )}
         />

@@ -16,7 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { dogSchema } from '@/lib/schemas/dog';
 import DatePicker from '../date-picker';
-import { dateToAge } from '@/lib/utils';
+import { dateToAge, dateToLocalYMD } from '@/lib/utils';
 import { DogSize } from '@/enums/dog-size';
 import {
   Select,
@@ -98,193 +98,198 @@ const DogCardForm = ({
     setIsSaving(false);
   }
 
+  // Track when this form is in a read-only state
+  const isReadonly = !isEditing || isSaving || isDeleting;
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <fieldset
-          disabled={!isEditing || isSaving || isDeleting}
-          className="space-y-5"
-        >
-          {/* Dog image field */}
-          {/* CITATION: Field developed with reference to:
-           * File uploads made easy with react and flask. (n.d.). Dunder Method Paper Company.
-           * Retrieved November 10, 2025, from https://dundermethodpaperco.hashnode.dev/file-uploads-made-easy-with-react-and-flask
-           */}
-          <FormField
-            control={form.control}
-            name="image"
-            render={({ field: { onChange, value, ...rest } }) => (
-              <FormItem>
-                <FormLabel>Dog image</FormLabel>
-                <FormControl>
-                  <div className="flex flex-col gap-3">
-                    {(isEditing || !dogImagePreview) && (
-                      <Input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            setDogImagePreview(URL.createObjectURL(file));
-                            onChange(file);
-                          }
-                        }}
-                        {...rest}
-                      />
-                    )}
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+        {/* Dog image field */}
+        {/* CITATION: Field developed with reference to:
+         * File uploads made easy with react and flask. (n.d.). Dunder Method Paper Company.
+         * Retrieved November 10, 2025, from https://dundermethodpaperco.hashnode.dev/file-uploads-made-easy-with-react-and-flask
+         */}
+        <FormField
+          control={form.control}
+          name="image"
+          render={({ field: { onChange, value, ...rest } }) => (
+            <FormItem>
+              <FormLabel>Dog image</FormLabel>
+              <FormControl>
+                <div className="flex flex-col gap-3">
+                  {(isEditing || !dogImagePreview) && (
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setDogImagePreview(URL.createObjectURL(file));
+                          onChange(file);
+                        }
+                      }}
+                      {...rest}
+                    />
+                  )}
 
-                    {dogImagePreview && (
-                      <img
-                        src={dogImagePreview}
-                        alt="Profile image preview"
-                        className="mx-auto aspect-square w-2/3 object-cover"
-                      />
-                    )}
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Name field */}
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Name</FormLabel>
-                <Input {...field} />
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Date of birth field */}
-          <FormField
-            control={form.control}
-            name="birthDate"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Date of Birth</FormLabel>
-                <FormControl>
-                  <div className="flex items-center gap-3">
-                    <DatePicker blockFuture {...field} />
-                    {field.value && (
-                      <p className="text-muted-foreground">
-                        ({dateToAge(field.value)} old)
-                      </p>
-                    )}
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Size field */}
-          <FormField
-            control={form.control}
-            name="size"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Size</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {/* Citation: Size weights are taken from:
-                     * Rover.com: Book Dog Boarding, Dog Walking and More. (n.d.). Rover.com. Retrieved November 8, 2025, https://www.rover.com/ca/
-                     */}
-                    <SelectItem value={DogSize.SMALL}>
-                      Small (0-15 lbs)
-                    </SelectItem>
-                    <SelectItem value={DogSize.MEDIUM}>
-                      Medium (16-40 lbs)
-                    </SelectItem>
-                    <SelectItem value={DogSize.LARGE}>
-                      Large (41+ lbs)
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Breeds field */}
-          <FormField
-            control={form.control}
-            name="breeds"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Breeds</FormLabel>
-                <Input {...field} />
-                <FormDescription>
-                  Separate multiple breeds with commas
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {isEditing && (
-            <div className="flex flex-col gap-3">
-              {/* Discard changes button */}
-              <Button
-                type="button"
-                className="w-full"
-                onClick={() => {
-                  form.reset();
-                  setDogImagePreview(dog.imageUrl);
-                  setIsEditing(false);
-                }}
-                variant="secondary"
-              >
-                Discard Changes
-              </Button>
-
-              {/* Save changes button */}
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={!formContainsChanges()}
-              >
-                {isSaving ? (
-                  <LoaderCircle className="animate-spin" />
-                ) : (
-                  'Save Changes'
-                )}
-              </Button>
-
-              {/* Delete button */}
-              <Button
-                type="button"
-                className="bg-destructive/30 mt-4 w-full"
-                variant="destructive"
-                onClick={async () => {
-                  setIsDeleting(true);
-                  if (window.confirm(`Are you sure you want to delete?`)) {
-                    await deleteDog(dog.name);
-                  }
-                  setIsDeleting(false);
-                }}
-              >
-                {isDeleting ? (
-                  <LoaderCircle className="animate-spin" />
-                ) : (
-                  'Delete'
-                )}
-              </Button>
-            </div>
+                  {dogImagePreview && (
+                    <img
+                      src={dogImagePreview}
+                      alt="Profile image preview"
+                      className="mx-auto aspect-square w-2/3 object-cover"
+                    />
+                  )}
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
           )}
-        </fieldset>
+        />
+
+        {/* Name field */}
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Name</FormLabel>
+              <Input readOnly={isReadonly} {...field} />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Date of birth field */}
+        <FormField
+          control={form.control}
+          name="birthDate"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Date of Birth</FormLabel>
+              <FormControl>
+                <div className="flex items-center gap-3">
+                  {isReadonly ? (
+                    <Input
+                      className="w-50"
+                      readOnly
+                      value={dateToLocalYMD(field.value)}
+                    />
+                  ) : (
+                    <DatePicker blockFuture {...field} />
+                  )}
+                  {field.value && (
+                    <p className="text-muted-foreground">
+                      ({dateToAge(field.value)} old)
+                    </p>
+                  )}
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Size field */}
+        <FormField
+          control={form.control}
+          name="size"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Size</FormLabel>
+              <Select
+                disabled={isReadonly}
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+              >
+                <FormControl>
+                  <SelectTrigger className="w-50 disabled:cursor-default disabled:opacity-100">
+                    <SelectValue />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {/* Citation: Size weights are taken from:
+                   * Rover.com: Book Dog Boarding, Dog Walking and More. (n.d.). Rover.com. Retrieved November 8, 2025, https://www.rover.com/ca/
+                   */}
+                  <SelectItem value={DogSize.SMALL}>
+                    Small (0-15 lbs)
+                  </SelectItem>
+                  <SelectItem value={DogSize.MEDIUM}>
+                    Medium (16-40 lbs)
+                  </SelectItem>
+                  <SelectItem value={DogSize.LARGE}>Large (41+ lbs)</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Breeds field */}
+        <FormField
+          control={form.control}
+          name="breeds"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Breeds</FormLabel>
+              <Input readOnly={isReadonly} {...field} />
+              <FormDescription>
+                Separate multiple breeds with commas
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {isEditing && (
+          <div className="flex flex-col gap-3">
+            {/* Discard changes button */}
+            <Button
+              type="button"
+              className="w-full"
+              onClick={() => {
+                form.reset();
+                setDogImagePreview(dog.imageUrl);
+                setIsEditing(false);
+              }}
+              variant="secondary"
+            >
+              Discard Changes
+            </Button>
+
+            {/* Save changes button */}
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={!formContainsChanges()}
+            >
+              {isSaving ? (
+                <LoaderCircle className="animate-spin" />
+              ) : (
+                'Save Changes'
+              )}
+            </Button>
+
+            {/* Delete button */}
+            <Button
+              type="button"
+              className="bg-destructive/30 mt-4 w-full"
+              variant="destructive"
+              onClick={async () => {
+                setIsDeleting(true);
+                if (window.confirm(`Are you sure you want to delete?`)) {
+                  await deleteDog(dog.name);
+                }
+                setIsDeleting(false);
+              }}
+            >
+              {isDeleting ? (
+                <LoaderCircle className="animate-spin" />
+              ) : (
+                'Delete'
+              )}
+            </Button>
+          </div>
+        )}
       </form>
     </Form>
   );

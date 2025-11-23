@@ -40,10 +40,10 @@ const DatePicker = ({
         <Button
           variant="outline"
           id="date"
-          className="w-48 justify-between font-normal"
+          className="w-50 justify-between font-normal"
         >
-          {value ? value.toLocaleDateString() : 'Select date'}
-          <ChevronDown />
+          {value ? value.toLocaleDateString('en-CA') : 'Select date'}
+          <ChevronDown className="text-muted-foreground opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto overflow-hidden p-0" align="start">
