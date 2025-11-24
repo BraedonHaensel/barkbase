@@ -94,6 +94,16 @@ class ServiceProviderDTO(TypedDict):
     image_url: str
 
 
+class ReviewDTO(TypedDict):
+    id: int
+    o_email: str
+    sp_email: str
+    service_type: str
+    date: str  # serialized ISO string, not datetime object
+    star_rating: int
+    description: str
+
+
 # Request body shape to create booking
 class BookingCreateDto(TypedDict):
     o_email: str
