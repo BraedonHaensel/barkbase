@@ -2,6 +2,7 @@
 
 import ReviewCard from '@/components/service-provider/review-card';
 import { SessionContext } from '@/context/session-context';
+import { UserContext } from '@/context/user-context';
 import { ReviewDto } from '@/dto/dto';
 import { AccountType } from '@/enums/account-type';
 import { ServiceType } from '@/enums/service-type';
@@ -17,6 +18,7 @@ export default function MyReviewsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [reviews, setReviews] = useState<Array<Review>>([]);
   const { session } = useContext(SessionContext);
+  const { user } = useContext(UserContext);
 
   // A service provider session is required
   useEffect(() => {
@@ -29,7 +31,7 @@ export default function MyReviewsPage() {
   const getReviews = async () => {
     setIsLoading(true);
     api
-      .get('/reviews/me', {
+      .get(`/reviews/service_provider/${user?.email}`, {
         headers: {
           Authorization: `Bearer ${session?.token}`,
         },
@@ -71,34 +73,6 @@ export default function MyReviewsPage() {
 
   useEffect(() => {
     getReviews();
-    // TODO placeholder until API is up
-    setReviews([
-      {
-        id: '1',
-        oEmail: 'jon@gmail.com',
-        spEmail: 'alice@gmail.com',
-        serviceType: ServiceType.WALKING,
-        date: new Date(),
-        starRating: 3,
-        description: 'I really liked Alice, she was a great dog walker!',
-      },
-      {
-        id: '2',
-        oEmail: 'jon@gmail.com',
-        spEmail: 'alice@gmail.com',
-        serviceType: ServiceType.SITTING,
-        date: new Date(),
-        starRating: 3,
-      },
-      {
-        id: '2',
-        oEmail: 'jon@gmail.com',
-        spEmail: 'alice@gmail.com',
-        serviceType: ServiceType.SITTING,
-        date: new Date(),
-        starRating: 3,
-      },
-    ]);
   }, []);
 
   if (isLoading) {

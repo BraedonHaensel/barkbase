@@ -142,7 +142,7 @@ class DB:
             sp_email="alice@gmail.com",
             service_type=ServiceType.WALKING,
             date=date(2025, 9, 19),
-            star_rating=1,
+            star_rating=5,
             description="Alice was very friendly and my dog was happy after the walk!",
         )
         self.db.add(review)

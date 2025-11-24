@@ -29,10 +29,11 @@ type CreateReviewSchema = z.infer<typeof createReviewSchema>;
 
 type Props = {
   booking: Booking;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 // Form to create a review for a booking
-const CreateReviewForm = ({ booking }: Props) => {
+const CreateReviewForm = ({ booking, setOpen }: Props) => {
   const router = useRouter();
   const { session } = useContext(SessionContext);
 
@@ -51,12 +52,12 @@ const CreateReviewForm = ({ booking }: Props) => {
   const { mutate: postCreateReview, isPending } = useMutation({
     mutationFn: async (input: CreateReviewSchema) => {
       const response = await api.post(
-        `/bookings/${booking.id}`,
+        '/reviews',
         {
           sp_email: booking.spEmail,
           service_type: booking.serviceType,
           date: dateToLocalYMD(new Date()),
-          rating: input.rating,
+          star_rating: input.rating,
           ...(input.description ? { description: input.description } : {}),
         },
         {
@@ -76,7 +77,7 @@ const CreateReviewForm = ({ booking }: Props) => {
       onSuccess: ({ message }) => {
         console.info(message);
         toast.success('Review created!');
-        router.push('/owner/previous-bookings');
+        setOpen(false);
       },
       onError: (error: any) => {
         const apiError = error?.response?.data?.error;
