@@ -16,6 +16,7 @@ import {
   DialogTrigger,
 } from '../ui/dialog';
 import CreateReviewForm from './create-review-form';
+import { useState } from 'react';
 
 type Props = {
   booking: Booking;
@@ -23,6 +24,8 @@ type Props = {
 
 // Card for dispalying an owner's previous booking
 const PreviousBookingCard = ({ booking }: Props) => {
+  const [writeReviewOpen, setWriteReviewOpen] = useState(false);
+
   return (
     <Card className="min-w-[450px] border-3">
       <CardHeader>
@@ -56,7 +59,7 @@ const PreviousBookingCard = ({ booking }: Props) => {
         <BookingForm booking={booking} />
 
         {/* Review button */}
-        <Dialog>
+        <Dialog open={writeReviewOpen} onOpenChange={setWriteReviewOpen}>
           <form>
             <DialogTrigger asChild>
               <Button className="mt-4 w-full">
@@ -72,7 +75,10 @@ const PreviousBookingCard = ({ booking }: Props) => {
                   Use this form to write a review.
                 </DialogDescription>
               </DialogHeader>
-              <CreateReviewForm booking={booking} />
+              <CreateReviewForm
+                booking={booking}
+                setOpen={setWriteReviewOpen}
+              />
             </DialogContent>
           </form>
         </Dialog>
