@@ -1,5 +1,6 @@
 from typing import List, Optional
 from datetime import date
+from sqlalchemy import func
 from repo.base_repo import BaseRepo
 from models.models import Review, ServiceProvider
 from dto.dto import ReviewDTO
@@ -37,6 +38,19 @@ class ReviewRepo(BaseRepo):
             self.db.query(Review).filter(Review.sp_email == sp_email).all()
         )
         return [self._to_dto(review) for review in reviews]
+
+    # Applies an SQL aggregate function to get the average star ratings of rows grouped by sp_email.
+    def get_average_rating_for_service_provider(self, sp_email: str) -> Optional[float]:
+        avg_query = (
+            self.db.query(
+                func.avg(Review.star_rating)
+            )  # aggregate average star ratings for the given sp
+            .filter(Review.sp_email == sp_email)
+            .scalar()
+        )
+        if avg_query is None:
+            return None
+        return float(avg_query)
 
     def getReviewById(self, review_id: int) -> Optional[ReviewDTO]:
         review = self.db.query(Review).filter(Review.id == review_id).first()

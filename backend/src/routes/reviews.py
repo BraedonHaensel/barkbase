@@ -103,6 +103,45 @@ def init_review_routes(app, repo: ReviewRepo):
         reviews = repo.get_reviews_by_service_provider(sp_email)
         return jsonify(reviews), 200
 
+    # GET AVERAGE RATINGS FOR SP
+    @app.route("/reviews/service_provider/<sp_email>/average", methods=["GET"])
+    def get_average_rating_by_service_provider(sp_email: str):
+        """
+        Get average rating for a service provider
+        ---
+        tags:
+          - Reviews
+        summary: Retrieve the average star rating for a service provider
+        parameters:
+          - in: path
+            name: sp_email
+            required: true
+            type: string
+            description: Email of the service provider
+            example: "alice@gmail.com"
+            default: "alice@gmail.com"
+        responses:
+          200:
+            description: Average rating result
+            schema:
+              type: object
+              properties:
+                sp_email:
+                  type: string
+                average_rating:
+                  type: number
+                  format: float
+                  example: 4.5
+          404:
+            description: No reviews found for the service provider
+        """
+
+        average = repo.get_average_rating_for_service_provider(sp_email)
+        if average is None:
+            return jsonify({"error": "No reviews found for this service provider"}), 404
+
+        return jsonify({"sp_email": sp_email, "average_rating": average}), 200
+
     # CREATE REVIEW
     @app.route("/reviews", methods=["POST"])
     @token_required
