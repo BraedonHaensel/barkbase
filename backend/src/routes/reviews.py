@@ -167,7 +167,6 @@ def init_review_routes(app, repo: ReviewRepo):
                 - service_type
                 - date
                 - star_rating
-                - description
               properties:
                 sp_email:
                   type: string
@@ -210,7 +209,6 @@ def init_review_routes(app, repo: ReviewRepo):
             "service_type",
             "date",
             "star_rating",
-            "description",
         ]
         missing = [field for field in required_fields if field not in data]
         if missing:
@@ -228,7 +226,7 @@ def init_review_routes(app, repo: ReviewRepo):
                 service_type=data["service_type"],
                 review_date=data["date"],
                 star_rating=star_rating,
-                description=data["description"],
+                description=data.get("description", "")
             )
         except ValueError as exc:
             return jsonify({"error": str(exc)}), 400
