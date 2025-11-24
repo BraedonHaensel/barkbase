@@ -1,5 +1,6 @@
 from routes.auth import init_auth_routes
 from routes.emergency_contacts import init_emergency_contact_routes
+from routes.reviews import init_review_routes
 from routes.user import init_user_routes
 from routes.booking import init_booking_routes
 from routes.dogs import init_dog_routes
@@ -8,6 +9,8 @@ from db.db import DB
 from repo.owner_repo import OwnerRepo
 from repo.sp_repo import ServiceProviderRepo
 from repo.booking_repo import BookingRepo
+from repo.review_repo import ReviewRepo
+from repo.dog_repo import DogRepo
 from flasgger import Swagger
 from flask_cors import CORS
 import os
@@ -24,6 +27,8 @@ if __name__ == "__main__":
     owner_repo = OwnerRepo(session)
     sp_repo = ServiceProviderRepo(session)
     booking_repo = BookingRepo(session)
+    review_repo = ReviewRepo(session)
+    dog_repo = DogRepo(session)
 
     # initialize app
     app = Flask(__name__)
@@ -45,6 +50,7 @@ if __name__ == "__main__":
             {"name": "Users", "description": "User management endpoints"},
             {"name": "Dogs", "description": "Dog management endpoints"},
             {"name": "Bookings", "description": "Booking management endpoints"},
+            {"name": "Reviews", "description": "Review management endpoints"},
         ],
         "securityDefinitions": {
             "bearerAuth": {
@@ -290,6 +296,29 @@ if __name__ == "__main__":
                     },
                 },
             },
+            "ReviewDTO": {
+                "type": "object",
+                "properties": {
+                    "id": {"type": "integer", "example": 1},
+                    "o_email": {"type": "string", "example": "bob@gmail.com"},
+                    "sp_email": {"type": "string", "example": "alice@gmail.com"},
+                    "service_type": {
+                        "type": "string",
+                        "enum": ["WALKING", "SITTING"],
+                        "example": "WALKING",
+                    },
+                    "date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2024-10-25",
+                    },
+                    "star_rating": {"type": "integer", "example": 5},
+                    "description": {
+                        "type": "string",
+                        "example": "Great walk!",
+                    },
+                },
+            },
         },
     }
 
@@ -322,7 +351,8 @@ if __name__ == "__main__":
     init_auth_routes(app, owner_repo=owner_repo, sp_repo=sp_repo)
     init_user_routes(app, db, owner_repo=owner_repo, sp_repo=sp_repo)
     init_booking_routes(app, db, booking_repo=booking_repo)
-    init_dog_routes(app, db)
+    init_dog_routes(app, db, repo=dog_repo)
     init_emergency_contact_routes(app, db)
+    init_review_routes(app, repo=review_repo)
 
     app.run(port=os.getenv("API_PORT"), debug=True)

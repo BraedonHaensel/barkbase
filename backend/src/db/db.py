@@ -19,7 +19,7 @@ from dto.dto import (
     BookingCreateDto,
     CreateDogDTO,
     UpdateDogDTO,
-    UpdateEmergencyContactDto
+    UpdateEmergencyContactDto,
 )
 from typing import Optional, List
 from enums.enums import Province, ServiceType, AccountType
@@ -222,7 +222,6 @@ class DB:
         self.db.add(booked_dog)
         self.db.commit()
 
-
     def getAllOwners(self) -> List[OwnerDTO]:
         owners = self.db.query(Owner).all()  # fetch all rows from owner table
 
@@ -281,34 +280,75 @@ class DB:
             "phone_num": sp.phone_num,
         }
 
-    def updateUser(self, email: str, account_type: AccountType, f_name: str, l_name: str,
-                   province: str, city: str, street: str, phone_num: str, image_filename: str):
+    def updateUser(
+        self,
+        email: str,
+        account_type: AccountType,
+        f_name: str,
+        l_name: str,
+        province: str,
+        city: str,
+        street: str,
+        phone_num: str,
+        image_filename: str,
+    ):
 
         if account_type == AccountType.OWNER:
-            self.db.execute(update(Owner).where(Owner.email == email).values(
-                f_name=f_name, l_name=l_name, province=province, city=city, street=street, phone_num=phone_num))
+            self.db.execute(
+                update(Owner)
+                .where(Owner.email == email)
+                .values(
+                    f_name=f_name,
+                    l_name=l_name,
+                    province=province,
+                    city=city,
+                    street=street,
+                    phone_num=phone_num,
+                )
+            )
             # Update image if it was provided
             if image_filename:
-                self.db.execute(update(Owner).where(Owner.email == email).values(image_filename=image_filename))
+                self.db.execute(
+                    update(Owner)
+                    .where(Owner.email == email)
+                    .values(image_filename=image_filename)
+                )
 
         elif account_type == AccountType.SERVICE_PROVIDER:
-            self.db.execute(update(ServiceProvider).where(ServiceProvider.email == email).values(
-                f_name=f_name, l_name=l_name, province=province, city=city, street=street, phone_num=phone_num))
+            self.db.execute(
+                update(ServiceProvider)
+                .where(ServiceProvider.email == email)
+                .values(
+                    f_name=f_name,
+                    l_name=l_name,
+                    province=province,
+                    city=city,
+                    street=street,
+                    phone_num=phone_num,
+                )
+            )
             # Update image if it was provided
             if image_filename:
-                self.db.execute(update(ServiceProvider).where(ServiceProvider.email == email).values(
-                    image_filename=image_filename))
+                self.db.execute(
+                    update(ServiceProvider)
+                    .where(ServiceProvider.email == email)
+                    .values(image_filename=image_filename)
+                )
 
         self.db.commit()
 
     # Change a user's password
     def updateUserPassword(self, email: str, account_type: AccountType, hashed_pw: str):
         if account_type == AccountType.OWNER:
-            self.db.execute(update(Owner).where(Owner.email == email).values(
-                password=hashed_pw))
+            self.db.execute(
+                update(Owner).where(Owner.email == email).values(password=hashed_pw)
+            )
         elif account_type == AccountType.SERVICE_PROVIDER:
-            self.db.execute(update(ServiceProvider).where(ServiceProvider.email == email).values(
-                password=hashed_pw))
+            self.db.execute(
+                update(ServiceProvider)
+                .where(ServiceProvider.email == email)
+                .values(password=hashed_pw)
+            )
         self.db.commit()
 
     # Filter by o_email
@@ -331,10 +371,13 @@ class DB:
             )
 
         return res
-    
+
     def getEmergencyContact(self, o_email: str, phone_num: str) -> EmergencyContact:
-        return self.db.query(EmergencyContact).filter_by(
-            o_email=o_email, phone_num=phone_num).first()
+        return (
+            self.db.query(EmergencyContact)
+            .filter_by(o_email=o_email, phone_num=phone_num)
+            .first()
+        )
 
     def addEmergencyContact(self, request: EmergencyContactDto):
 
@@ -344,13 +387,19 @@ class DB:
         if self.getEmergencyContact(o_email, phone_num) is not None:
             raise KeyError(f"Phone number already in use: {phone_num}")
 
-        self.db.add(EmergencyContact(
-            o_email=o_email, phone_num=phone_num, f_name=request["f_name"],
-            l_name=request["l_name"], relationship=request["relationship"], email=request["email"]
-        ))
+        self.db.add(
+            EmergencyContact(
+                o_email=o_email,
+                phone_num=phone_num,
+                f_name=request["f_name"],
+                l_name=request["l_name"],
+                relationship=request["relationship"],
+                email=request["email"],
+            )
+        )
         self.db.commit()
 
-    def removeEmergencyContact(self, o_email:str, phone_num:str):
+    def removeEmergencyContact(self, o_email: str, phone_num: str):
 
         contact = self.getEmergencyContact(o_email, phone_num)
 
@@ -359,8 +408,10 @@ class DB:
 
         self.db.delete(contact)
         self.db.commit()
-    
-    def updateEmergencyContact(self, old_phone_num: str, request: UpdateEmergencyContactDto):
+
+    def updateEmergencyContact(
+        self, old_phone_num: str, request: UpdateEmergencyContactDto
+    ):
         try:
             new_phone_num = request["phone_num"]
             f_name = request["f_name"]
@@ -370,15 +421,17 @@ class DB:
             o_email = request["owner_email"]
         except KeyError as e:
             raise ValueError(f"Missing field: {e}")
-        
+
         contact = self.getEmergencyContact(o_email, old_phone_num)
         if not contact:
             raise KeyError(f"Emergency contact not for phone number: {old_phone_num}")
-        
+
         # Check phone number conflict if changing
         if new_phone_num != old_phone_num:
             if self.getEmergencyContact(o_email, new_phone_num):
-                raise KeyError(f"Emergency contact with phone number {new_phone_num} already exists")
+                raise KeyError(
+                    f"Emergency contact with phone number {new_phone_num} already exists"
+                )
             contact.phone_num = new_phone_num  # triggers onupdate cascade
 
         # Update other fields
@@ -388,7 +441,6 @@ class DB:
         contact.email = email
 
         self.db.commit()
-
 
     # DOGS
     def getAllDogs(self) -> List[Dog]:
@@ -571,25 +623,6 @@ class DB:
                     "street": provider.street,
                     "phone_num": provider.phone_num,
                     "image_filename": provider.image_filename,
-                }
-            )
-
-        return results
-
-    def getAllReviews(self):
-        reviews: List[Review] = self.db.query(Review).all()
-        results = []
-
-        for review in reviews:
-            results.append(
-                {
-                    "id": review.id,
-                    "o_email": review.o_email,
-                    "sp_email": review.sp_email,
-                    "service_type": review.service_type.name,  # convert enum to string
-                    "date": review.date.isoformat(),  # convert datetime.date → string
-                    "star_rating": review.star_rating,
-                    "description": review.description,
                 }
             )
 
