@@ -8,6 +8,9 @@ from enums.enums import AccountType, ServiceType
 from repo.booking_repo import BookingRepo
 from typing import List
 
+from dto.dto import OwnerDTO
+from models.models import Booking, BookedDog, Owner
+
 
 def convert_booking_to_dto(
     booking: Booking, booked_dogs: List[BookedDog]
@@ -31,6 +34,36 @@ def convert_booking_to_dto(
         "city": booking.city,
         "street": booking.street,
         "note": booking.note,
+    }
+
+    return dto
+
+
+def convert_booking_to_dto_plus(
+    booking: Booking, booked_dogs: List[BookedDog], owner: OwnerDTO
+) -> BookingDto:
+    dog_names = [bd.d_name.capitalize() for bd in booked_dogs]
+
+    dto: BookingDto = {
+        "id": booking.id,
+        "o_email": booking.o_email,
+        "sp_email": booking.sp_email,
+        "start_datetime": booking.start_datetime.isoformat(),
+        "end_datetime": booking.end_datetime.isoformat(),
+        "service_type": booking.service_type.name.upper(),
+        "price": float(booking.price),
+        "dog_names": dog_names,
+        "province": (
+            booking.province.name
+            if hasattr(booking.province, "name")
+            else booking.province
+        ),
+        "city": booking.city,
+        "street": booking.street,
+        "note": booking.note,
+        "f_name": owner["f_name"],
+        "l_name": owner["l_name"],
+        "phone_num": owner["phone_num"],
     }
 
     return dto
@@ -137,7 +170,7 @@ def init_booking_routes(app, db: DB, booking_repo: BookingRepo):
             schema:
               type: array
               items:
-                $ref: '#/definitions/BookingDto'
+                $ref: '#/definitions/BookingPlusDto'
           401:
             description: Unauthorized (must be a service provider)
         """
@@ -154,7 +187,8 @@ def init_booking_routes(app, db: DB, booking_repo: BookingRepo):
         result = []
         for booking in bookings:
             booked_dogs = booking_repo.get_booked_dogs(booking.id)
-            dto = convert_booking_to_dto(booking, booked_dogs)
+            owner = db.getOwnerByEmail(booking.o_email)
+            dto = convert_booking_to_dto_plus(booking, booked_dogs, owner)
             result.append(dto)
 
         return jsonify(result), 200

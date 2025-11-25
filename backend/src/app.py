@@ -262,6 +262,46 @@ if __name__ == "__main__":
                     },
                 },
             },
+            "BookingPlusDto": {
+                "type": "object",
+                "properties": {
+                    "id": {"type": "string", "example": "1"},
+                    "o_email": {"type": "string", "example": "bob@gmail.com"},
+                    "sp_email": {"type": "string", "example": "alice@gmail.com"},
+                    "start_datetime": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-10-30T14:30:00",
+                    },
+                    "end_datetime": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-10-30T16:30:00",
+                    },
+                    "service_type": {
+                        "type": "string",
+                        "enum": ["WALKING", "SITTING"],
+                        "example": "WALKING",
+                    },
+                    "price": {"type": "number", "format": "float", "example": 60.0},
+                    "dog_names": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "example": ["chico", "amigo"],
+                    },
+                    "province": {"type": "string", "example": "AB"},
+                    "street": {"type": "string", "example": "2500 University Drive NW"},
+                    "city": {"type": "string", "example": "Calgary"},
+                    "note": {
+                        "type": "string",
+                        "example": "Please walk Chico with a leash instead of a harness.",
+                    },
+
+                    "f_name" : {"type": "string", "example": "bob"},
+                    "l_name" : {"type": "string", "example": "bobson"},
+                    "phone_num" : {"type": "string", "example": "1234560987"},
+                },
+            },
             "BookingUpdateDto": {
                 "type": "object",
                 "properties": {

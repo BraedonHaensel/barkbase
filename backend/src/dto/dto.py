@@ -134,6 +134,24 @@ class BookingDto(TypedDict):
     street: str  # e.g. "2500 University Drive NW"]
     note: str
 
+# Request body shape to create booking
+class BookingPlusDto(TypedDict):
+    id: str
+    o_email: str
+    sp_email: str
+    start_datetime: str  # serialized ISO string, not datetime object
+    end_datetime: str
+    service_type: str  # e.g. "WALKING" or "SITTING"
+    price: float
+    dog_names: List[str]
+    province: str  # e.g. "AB"
+    city: str  # e.g. "Calgary"
+    street: str  # e.g. "2500 University Drive NW"]
+    note: str
+    f_name: str
+    l_name: str
+    phone_num: str
+
 
 # Request body shape to create booking
 class BookingUpdateDto(TypedDict):
