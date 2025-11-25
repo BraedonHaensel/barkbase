@@ -138,7 +138,6 @@ class BookingDto(TypedDict):
 class BookingPlusDto(TypedDict):
     id: str
     o_email: str
-    sp_email: str
     start_datetime: str  # serialized ISO string, not datetime object
     end_datetime: str
     service_type: str  # e.g. "WALKING" or "SITTING"
@@ -150,7 +149,7 @@ class BookingPlusDto(TypedDict):
     note: str
     f_name: str
     l_name: str
-    phone_num: str
+    image_url: str
 
 
 # Request body shape to create booking

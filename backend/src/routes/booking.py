@@ -47,7 +47,6 @@ def convert_booking_to_dto_plus(
     dto: BookingDto = {
         "id": booking.id,
         "o_email": booking.o_email,
-        "sp_email": booking.sp_email,
         "start_datetime": booking.start_datetime.isoformat(),
         "end_datetime": booking.end_datetime.isoformat(),
         "service_type": booking.service_type.name.upper(),
@@ -63,7 +62,7 @@ def convert_booking_to_dto_plus(
         "note": booking.note,
         "f_name": owner["f_name"],
         "l_name": owner["l_name"],
-        "phone_num": owner["phone_num"],
+        "image_url": owner["image_url"],
     }
 
     return dto

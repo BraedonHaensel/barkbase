@@ -267,7 +267,6 @@ if __name__ == "__main__":
                 "properties": {
                     "id": {"type": "string", "example": "1"},
                     "o_email": {"type": "string", "example": "bob@gmail.com"},
-                    "sp_email": {"type": "string", "example": "alice@gmail.com"},
                     "start_datetime": {
                         "type": "string",
                         "format": "date-time",
@@ -299,7 +298,10 @@ if __name__ == "__main__":
 
                     "f_name" : {"type": "string", "example": "bob"},
                     "l_name" : {"type": "string", "example": "bobson"},
-                    "phone_num" : {"type": "string", "example": "1234560987"},
+                    "image_url": {
+                        "type": "string",
+                        "example": "https://example.com/images/alice.png",
+                    },
                 },
             },
             "BookingUpdateDto": {
