@@ -175,7 +175,12 @@ const DogCardForm = ({
                       value={dateToLocalYMD(field.value)}
                     />
                   ) : (
-                    <DatePicker blockFuture {...field} />
+                    <DatePicker
+                      blockFuture
+                      // Dates from now up to 30 years into the past
+                      startMonth={new Date(new Date().getFullYear() - 30, 0)}
+                      {...field}
+                    />
                   )}
                   {field.value && (
                     <p className="text-muted-foreground">

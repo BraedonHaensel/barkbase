@@ -17,6 +17,8 @@ type Props = {
   onChange: any;
   blockPast?: boolean;
   blockFuture?: boolean;
+  startMonth?: Date;
+  endMonth?: Date;
 };
 
 const DatePicker = ({
@@ -24,6 +26,8 @@ const DatePicker = ({
   onChange,
   blockPast = false,
   blockFuture = false,
+  startMonth,
+  endMonth,
 }: Props) => {
   const [open, setOpen] = useState(false);
 
@@ -64,6 +68,9 @@ const DatePicker = ({
               }
             }
           }}
+          // Use deprecated props as the new ones cause day alignment errors on the last day
+          fromMonth={startMonth}
+          toMonth={endMonth}
         />
       </PopoverContent>
     </Popover>

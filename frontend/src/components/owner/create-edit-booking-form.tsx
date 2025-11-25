@@ -327,7 +327,13 @@ const CreateEditBookingForm = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <DatePicker blockPast {...field} />
+                      <DatePicker
+                        blockPast
+                        // Dates from now up to 2 years into the future
+                        startMonth={new Date(new Date().getFullYear(), 0, 1)}
+                        endMonth={new Date(new Date().getFullYear() + 2, 11, 1)}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -357,7 +363,13 @@ const CreateEditBookingForm = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <DatePicker blockPast {...field} />
+                      <DatePicker
+                        blockPast
+                        // Dates from now up to 2 years into the future
+                        startMonth={new Date(new Date().getFullYear(), 0)}
+                        endMonth={new Date(new Date().getFullYear() + 2, 11)}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
