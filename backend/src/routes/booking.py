@@ -3,13 +3,12 @@ from flask import request, jsonify
 from datetime import datetime, timedelta
 from models.models import *
 from middleware.auth_middleware import token_required
-from dto.dto import TokenPayload, BookingUpdateDto, BookingDto
+from dto.dto import TokenPayload, BookingUpdateDto, BookingDto, OwnerDTO
 from enums.enums import AccountType, ServiceType
 from repo.booking_repo import BookingRepo
 from typing import List
-
-from dto.dto import OwnerDTO
-from models.models import Booking, BookedDog, Owner
+from models.models import Booking, BookedDog
+from utils.images import get_user_image_url
 
 
 def convert_booking_to_dto(
@@ -62,7 +61,7 @@ def convert_booking_to_dto_plus(
         "note": booking.note,
         "f_name": owner["f_name"],
         "l_name": owner["l_name"],
-        "image_url": owner["image_url"],
+        "image_url": get_user_image_url(owner["image_url"]),
     }
 
     return dto
