@@ -5,7 +5,7 @@ import { Booking } from '@/types/booking';
 import BookingForm from '@/components/booking-form';
 import { ServiceType } from '@/enums/service-type';
 import { Footprints, House, PencilLine } from 'lucide-react';
-import BookingSPProfile from '@/components/booking-sp-nav';
+import BookingProfileIcon from '@/components/booking-sp-nav';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -42,8 +42,8 @@ const PreviousBookingCard = ({ booking }: Props) => {
           <div className="flex h-10 items-center justify-end gap-4">
             {/* TODO get sp details */}
             <p className="truncate">John D.</p>
-            <BookingSPProfile
-              spDetails={{
+            <BookingProfileIcon
+              userDetails={{
                 firstName: 'John',
                 lastName: 'Doe',
                 email: 'jdoe@gmail.com',

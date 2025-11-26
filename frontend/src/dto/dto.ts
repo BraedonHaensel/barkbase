@@ -42,6 +42,9 @@ export interface BookingDto {
   city: string;
   street: string;
   note: string;
+  f_name?: string;
+  l_name?: string;
+  image_url?: string;
 }
 
 export interface ServiceProviderDto {

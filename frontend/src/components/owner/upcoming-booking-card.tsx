@@ -12,7 +12,7 @@ import {
   Timer,
   Trash2,
 } from 'lucide-react';
-import BookingSPProfile from '@/components/booking-sp-nav';
+import BookingProfileIcon from '@/components/booking-sp-nav';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { redirect } from 'next/navigation';
@@ -45,8 +45,8 @@ const UpcomingBookingCard = ({ booking, onDelete }: Props) => {
             <div className="flex items-center gap-2">
               <p>ACCEPTED</p>
               {/* TODO get sp details */}
-              <BookingSPProfile
-                spDetails={{
+              <BookingProfileIcon
+                userDetails={{
                   firstName: 'John',
                   lastName: 'Doe',
                   email: 'jdoe@gmail.com',

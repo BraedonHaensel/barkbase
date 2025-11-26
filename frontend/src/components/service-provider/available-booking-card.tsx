@@ -4,10 +4,17 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Booking } from '@/types/booking';
 import BookingForm from '@/components/booking-form';
 import { ServiceType } from '@/enums/service-type';
-import { CheckLine, Footprints, House, LoaderCircle } from 'lucide-react';
-import BookingSPProfile from '@/components/booking-sp-nav';
+import {
+  CheckLine,
+  CircleUser,
+  Footprints,
+  House,
+  LoaderCircle,
+} from 'lucide-react';
+import BookingProfileIcon from '@/components/booking-sp-nav';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
 type Props = {
   booking: Booking;
@@ -21,30 +28,32 @@ const AvailableBookingCard = ({ booking, onAccept }: Props) => {
   return (
     <Card className="min-w-[450px] border-3">
       <CardHeader className="flex h-10 items-center justify-between">
-        <CardTitle className="min-w-fit text-xl font-bold">
+        <CardTitle className="grid w-full grid-cols-2 text-xl font-bold">
           {booking.serviceType === ServiceType.WALKING ? (
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2 whitespace-nowrap">
               <Footprints /> <span>DOG WALK</span>
             </div>
           ) : (
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2 whitespace-nowrap">
               <House /> <span>DOG SITTING</span>
             </div>
           )}
-        </CardTitle>
-        <CardTitle className="flex h-full text-xl">
-          <div className="flex items-center gap-2">
-            {/* TODO Just owner name in dropdown? Or put text beside? */}
-            <BookingSPProfile
-              spDetails={{
-                firstName: 'John',
-                lastName: 'Doe',
-                email: 'jdoe@gmail.com',
-                imageUrl:
-                  'http://127.0.0.1:5000/static/images/users/3549e957-3b4d-43f7-b790-f230597a1711.jpg',
-                rating: 4,
-              }}
-            />
+          <div className="flex h-10 items-center justify-end gap-4">
+            <p className="truncate">
+              {booking.firstName} {booking.lastName?.charAt(0)}.
+            </p>
+            <div className="aspect-square h-full">
+              <Avatar className="h-full w-full">
+                <AvatarImage
+                  src={booking.imageUrl}
+                  alt="Profile image"
+                  className="object-cover"
+                />
+                <AvatarFallback className="bg-white">
+                  <CircleUser className="h-full w-full" />
+                </AvatarFallback>
+              </Avatar>
+            </div>
           </div>
         </CardTitle>
       </CardHeader>

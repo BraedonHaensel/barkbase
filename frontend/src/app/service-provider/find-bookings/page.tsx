@@ -61,6 +61,9 @@ export default function FindBookingsPage() {
             price: String(booking.price),
             note: booking.note,
             spEmail: booking.sp_email,
+            firstName: booking.f_name,
+            lastName: booking.l_name,
+            imageUrl: booking.image_url,
           };
           newBookings.push(bookingData);
         });

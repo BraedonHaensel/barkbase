@@ -17,4 +17,7 @@ export interface Booking {
   price: string;
   note: string;
   spEmail: string;
+  firstName?: string;
+  lastName?: string;
+  imageUrl?: string;
 }
