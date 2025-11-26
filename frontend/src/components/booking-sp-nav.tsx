@@ -10,18 +10,20 @@ import { CircleUser, Star } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 type Props = {
-  spDetails: {
+  userDetails: {
     firstName: string;
     lastName: string;
     email: string;
     imageUrl: string;
-    rating: number;
+    rating?: number;
   };
 };
 
-// Booking service provider icon with a dropdown menu
-const BookingSPProfile = ({ spDetails }: Props) => {
+// Booking owner or service provider icon with a dropdown menu for their details
+const BookingProfileIcon = ({ userDetails }: Props) => {
   const [open, setOpen] = useState(false);
+
+  console.log(userDetails.imageUrl);
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -29,7 +31,7 @@ const BookingSPProfile = ({ spDetails }: Props) => {
       <DropdownMenuTrigger className="aspect-square h-full hover:cursor-pointer hover:opacity-60 focus:outline-none">
         <Avatar className="h-full w-full">
           <AvatarImage
-            src={spDetails.imageUrl}
+            src={userDetails.imageUrl}
             alt="Profile image"
             className="object-cover"
           />
@@ -44,25 +46,29 @@ const BookingSPProfile = ({ spDetails }: Props) => {
         {/* Service provider name and email */}
         <div className="p-2">
           <p className="truncate font-medium">
-            {spDetails.firstName} {spDetails.lastName}
+            {userDetails.firstName} {userDetails.lastName}
           </p>
           <p className="text-muted-foreground truncate text-sm">
-            {spDetails.email}
+            {userDetails.email}
           </p>
         </div>
-        {/* Star rating */}
-        <div className="flex justify-center">
-          {[1, 2, 3, 4, 5].map((num) => (
-            <Star
-              key={num}
-              size={18}
-              fill={num <= spDetails.rating ? 'yellow' : '#111'}
-            />
-          ))}
-        </div>
+        {userDetails.rating && (
+          <>
+            {/* Star rating */}
+            <div className="flex justify-center">
+              {[1, 2, 3, 4, 5].map((num) => (
+                <Star
+                  key={num}
+                  size={18}
+                  fill={num <= (userDetails.rating ?? 0) ? 'yellow' : '#111'}
+                />
+              ))}
+            </div>
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
 };
 
-export default BookingSPProfile;
+export default BookingProfileIcon;
