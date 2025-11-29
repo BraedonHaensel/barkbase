@@ -72,6 +72,73 @@ def init_dog_routes(app, db: DB, repo: DogRepo):
 
         return jsonify(result), 200
 
+
+    @app.route("/dogs/<email>", methods=["GET"])
+    @token_required
+    def get_dogs_by_email(email):
+        """
+        Get my dogs
+        ---
+        tags:
+          - Dogs
+        security:
+          - bearerAuth: []        # requires JWT Authorization
+        summary: Get the authenticated owner's dogs
+        description: |
+          Returns a list of dogs owned by the email provided.
+          Only service providers can access this endpoint.
+        parameters:
+          - in: path
+            name: email
+            required: true
+            type: string
+            description: Email to retrieve emergency contacts for
+            example: "bob@gmail.com"
+
+        responses:
+          200:
+            description: Successfully retrieved user's dogs
+            schema:
+              type: array
+              items:
+                $ref: '#/definitions/DogDTO'
+            examples:
+              application/json:
+                - name: "Storm"
+                  o_email: "bob@gmail.com"
+                  birth_date: "2010-01-20"
+                  size: "small"
+                  image_url: "https://example.com/images/john.png"
+                  breeds: ["Golden Retriever", "Labrador"]
+                - name: "Amigo"
+                  o_email: "bob@gmail.com"
+                  birth_date: "2010-02-13"
+                  size: "large"
+                  image_url: "https://example.com/images/john.png"
+                  breeds: []
+          401:
+            description: Invalid credentials or not a service provider
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: Invalid account type
+        """
+        user_info: TokenPayload = request.payload  # comes from the decoded JWT
+        account_type = AccountType(user_info["account_type"].lower())
+
+        if account_type != AccountType.SERVICE_PROVIDER:
+            return jsonify({"error": f"Invalid account type"}), 401
+
+        dogs = db.get_my_dogs(email)
+
+        result: list[DogDTO] = []
+        for dog in dogs:
+            result.append(repo._to_dto(dog))
+
+        return jsonify(result), 200
+
     # POST
     @app.route("/dogs", methods=["POST"])
     @token_required

@@ -267,6 +267,7 @@ if __name__ == "__main__":
                 "properties": {
                     "id": {"type": "string", "example": "1"},
                     "o_email": {"type": "string", "example": "bob@gmail.com"},
+                    "sp_email": {"type": "string", "example": "alice@gmail.com"},
                     "start_datetime": {
                         "type": "string",
                         "format": "date-time",

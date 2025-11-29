@@ -3,10 +3,10 @@ from flask import request, jsonify
 from datetime import datetime, timedelta
 from models.models import *
 from middleware.auth_middleware import token_required
-from dto.dto import TokenPayload, BookingUpdateDto, BookingDto, OwnerDTO
+from dto.dto import TokenPayload, BookingUpdateDto, BookingDto, OwnerDTO, ServiceProviderDTO
 from enums.enums import AccountType, ServiceType
 from repo.booking_repo import BookingRepo
-from typing import List
+from typing import List, Union
 from models.models import Booking, BookedDog
 from utils.images import get_user_image_url
 
@@ -39,13 +39,28 @@ def convert_booking_to_dto(
 
 
 def convert_booking_to_dto_plus(
-    booking: Booking, booked_dogs: List[BookedDog], owner: OwnerDTO
+    booking: Booking, booked_dogs: List[BookedDog], other: Union[OwnerDTO, ServiceProviderDTO]
 ) -> BookingDto:
     dog_names = [bd.d_name.capitalize() for bd in booked_dogs]
+
+    if not booking.sp_email == None:
+        sp_email = booking.sp_email
+    else:
+        sp_email = ""
+
+    if other != None:
+        f_name = other["f_name"]
+        l_name = other["l_name"]
+        image_url = get_user_image_url(other["image_url"])
+    else:
+        f_name = ""
+        l_name = ""
+        image_url = ""
 
     dto: BookingDto = {
         "id": booking.id,
         "o_email": booking.o_email,
+        "sp_email": sp_email,
         "start_datetime": booking.start_datetime.isoformat(),
         "end_datetime": booking.end_datetime.isoformat(),
         "service_type": booking.service_type.name.upper(),
@@ -59,9 +74,9 @@ def convert_booking_to_dto_plus(
         "city": booking.city,
         "street": booking.street,
         "note": booking.note,
-        "f_name": owner["f_name"],
-        "l_name": owner["l_name"],
-        "image_url": get_user_image_url(owner["image_url"]),
+        "f_name": f_name,
+        "l_name": l_name,
+        "image_url": image_url,
     }
 
     return dto
@@ -102,7 +117,7 @@ def init_booking_routes(app, db: DB, booking_repo: BookingRepo):
             schema:
               type: array
               items:
-                $ref: '#/definitions/BookingDto'
+                $ref: '#/definitions/BookingPlusDto'
           401:
             description: Invalid credentials or not an owner
         """
@@ -140,7 +155,15 @@ def init_booking_routes(app, db: DB, booking_repo: BookingRepo):
         for booking in bookings:
             booked_dogs = booking_repo.get_booked_dogs(booking.id)
 
-            booking_dto = convert_booking_to_dto(booking, booked_dogs)
+            if account_type == AccountType.OWNER:
+                if booking.sp_email == None or booking.sp_email == "":
+                    other = None
+                else:
+                    other = db.getServiceProviderByEmail(booking.sp_email)
+            else:
+                other = db.getOwnerByEmail(booking.o_email)
+
+            booking_dto = convert_booking_to_dto_plus(booking, booked_dogs, other)
 
             result.append(booking_dto)
 
