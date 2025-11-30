@@ -11,7 +11,6 @@ import {
   House,
   LoaderCircle,
 } from 'lucide-react';
-import BookingProfileIcon from '@/components/booking-sp-nav';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';

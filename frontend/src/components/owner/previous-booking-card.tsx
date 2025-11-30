@@ -5,7 +5,7 @@ import { Booking } from '@/types/booking';
 import BookingForm from '@/components/booking-form';
 import { ServiceType } from '@/enums/service-type';
 import { Footprints, House, PencilLine } from 'lucide-react';
-import BookingProfileIcon from '@/components/booking-sp-nav';
+import BookingProfileIcon from '@/components/booking-profile-icon';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -17,6 +17,7 @@ import {
 } from '../ui/dialog';
 import CreateReviewForm from './create-review-form';
 import { useState } from 'react';
+import { AccountType } from '@/enums/account-type';
 
 type Props = {
   booking: Booking;
@@ -40,16 +41,17 @@ const PreviousBookingCard = ({ booking }: Props) => {
             </div>
           )}
           <div className="flex h-10 items-center justify-end gap-4">
-            {/* TODO get sp details */}
-            <p className="truncate">John D.</p>
+            <p className="truncate">
+              {booking.firstName} {(booking.lastName ?? '').charAt(0)}.
+            </p>
             <BookingProfileIcon
               userDetails={{
-                firstName: 'John',
-                lastName: 'Doe',
-                email: 'jdoe@gmail.com',
-                imageUrl:
-                  'http://127.0.0.1:5000/static/images/users/3549e957-3b4d-43f7-b790-f230597a1711.jpg',
-                rating: 4,
+                accountType: AccountType.SERVICE_PROVIDER,
+                firstName: booking.firstName ?? '',
+                lastName: booking.lastName ?? '',
+                email: booking.spEmail,
+                phoneNumber: booking.phoneNumber ?? '',
+                imageUrl: booking.imageUrl ?? '',
               }}
             />
           </div>

@@ -5,7 +5,7 @@ import { Booking } from '@/types/booking';
 import BookingForm from '@/components/booking-form';
 import { ServiceType } from '@/enums/service-type';
 import { Footprints, House, LoaderCircle, ShieldUser } from 'lucide-react';
-import BookingProfileIcon from '@/components/booking-sp-nav';
+import BookingProfileIcon from '@/components/booking-profile-icon';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {

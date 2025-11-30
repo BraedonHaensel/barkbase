@@ -19,5 +19,6 @@ export interface Booking {
   spEmail: string;
   firstName?: string;
   lastName?: string;
+  phoneNumber?: string;
   imageUrl?: string;
 }
