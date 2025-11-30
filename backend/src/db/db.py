@@ -257,7 +257,7 @@ class DB:
             "city": owner.city,
             "street": owner.street,
             "phone_num": owner.phone_num,
-            "image_url": owner.image_filename,
+            "image_filename": owner.image_filename,
         }
 
     def getServiceProviderByEmail(self, email: str) -> Optional[ServiceProviderDTO]:
@@ -278,6 +278,7 @@ class DB:
             "city": sp.city,
             "street": sp.street,
             "phone_num": sp.phone_num,
+            "image_filename": sp.image_filename,
         }
 
     def updateUser(

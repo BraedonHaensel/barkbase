@@ -3,7 +3,13 @@ from flask import request, jsonify
 from datetime import datetime, timedelta
 from models.models import *
 from middleware.auth_middleware import token_required
-from dto.dto import TokenPayload, BookingUpdateDto, BookingDto, OwnerDTO, ServiceProviderDTO
+from dto.dto import (
+    TokenPayload,
+    BookingUpdateDto,
+    BookingDto,
+    OwnerDTO,
+    ServiceProviderDTO,
+)
 from enums.enums import AccountType, ServiceType
 from repo.booking_repo import BookingRepo
 from typing import List, Union
@@ -39,7 +45,9 @@ def convert_booking_to_dto(
 
 
 def convert_booking_to_dto_plus(
-    booking: Booking, booked_dogs: List[BookedDog], other: Union[OwnerDTO, ServiceProviderDTO]
+    booking: Booking,
+    booked_dogs: List[BookedDog],
+    other: Union[OwnerDTO, ServiceProviderDTO],
 ) -> BookingDto:
     dog_names = [bd.d_name.capitalize() for bd in booked_dogs]
 
@@ -51,10 +59,12 @@ def convert_booking_to_dto_plus(
     if other != None:
         f_name = other["f_name"]
         l_name = other["l_name"]
-        image_url = get_user_image_url(other["image_url"])
+        phone_num = other["phone_num"]
+        image_url = get_user_image_url(other["image_filename"])
     else:
         f_name = ""
         l_name = ""
+        phone_num = ""
         image_url = ""
 
     dto: BookingDto = {
@@ -76,6 +86,7 @@ def convert_booking_to_dto_plus(
         "note": booking.note,
         "f_name": f_name,
         "l_name": l_name,
+        "phone_num": phone_num,
         "image_url": image_url,
     }
 
