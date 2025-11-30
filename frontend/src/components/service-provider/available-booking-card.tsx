@@ -11,7 +11,6 @@ import {
   House,
   LoaderCircle,
 } from 'lucide-react';
-import BookingProfileIcon from '@/components/booking-sp-nav';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
@@ -40,7 +39,7 @@ const AvailableBookingCard = ({ booking, onAccept }: Props) => {
           )}
           <div className="flex h-10 items-center justify-end gap-4">
             <p className="truncate">
-              {booking.firstName} {booking.lastName?.charAt(0)}.
+              {booking.firstName} {(booking.lastName ?? '').charAt(0)}.
             </p>
             <div className="aspect-square h-full">
               <Avatar className="h-full w-full">

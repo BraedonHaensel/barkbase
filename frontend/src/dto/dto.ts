@@ -44,6 +44,7 @@ export interface BookingDto {
   note: string;
   f_name?: string;
   l_name?: string;
+  phone_num?: string;
   image_url?: string;
 }
 
