@@ -296,9 +296,9 @@ if __name__ == "__main__":
                         "type": "string",
                         "example": "Please walk Chico with a leash instead of a harness.",
                     },
-
-                    "f_name" : {"type": "string", "example": "bob"},
-                    "l_name" : {"type": "string", "example": "bobson"},
+                    "f_name": {"type": "string", "example": "bob"},
+                    "l_name": {"type": "string", "example": "bobson"},
+                    "phone_num": {"type": "string", "example": "9998887777"},
                     "image_url": {
                         "type": "string",
                         "example": "https://example.com/images/alice.png",
