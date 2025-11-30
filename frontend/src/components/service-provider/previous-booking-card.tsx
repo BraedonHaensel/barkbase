@@ -6,6 +6,7 @@ import BookingForm from '@/components/booking-form';
 import { ServiceType } from '@/enums/service-type';
 import { Footprints, House } from 'lucide-react';
 import BookingProfileIcon from '@/components/booking-profile-icon';
+import { AccountType } from '@/enums/account-type';
 
 type Props = {
   booking: Booking;
@@ -27,16 +28,17 @@ const PreviousBookingCard = ({ booking }: Props) => {
             </div>
           )}
           <div className="flex h-10 items-center justify-end gap-4">
-            {/* TODO get sp details */}
-            <p className="truncate">John D.</p>
+            <p className="truncate">
+              {booking.firstName} {(booking.lastName ?? '').charAt(0)}.
+            </p>
             <BookingProfileIcon
               userDetails={{
-                firstName: 'John',
-                lastName: 'Doe',
-                email: 'jdoe@gmail.com',
-                imageUrl:
-                  'http://127.0.0.1:5000/static/images/users/3549e957-3b4d-43f7-b790-f230597a1711.jpg',
-                rating: 4,
+                accountType: AccountType.OWNER,
+                firstName: booking.firstName ?? '',
+                lastName: booking.lastName ?? '',
+                email: booking.oEmail,
+                phoneNumber: booking.phoneNumber ?? '',
+                imageUrl: booking.imageUrl ?? '',
               }}
             />
           </div>

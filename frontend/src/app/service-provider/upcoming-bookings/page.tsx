@@ -61,6 +61,10 @@ export default function UpcomingBookingsPage() {
             price: String(booking.price),
             note: booking.note,
             spEmail: booking.sp_email,
+            firstName: booking.f_name,
+            lastName: booking.l_name,
+            phoneNumber: booking.phone_num,
+            imageUrl: booking.image_url,
           };
           newBookings.push(bookingData);
         });
