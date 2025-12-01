@@ -590,7 +590,7 @@ class DB:
     #     self.db.commit()
 
     def get_my_dogs(self, o_email: str):
-        return self.db.query(Dog).filter(Dog.o_email == o_email)
+        return self.db.query(Dog).filter(Dog.o_email == o_email).all()
 
     # DOG BREEDS
     def getAllDogBreeds(self):

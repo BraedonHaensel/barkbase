@@ -493,7 +493,7 @@ const CreateEditBookingForm = ({
                 <FormItem>
                   <FormLabel>Total Price ($)</FormLabel>
                   <FormControl>
-                    <Input placeholder="30" {...field} />
+                    <Input placeholder="0" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
