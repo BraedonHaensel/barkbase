@@ -72,12 +72,11 @@ def init_dog_routes(app, db: DB, repo: DogRepo):
 
         return jsonify(result), 200
 
-
     @app.route("/dogs/<email>", methods=["GET"])
     @token_required
     def get_dogs_by_email(email):
         """
-        Get my dogs
+        Get dogs by owner
         ---
         tags:
           - Dogs

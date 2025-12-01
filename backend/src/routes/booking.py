@@ -312,6 +312,16 @@ def init_booking_routes(app, db: DB, booking_repo: BookingRepo):
         if start_datetime >= end_datetime:
             return jsonify({"error": "End date must be later than the start date"}), 400
 
+        # Check if the length is too long for a walk (max 3 hours)
+        hours_diff = (end_datetime - start_datetime).total_seconds() / 3600
+        if service_type == ServiceType.WALKING and hours_diff > 3:
+            return jsonify({"error": "Maximum 3 hours for dog walks"}), 400
+
+        # Check if the length is too long for a sitting (max 2 months)
+        days_diff = (end_datetime - start_datetime).days
+        if service_type == ServiceType.SITTING and days_diff > 62:
+            return jsonify({"error": "Maximum 2 months for dog sittings"}), 400
+
         try:
             booking_id = db.createBooking(
                 {
