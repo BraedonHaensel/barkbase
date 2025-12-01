@@ -1,6 +1,5 @@
 import { Booking } from '@/types/booking';
 import { Form, FormControl, FormField, FormItem, FormLabel } from './ui/form';
-import DatePicker from './date-picker';
 import { bookingSchema } from '@/lib/schemas/bookings';
 import z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -8,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { dateToLocalYMD } from '@/lib/utils';
+import DogDetailsSlider from './dog-details-slider';
 
 // Form schema for a general booking view
 type BookingSchema = z.infer<typeof bookingSchema>;
@@ -39,6 +39,12 @@ const BookingForm = ({ booking }: Props) => {
               <Input readOnly value={value.join(', ')} />
             </FormItem>
           )}
+        />
+
+        {/* Display a slider for each of the dog details */}
+        <DogDetailsSlider
+          ownerEmail={booking.oEmail}
+          dogNames={booking.dogNames}
         />
 
         <FormLabel>Start date</FormLabel>

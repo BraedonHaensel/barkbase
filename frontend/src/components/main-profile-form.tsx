@@ -209,7 +209,6 @@ const MainProfileForm = ({
                 <FormControl>
                   <div
                     onClick={() => {
-                      console.log('click');
                       toast.warning("Email can't be changed!");
                     }}
                   >

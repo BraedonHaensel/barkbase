@@ -20,3 +20,12 @@ export const dogSchema = z
       path: ['image'],
     }
   );
+
+// Schema for the booking dog details form
+export const dogDetailsSchema = z.object({
+  name: z.string(),
+  birthDate: z.date(),
+  size: z.enum([DogSize.SMALL, DogSize.MEDIUM, DogSize.LARGE]),
+  breeds: z.string(),
+  imageUrl: z.string(),
+});
