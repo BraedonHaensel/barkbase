@@ -36,7 +36,7 @@ if __name__ == "__main__":
     CORS(app)
 
     # configure the path to the images folder
-    app.config["IMAGES_DIR"] = os.path.join("static", "images")
+    app.config["IMAGES_DIR"] = os.path.join(app.static_folder, "images")
 
     swagger_template = {
         "swagger": "2.0",

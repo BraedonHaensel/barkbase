@@ -32,9 +32,10 @@ const ReviewCard = ({ review }: Props) => {
             <p className="text-lg font-medium">{dateToLocalYMD(review.date)}</p>
           </div>
 
-          <div className="my-auto flex h-10 items-center justify-end gap-4">
-            <p className="truncate">John D.</p>
-            {/* Profile icon button */}
+          <div className="flex h-10 items-center justify-end gap-4">
+            <p className="truncate">
+              {review.oFirstName} {(review.oLastName ?? '').charAt(0)}.
+            </p>
             <div className="aspect-square h-full focus:outline-none">
                 <Avatar className="h-full w-full">
                   <AvatarImage

@@ -97,6 +97,8 @@ class ServiceProviderDTO(TypedDict):
 class ReviewDTO(TypedDict):
     id: int
     o_email: str
+    o_f_name: str
+    o_l_name: str
     o_image_url: str
     sp_email: str
     service_type: str

@@ -28,6 +28,8 @@ class ReviewRepo(BaseRepo):
         return {
             "id": review.id,
             "o_email": review.o_email,
+            "o_f_name": owner["f_name"],
+            "o_l_name": owner["l_name"],
             "o_image_url": o_image_url,
             "sp_email": review.sp_email,
             "service_type": review.service_type.name,

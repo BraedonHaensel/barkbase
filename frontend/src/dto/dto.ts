@@ -62,6 +62,8 @@ export interface ServiceProviderDto {
 export interface ReviewDto {
   id: string;
   o_email: string;
+  o_f_name: string;
+  o_l_name: string;
   o_image_url: string;
   sp_email: string;
   service_type: string;

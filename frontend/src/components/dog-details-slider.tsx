@@ -81,7 +81,7 @@ const DogDetailsSlider = ({ ownerEmail, dogNames }: Props) => {
     setDogIndex(Math.max(0, dogIndex - 1));
   };
 
-  if (isLoading) {
+  if (isLoading || dogDetails.length == 0) {
     return <LoaderCircle className="mx-auto mt-3 h-10 w-10 animate-spin" />;
   }
 
