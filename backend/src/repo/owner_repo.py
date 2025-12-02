@@ -6,7 +6,6 @@ from repo.base_repo import BaseRepo
 from models.models import Owner
 
 
-# TODO: generate swagger for this
 # Repos return the full shape as per the model
 class OwnerRepo(BaseRepo):
     def get_all(self) -> List[Owner]:

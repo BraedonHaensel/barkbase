@@ -548,48 +548,6 @@ class DB:
 
         self.db.commit()
 
-    # def updateDog(self, o_email: str, old_name: str, request: DogDTO):
-    #     """
-    #     Update a dog identified by o_email and old_name.
-    #     The request should contain the updated values (name, birth_date, size).
-    #     size should be a Dog.Size enum value.
-    #     """
-    #     try:
-    #         new_name = request["name"]
-    #         birth_date = request["birth_date"]
-    #         size_str = request["size"]  # This comes as a string from DTO
-    #     except KeyError as e:
-    #         raise ValueError(f"Missing field: {e}")
-    #     except Exception as e:
-    #         raise ValueError(f"Invalid field format: {e}")
-
-    #     # Get the existing dog
-    #     dog = self.db.query(Dog).filter(and_(Dog.o_email == o_email, Dog.name == old_name)).first()
-    #     if not dog:
-    #         raise KeyError(f"Dog not found: {old_name}")
-
-    #     # Convert size string to enum
-    #     try:
-    #         size = Dog.Size[size_str.upper()]
-    #     except (KeyError, AttributeError):
-    #         raise ValueError(f"Invalid size: {size_str}")
-
-    #     # Update the dog's attributes
-    #     # If name changed, we need to handle it carefully since it's part of the primary key
-    #     if new_name != old_name:
-    #         # Check if new name already exists for this owner
-    #         existing_dog = self.db.query(Dog).filter(and_(Dog.o_email == o_email, Dog.name == new_name)).first()
-    #         if existing_dog:
-    #             raise KeyError(f"Dog with name {new_name} already exists")
-    #         # Update name
-    #         dog.name = new_name
-
-    #     # Update other fields
-    #     dog.birth_date = birth_date
-    #     dog.size = size
-
-    #     self.db.commit()
-
     def get_my_dogs(self, o_email: str):
         return self.db.query(Dog).filter(Dog.o_email == o_email).all()
 
@@ -710,7 +668,7 @@ class DB:
             end_datetime=end_dt,
             service_type=service_type,
             price=price,
-            city=city,  # TODO: make configurable later
+            city=city,
             street=street,
             province=province,
             note=note,
