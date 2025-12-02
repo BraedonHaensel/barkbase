@@ -52,6 +52,8 @@ Use [draw.io](https://www.drawio.com/) to view our relational schema: [BarkBase 
         python src/app.py
         ```
 
+    4. You can open the displayed backend URL to view our API documentation
+
 5. With the backend still running, run the frontend **in a separate terminal**:
 
     1. Navigate into the `frontend` directory at the root of the repository
