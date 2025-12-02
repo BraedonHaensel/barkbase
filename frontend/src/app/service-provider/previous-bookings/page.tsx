@@ -95,9 +95,9 @@ export default function PreviousBookingsPage() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col items-center gap-4">
       {/* Page title */}
-      <p style={{ fontSize: '35px' }} className="text-center font-bold">
+      <p style={{ fontSize: '35px' }} className="font-bold">
         Previous Bookings
       </p>
       {bookings.length == 0 ? (
@@ -106,11 +106,7 @@ export default function PreviousBookingsPage() {
         </div>
       ) : (
         <div
-          className={
-            bookings.length == 1
-              ? 'mx-auto w-1/2'
-              : 'grid min-w-[400px] gap-6 lg:grid-cols-2'
-          }
+          className={`grid w-full max-w-[600px] gap-6 ${bookings.length > 1 && 'lg:max-w-none lg:grid-cols-2'}`}
         >
           {/* Render a card for each previous booking */}
           {bookings.map((booking, id) => (

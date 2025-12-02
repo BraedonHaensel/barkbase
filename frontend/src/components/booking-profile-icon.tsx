@@ -49,7 +49,7 @@ const BookingProfileIcon = ({ userDetails }: Props) => {
         // Handle request errors
         const apiError = error?.response?.data?.error;
         if (apiError) {
-          if ('No reviews found' in apiError) {
+          if (apiError.includes('No reviews found')) {
             // No reviews, hide the error
             return;
           }

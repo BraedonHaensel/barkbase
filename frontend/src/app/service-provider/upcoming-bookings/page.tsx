@@ -90,36 +90,6 @@ export default function UpcomingBookingsPage() {
     getUpcomingBookings();
   }, []);
 
-  // Delete a booking
-  const deleteBooking = async (bookingId: string) => {
-    api
-      .delete(`/bookings/${bookingId}`, {
-        headers: {
-          Authorization: `Bearer ${session?.token}`,
-        },
-      })
-      .then((response) => {
-        toast.success(response.data.message);
-        // Refresh the service provider's bookings
-        getUpcomingBookings();
-      })
-      .catch((error) => {
-        // Handle request errors
-        const apiError = error?.response?.data?.error;
-        if (apiError) {
-          console.error(`API error: ${apiError}`);
-          toast.error(`Failed to delete: ${apiError}`);
-        } else {
-          console.error(error);
-          toast.error(`Failed to delete. Please try again.`);
-        }
-      });
-  };
-
-  if (isLoading) {
-    return <LoaderCircle className="mx-auto mt-3 h-10 w-10 animate-spin" />;
-  }
-
   // Accept a booking
   const declineBooking = async (bookingId: string) => {
     api
@@ -147,10 +117,14 @@ export default function UpcomingBookingsPage() {
       });
   };
 
+  if (isLoading) {
+    return <LoaderCircle className="mx-auto mt-3 h-10 w-10 animate-spin" />;
+  }
+
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col items-center gap-4">
       {/* Page title */}
-      <p style={{ fontSize: '35px' }} className="text-center font-bold">
+      <p style={{ fontSize: '35px' }} className="font-bold">
         Upcoming Bookings
       </p>
       {bookings.length == 0 ? (
@@ -159,11 +133,7 @@ export default function UpcomingBookingsPage() {
         </div>
       ) : (
         <div
-          className={
-            bookings.length == 1
-              ? 'mx-auto w-1/2'
-              : 'grid min-w-[400px] gap-6 lg:grid-cols-2'
-          }
+          className={`grid w-full max-w-[600px] gap-6 ${bookings.length > 1 && 'lg:max-w-none lg:grid-cols-2'}`}
         >
           {/* Render a card for each upcoming booking */}
           {bookings.map((booking, id) => (
