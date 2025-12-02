@@ -28,7 +28,7 @@ const DogCard = ({
 
   return (
     <Card
-      className={`border-3 ${isEditing ? 'border-teal-400/50' : 'hover:cursor-pointer hover:opacity-60'}`}
+      className={`max-w-[450px] border-3 ${isEditing ? 'border-teal-400/50' : 'hover:cursor-pointer hover:opacity-60'}`}
       onClick={() => {
         if (!isEditing) {
           // Check if another dog is already being edited

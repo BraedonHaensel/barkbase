@@ -212,12 +212,12 @@ export default function ManageDogsPage() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col items-center gap-4">
       {/* Page title */}
-      <p style={{ fontSize: '35px' }} className="text-center font-bold">
+      <p style={{ fontSize: '35px' }} className="font-bold">
         Dog Manager
       </p>
-      <div className="grid min-w-[400px] gap-6 md:grid-cols-2">
+      <div className="grid min-w-[400px] grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Render a card for each dog */}
         {dogs.map((dog, id) => (
           <DogCard
@@ -231,7 +231,7 @@ export default function ManageDogsPage() {
         ))}
         {/* Add new dogs button */}
         <div
-          className={`flex min-h-50 items-center justify-center ${dogs.length % 2 == 0 && 'md:col-span-2'}`}
+          className={`flex min-h-50 items-center justify-center ${dogs.length % 2 == 0 && 'lg:col-span-2'}`}
         >
           <SquarePlus
             className="text-teal-600 hover:cursor-pointer hover:opacity-60"
