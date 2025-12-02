@@ -501,9 +501,23 @@ class DB:
 
         self.db.commit()
 
-    def remove_dog(self, dog: Dog):
+    def remove_dog(self, dog: Dog, o_email: str):
+        # Find bookings that include this dog
+        dog_bk_ids_query = (
+            self.db.query(BookedDog.booking_id)
+            .filter_by(o_email=o_email, d_name=dog.name)
+            .all()
+        )
+        dog_bk_ids = [bk[0] for bk in dog_bk_ids_query]
+
+        # Delete bookings that include this dog
+        bookings = self.db.query(Booking).filter(Booking.id.in_(dog_bk_ids)).all()
+        for booking in bookings:
+            self.db.delete(booking)
+
         # Now safely delete the dog
         self.db.delete(dog)
+
         self.db.commit()
 
     def updateDog(self, o_email: str, old_name: str, request: UpdateDogDTO):

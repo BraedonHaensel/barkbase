@@ -60,6 +60,9 @@ class Dog(Base):
     # Define relationship so future deletions will delete columns with FK references to this dog
     breeds = relationship("DogBreed", cascade="all, delete-orphan", backref="dog")
 
+    # Define relationship so future deletions will delete columns with FK references to this booking
+    booked_dogs = relationship("BookedDog", cascade="all, delete-orphan", backref="dog")
+
 
 class DogBreed(Base):
     __tablename__ = "dog_breed"
@@ -138,6 +141,13 @@ class Booking(Base):
     street: Mapped[str] = mapped_column(String(100))
     note: Mapped[str] = mapped_column(String(1000))
 
+    # Define relationship so future deletions will delete columns with FK references to this booking
+    booked_dogs = relationship(
+        "BookedDog",
+        cascade="all, delete-orphan",
+        backref="booking",
+    )
+
 
 class BookedDog(Base):
     __tablename__ = "booked_dog"
@@ -148,11 +158,18 @@ class BookedDog(Base):
     )
     d_name: Mapped[str] = mapped_column(
         String(100),
-        ForeignKey("dog.name", ondelete="CASCADE", onupdate="CASCADE"),
         primary_key=True,
     )
     o_email: Mapped[str] = mapped_column(
         String(100),
-        ForeignKey("dog.o_email", ondelete="CASCADE", onupdate="CASCADE"),
         primary_key=True,
+    )
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["d_name", "o_email"],
+            ["dog.name", "dog.o_email"],
+            ondelete="CASCADE",
+            onupdate="CASCADE",
+        ),
     )

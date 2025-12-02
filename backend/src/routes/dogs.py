@@ -367,8 +367,8 @@ def init_dog_routes(app, db: DB, repo: DogRepo):
             return jsonify({"error": f"Non-existent dog: {name}"}), 400
 
         try:
-            # Remove the dog (this also handles related BookedDog and DogBreed records)
-            db.remove_dog(dog)
+            # Remove the dog (this also handles related Booking, BookedDog and DogBreed records)
+            db.remove_dog(dog, email)
             return jsonify({"message": "Dog successfully deleted"}), 200
         except Exception as e:
             return jsonify({"error": f"Error deleting dog: {str(e)}"}), 500
