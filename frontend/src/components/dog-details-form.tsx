@@ -27,7 +27,7 @@ type Props = {
 // Form to view the details of a dog in a booking
 const DogDetailsForm = ({ dog }: Props) => {
   // Form initialization
-  let form = useForm<DogSchema>({
+  const form = useForm<DogSchema>({
     resolver: zodResolver(dogDetailsSchema),
     defaultValues: {
       name: dog.name,
@@ -62,7 +62,7 @@ const DogDetailsForm = ({ dog }: Props) => {
               <FormControl>
                 <img
                   src={field.value}
-                  alt="Profile image preview"
+                  alt="Dog image"
                   className="my-auto aspect-square w-full object-cover"
                 />
               </FormControl>
