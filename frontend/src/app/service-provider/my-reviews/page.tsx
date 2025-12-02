@@ -44,6 +44,7 @@ export default function MyReviewsPage() {
           const reviewData: Review = {
             id: review.id,
             oEmail: review.o_email,
+            oImageUrl: review.o_image_url,
             spEmail: review.sp_email,
             serviceType:
               ServiceType[review.service_type as keyof typeof ServiceType],

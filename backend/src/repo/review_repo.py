@@ -1,10 +1,12 @@
 from typing import List, Optional
 from datetime import date
 from sqlalchemy import func
+from utils.images import get_user_image_url
 from repo.base_repo import BaseRepo
 from models.models import Review, ServiceProvider
 from dto.dto import ReviewDTO
 from enums.enums import ServiceType
+from db.db import DB
 
 
 class ReviewRepo(BaseRepo):
@@ -19,9 +21,14 @@ class ReviewRepo(BaseRepo):
             raise ValueError("Service provider does not exist.")
 
     def _to_dto(self, review: Review) -> ReviewDTO:
+        # Add the owner's profile image URL
+        owner = DB.getOwnerByEmail(self, review.o_email)
+        o_image_url = get_user_image_url(owner["image_filename"])
+
         return {
             "id": review.id,
             "o_email": review.o_email,
+            "o_image_url": o_image_url,
             "sp_email": review.sp_email,
             "service_type": review.service_type.name,
             "date": review.date.isoformat(),

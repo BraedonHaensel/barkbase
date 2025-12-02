@@ -2,6 +2,7 @@
 export interface Review {
   id: string;
   oEmail: string;
+  oImageUrl: string;
   spEmail: string;
   serviceType: string;
   date: Date;

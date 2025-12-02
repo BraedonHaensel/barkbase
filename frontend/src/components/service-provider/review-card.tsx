@@ -36,18 +36,15 @@ const ReviewCard = ({ review }: Props) => {
             <p className="truncate">John D.</p>
             {/* Profile icon button */}
             <div className="aspect-square h-full focus:outline-none">
-              <Avatar className="h-full w-full">
-                <AvatarImage
-                  // TODO GET URL
-                  src={
-                    'http://127.0.0.1:5000/static/images/users/3549e957-3b4d-43f7-b790-f230597a1711.jpg'
-                  }
-                  alt="Profile image"
-                  className="object-cover"
-                />
-                <AvatarFallback className="bg-white">
-                  <CircleUser className="h-full w-full" />
-                </AvatarFallback>
+                <Avatar className="h-full w-full">
+                  <AvatarImage
+                    src={review.oImageUrl}
+                    alt="Profile image"
+                    className="object-cover"
+                  />
+                  <AvatarFallback className="bg-white">
+                    <CircleUser className="h-full w-full" />
+                  </AvatarFallback>
               </Avatar>
             </div>
           </div>

@@ -3,7 +3,7 @@ This folder contains the types that will be exposed in our API.
 They are known as DTOs (Data Transfer Objects).
 """
 
-from typing import TypedDict, List
+from typing import Optional, TypedDict, List
 from datetime import date
 
 
@@ -97,6 +97,7 @@ class ServiceProviderDTO(TypedDict):
 class ReviewDTO(TypedDict):
     id: int
     o_email: str
+    o_image_url: str
     sp_email: str
     service_type: str
     date: str  # serialized ISO string, not datetime object
