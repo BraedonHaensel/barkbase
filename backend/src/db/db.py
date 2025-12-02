@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine, and_, update
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
 from models.models import (
     Base,
     Owner,
@@ -49,9 +49,10 @@ class DB:
         else:
             DATABASE_URI = f"{DB_DRIVER}://{DB_USER}:{DB_PASS}@{DB_HOST}/{DB_NAME}"
 
-        self.engine = create_engine(DATABASE_URI)
-        self.session = sessionmaker(bind=self.engine)()
-        self.db = self.session  # TODO: remove later
+        self.engine = create_engine(DATABASE_URI, pool_size=10, max_overflow=20)
+        session_factory = sessionmaker(bind=self.engine)
+        self.session = scoped_session(session_factory)
+        self.db = self.session
 
     def resetAllTables(self):
         Base.metadata.drop_all(self.engine)  # Clear all tables
