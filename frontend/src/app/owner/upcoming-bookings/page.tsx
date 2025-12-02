@@ -132,7 +132,7 @@ export default function UpcomingBookingsPage() {
         </div>
       ) : (
         <div
-          className={`grid w-full max-w-[600px] gap-6 ${bookings.length > 1 && 'lg:max-w-none lg:grid-cols-2'}`}
+          className={`grid w-full max-w-[600px] gap-6 ${bookings.length > 1 && 'xl:max-w-none xl:grid-cols-2'}`}
         >
           {/* Render a card for each upcoming booking */}
           {bookings.map((booking, id) => (

@@ -178,6 +178,9 @@ def init_booking_routes(app, db: DB, booking_repo: BookingRepo):
 
             result.append(booking_dto)
 
+        # Sort the bookings by start datetime
+        result.sort(key=lambda bk: bk["start_datetime"])
+
         return jsonify(result), 200
 
     # GET AVAILABLE BOOKINGS (Service Provider only)
@@ -222,6 +225,9 @@ def init_booking_routes(app, db: DB, booking_repo: BookingRepo):
             owner = db.getOwnerByEmail(booking.o_email)
             dto = convert_booking_to_dto_plus(booking, booked_dogs, owner)
             result.append(dto)
+
+        # Sort the bookings by start datetime
+        result.sort(key=lambda bk: bk["start_datetime"])
 
         return jsonify(result), 200
 
