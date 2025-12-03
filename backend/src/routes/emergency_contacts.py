@@ -136,7 +136,7 @@ def init_emergency_contact_routes(app, db: DB):
                 "email": email,
                 "owner_email": owner_email,
                 "f_name": data["f_name"],
-                "l_name": data["f_name"],
+                "l_name": data["l_name"],
                 "phone_num": data["phone_num"],
                 "relationship": data["relationship"],
             }
