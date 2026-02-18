@@ -8,9 +8,9 @@ For more information, check out our project's [Proposal.pdf](documents/Proposal.
 
 This application was developed by:
 
--   Braedon Haensel (30144363)
--   Matias Lupick (30216478)
--   Jolene Tan (30301991)
+-   Braedon Haensel
+-   Matias Lupick
+-   Jolene Tan
 
 ## ER Diagram
 
