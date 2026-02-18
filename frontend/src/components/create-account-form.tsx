@@ -407,6 +407,16 @@ const CreateAccountForm = () => {
                   ]
             );
             if (isValid) {
+              if (stageNum === 1) {
+                // Password and confirm password fields must match
+                const { password, confirmPassword } = form.getValues();
+                if (password !== confirmPassword) {
+                  form.setError("confirmPassword", {
+                    message: "Passwords do not match",
+                  });
+                  return;
+                }
+              }
               setStageNum(stageNum + 1);
             }
           }}

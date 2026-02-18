@@ -13,12 +13,8 @@ export const createAccountSchema = z
     city: z.string().nonempty('Required field'),
     street: z.string().nonempty('Required field'),
     password: z.string().min(8, 'Password must be at least 8 characters'),
-    confirmPassword: z.string(),
+    confirmPassword: z.string().min(8, 'Password must be at least 8 characters'),
     accountType: z.enum(AccountType),
     image: z.file(),
-  })
-  // Password and confirm password fields must match
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ['confirmPassword'],
   });
+  
