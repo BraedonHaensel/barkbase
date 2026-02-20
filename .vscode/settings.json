@@ -1,0 +1,15 @@
+{
+    "editor.tabSize": 2,
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true,
+    "editor.formatOnSaveMode": "file",
+    "files.insertFinalNewline": true,
+    "workbench.editor.customLabels.patterns": {
+        "/route.ts": "${dirname}/${filename}.${extname}",
+        "/page.tsx": "${dirname}/${filename}.${extname}",
+        "/schemas/": "${dirname}/${filename}.${extname}"
+    },
+    "search.exclude": {
+        "backend/archive": true
+    }
+}
